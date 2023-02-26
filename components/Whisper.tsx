@@ -420,7 +420,6 @@ export default () => {
             { backgroundColor: isRecording ? '#fff' : '#000' },
           ]}
           onPress={handleRecordButtonPress}>
-
           {isLoading ? (
             <ActivityIndicator size={32} color="#fff" />
           ) : isRecording ? (
@@ -428,87 +427,13 @@ export default () => {
           ) : (
             <FontAwesome name="microphone" size={32} color="#fff" />
           )}
-
         </TouchableOpacity>
       </View>
-
-      {/* <View style={styles.buttonsSection}>
-        <Home changeText={(value) => {
-          setSpeechText(value)
-        }} />
-      </View> */}
-
       <View >
       </View>
       {getRecordingLines()}
     </View>
   );
-
-
-  // return (
-  //   <View style={styles.root}>
-  //     <View style={{ alignSelf: 'flex-end', margin: 30, backgroundColor: 'black', padding: 1 }}>
-  //       <Text style={{ color: 'white' }}>
-  //         CC
-  //       </Text>
-  //     </View>
-  //     <View style={{ flex: 1, marginHorizontal: 20, alignItems: 'center' }}>
-  //       {speechText == "" &&
-  //         <View>
-  //           <Text style={styles.title}>Start Speaking</Text>
-  //           <Text style={styles.title}>To Activate Alli</Text>
-  //         </View>
-  //       }
-  //       <ScrollView>
-  //         <Text style={styles.title}>{speechText}</Text>
-  //       </ScrollView>
-  //     </View>
-  //     <View style={styles.settingsSection}>
-
-  //       <Image style={{ borderRadius: 80 }} source={logo} />
-
-  //     </View>
-
-  //     <View style={styles.container}>
-  //       <TouchableOpacity
-  //         style={[
-  //           styles.button,
-  //           { backgroundColor: isRecording ? 'red' : 'green' },
-  //         ]}
-  //         onPress={handleRecordButtonPress}
-  //         disabled={isLoading}>
-  //         {isLoading ? (
-  //           <ActivityIndicator color="#fff" />
-  //         ) : isRecording ? (
-  //           <Text style={styles.buttonText}>Stop Recording</Text>
-  //         ) : (
-  //           <Text style={styles.buttonText}>Start Recording</Text>
-  //         )}
-  //       </TouchableOpacity>
-  //       <TouchableOpacity
-  //         style={[
-  //           styles.button,
-  //           { backgroundColor: isPlaying ? 'blue' : 'gray' },
-  //         ]}
-  //         onPress={handlePlayButtonPress}
-  //         disabled={!isPlaying}>
-  //         <Text style={styles.buttonText}>Playssss Answer</Text>
-  //       </TouchableOpacity>
-  //     </View>
-
-  //     {/* <View style={styles.buttonsSection}>
-  //       <Home changeText={(value) => {
-  //         setSpeechText(value)
-  //       }} />
-  //     </View> */}
-
-  //     <View >
-
-  //     </View>
-
-  //     {getRecordingLines()}
-  //   </View>
-  // );
 }
 
 const styles = StyleSheet.create({
