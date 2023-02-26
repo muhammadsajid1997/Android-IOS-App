@@ -99,6 +99,8 @@ export default () => {
 
   //
   const handleRecordButtonPress = async () => {
+    console.log('aaaaaaaaaaaaaaaaaaaaaaa');
+
     if (!isRecording) {
       try {
         await Audio.requestPermissionsAsync();
@@ -166,9 +168,9 @@ export default () => {
           setData(data2)
         })
 
-        // if (responses.status !== 200) {
-        //   throw new Error('Failed to upload audio');
-        // }
+      // if (responses.status !== 200) {
+      //   throw new Error('Failed to upload audio');
+      // }
 
       setIsLoading(false);
       setIsPlaying(true);
@@ -178,6 +180,11 @@ export default () => {
       // setIsPlaying(false);
       setIsLoading(false);
     }
+
+    if (isPlaying) {
+      handlePlayButtonPress();
+    }
+
   };
 
   const handlePlayButtonPress = async () => {
@@ -384,7 +391,6 @@ export default () => {
     setTranscribeTimout(newTimeout);
   }
 
-
   return (
     <View style={styles.root}>
       <View style={{ alignSelf: 'flex-end', margin: 30, backgroundColor: 'black', padding: 1 }}>
@@ -395,8 +401,8 @@ export default () => {
       <View style={{ flex: 1, marginHorizontal: 20, alignItems: 'center' }}>
         {speechText == "" &&
           <View>
-            <Text style={styles.title}>Start Speaking</Text>
-            <Text style={styles.title}>To Activate Alli</Text>
+            <Text style={styles.title}>Start Speaking </Text>
+            <Text style={styles.title}> To Activate Alli </Text>
           </View>
         }
         <ScrollView>
@@ -404,35 +410,25 @@ export default () => {
         </ScrollView>
       </View>
       <View style={styles.settingsSection}>
-
         <Image style={{ borderRadius: 80 }} source={logo} />
-
       </View>
 
       <View style={styles.container}>
         <TouchableOpacity
           style={[
-            styles.button,
-            { backgroundColor: isRecording ? 'red' : 'green' },
+            styles.circleButton,
+            { backgroundColor: isRecording ? '#fff' : '#000' },
           ]}
-          onPress={handleRecordButtonPress}
-          disabled={isLoading}>
+          onPress={handleRecordButtonPress}>
+
           {isLoading ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator size={32} color="#fff" />
           ) : isRecording ? (
-            <Text style={styles.buttonText}>Stop Recording</Text>
+            <FontAwesome name="microphone" size={32} color="#000" />
           ) : (
-            <Text style={styles.buttonText}>Start Recording</Text>
+            <FontAwesome name="microphone" size={32} color="#fff" />
           )}
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.button,
-            { backgroundColor: isPlaying ? 'blue' : 'gray' },
-          ]}
-          onPress={handlePlayButtonPress}
-          disabled={!isPlaying}>
-          <Text style={styles.buttonText}>Play Answer</Text>
+
         </TouchableOpacity>
       </View>
 
@@ -443,12 +439,76 @@ export default () => {
       </View> */}
 
       <View >
-
       </View>
-
       {getRecordingLines()}
     </View>
   );
+
+
+  // return (
+  //   <View style={styles.root}>
+  //     <View style={{ alignSelf: 'flex-end', margin: 30, backgroundColor: 'black', padding: 1 }}>
+  //       <Text style={{ color: 'white' }}>
+  //         CC
+  //       </Text>
+  //     </View>
+  //     <View style={{ flex: 1, marginHorizontal: 20, alignItems: 'center' }}>
+  //       {speechText == "" &&
+  //         <View>
+  //           <Text style={styles.title}>Start Speaking</Text>
+  //           <Text style={styles.title}>To Activate Alli</Text>
+  //         </View>
+  //       }
+  //       <ScrollView>
+  //         <Text style={styles.title}>{speechText}</Text>
+  //       </ScrollView>
+  //     </View>
+  //     <View style={styles.settingsSection}>
+
+  //       <Image style={{ borderRadius: 80 }} source={logo} />
+
+  //     </View>
+
+  //     <View style={styles.container}>
+  //       <TouchableOpacity
+  //         style={[
+  //           styles.button,
+  //           { backgroundColor: isRecording ? 'red' : 'green' },
+  //         ]}
+  //         onPress={handleRecordButtonPress}
+  //         disabled={isLoading}>
+  //         {isLoading ? (
+  //           <ActivityIndicator color="#fff" />
+  //         ) : isRecording ? (
+  //           <Text style={styles.buttonText}>Stop Recording</Text>
+  //         ) : (
+  //           <Text style={styles.buttonText}>Start Recording</Text>
+  //         )}
+  //       </TouchableOpacity>
+  //       <TouchableOpacity
+  //         style={[
+  //           styles.button,
+  //           { backgroundColor: isPlaying ? 'blue' : 'gray' },
+  //         ]}
+  //         onPress={handlePlayButtonPress}
+  //         disabled={!isPlaying}>
+  //         <Text style={styles.buttonText}>Playssss Answer</Text>
+  //       </TouchableOpacity>
+  //     </View>
+
+  //     {/* <View style={styles.buttonsSection}>
+  //       <Home changeText={(value) => {
+  //         setSpeechText(value)
+  //       }} />
+  //     </View> */}
+
+  //     <View >
+
+  //     </View>
+
+  //     {getRecordingLines()}
+  //   </View>
+  // );
 }
 
 const styles = StyleSheet.create({
@@ -513,6 +573,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
+  circleButton: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });
 
 const customPickerStyles = StyleSheet.create({
