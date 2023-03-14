@@ -1,4 +1,4 @@
-import React, {useState, createRef} from 'react';
+import React, { useState, createRef } from 'react';
 import {
   StyleSheet,
   TextInput,
@@ -20,109 +20,92 @@ import logoBack from './Images/logoback.png'
 import signInButton from './Images/signIn.jpg'
 import { LinearGradient } from 'expo-linear-gradient';
 import facebook from './Images/facebook.png'
-import google from './Images/google.webp'
+import google from './Images/google.png'
 import apple from './Images/apple.png'
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
-import {  MaterialIcons } from '@expo/vector-icons';
-import { MaterialCommunityIcons } from '@expo/vector-icons'; 
-import { getAuth, signInWithEmailAndPassword,GoogleAuthProvider, signInWithPopup, signInWithRedirect } from 'firebase/auth';
+import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithRedirect } from 'firebase/auth';
 import { Feather } from '@expo/vector-icons';
+// import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { useAuthRequest } from 'expo-auth-session/providers/google';
+// import auth from '@react-native-firebase/auth';
 
-
-
-const LoginScreen = ({navigation}) => {
+const LoginScreen = ({ navigation }) => {
   WebBrowser.maybeCompleteAuthSession();
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     expoClientId: '44373533249-4eatu4snl2fhth2cqc7sf848fh19sqvk.apps.googleusercontent.com',
-    androidClientId:'44373533249-k414100f72pkrcrm4s9i0p3kinm9s3q0.apps.googleusercontent.com'
-  
+    androidClientId: '44373533249-k414100f72pkrcrm4s9i0p3kinm9s3q0.apps.googleusercontent.com'
+
   });
-
-  React.useEffect(() => {
-    if (response?.type === 'success') {
-      const { authentication } = response;
-    }
-  }, [response]);
-
-
   
+  // GoogleSignin.configure({
+  //   webClientId: '127065750913-8r60ecto94cbq64rvghk0gepguatgs3l.apps.googleusercontent.com',
+  // });
+
   const [userEmail, setUserEmail] = useState('');
   const [userPassword, setUserPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errortext, setErrortext] = useState('');
-  const [showPassword,setShowPassword]=useState(false);
-  const auth = getAuth();
+  const [showPassword, setShowPassword] = useState(false);
+  const auths = getAuth();
   const provider = new GoogleAuthProvider();
   const passwordInputRef = createRef();
-function loginUser(){
-  console.log("login test")
+
+  function loginUser() {
+    setLoading(true)
+    signInWithEmailAndPassword(auths, userEmail, userPassword)
+      .then((userCredential) => {
+        // Signed in 
+        const user = userCredential.user;
+        navigation.navigate("Home",{screen:"home"})
+        console.log(user,"loginScreen")
+        setLoading(false)
+        // ...
+      })
+      .catch((error) => {
+        setLoading(false)
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        alert(error)
+      });
+  }
 
 
+  function loginUserWithGoogle() {
+    console.log("login test")
+    setLoading(true)
+    // const auth = getAuth();
+
+    signInWithPopup(useAuthRequest, provider)
+      .then((result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        // The signed-in user info.
+        const user = result.user;
+
+        // onst user = userCredential.user;
+        navigation.navigate("home")
+        console.log(user)
+        setLoading(false)
+        // IdP data available using getAdditionalUserInfo(result)
+        // ...
+      }).catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The AuthCredential type that was used.
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        // ...
+      });
 
 
-
-  setLoading(true)
-signInWithEmailAndPassword(auth,  userEmail,userPassword)
-  .then((userCredential) => {
-    // Signed in 
-    const user = userCredential.user;
-    navigation.navigate("home")
-    console.log(user)
-    setLoading(false)
-
-    // ...
-  })
-  .catch((error) => {
-    setLoading(false)
-
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    alert(error)
-  });
-}
-
-
-function loginUserWithGoogle(){
- 
-
-  console.log("login test")
-
-
-  
-
-
-  setLoading(true)
-  // const auth = getAuth();
-
-  signInWithPopup(auth, provider)
-    .then((result) => {
-      // This gives you a Google Access Token. You can use it to access the Google API.
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      const token = credential.accessToken;
-      // The signed-in user info.
-      const user = result.user;
-
-      // onst user = userCredential.user;
-    navigation.navigate("home")
-    console.log(user)
-    setLoading(false)
-      // IdP data available using getAdditionalUserInfo(result)
-      // ...
-    }).catch((error) => {
-      // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // The email of the user's account used.
-      const email = error.customData.email;
-      // The AuthCredential type that was used.
-      const credential = GoogleAuthProvider.credentialFromError(error);
-      // ...
-    });
-
-
-}
+  }
 
   const handleSubmitPress = () => {
     setErrortext('');
@@ -135,7 +118,7 @@ function loginUserWithGoogle(){
       return;
     }
     setLoading(true);
-    let dataToSend = {email: userEmail, password: userPassword};
+    let dataToSend = { email: userEmail, password: userPassword };
     let formBody = [];
     for (let key in dataToSend) {
       let encodedKey = encodeURIComponent(key);
@@ -150,7 +133,7 @@ function loginUserWithGoogle(){
       headers: {
         //Header Defination
         'Content-Type':
-        'application/x-www-form-urlencoded;charset=UTF-8',
+          'application/x-www-form-urlencoded;charset=UTF-8',
       },
     })
       .then((response) => response.json())
@@ -176,23 +159,24 @@ function loginUserWithGoogle(){
   };
 
   return (
-    <View style={{flex: 1, backgroundColor: 'white'}}>
-      <Loader loading={loading} /> 
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
+      <Loader loading={loading} />
 
       <ScrollView
-      nestedScrollEnabled={true}
+        nestedScrollEnabled={true}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{
           justifyContent: 'center',
           alignContent: 'center',
-        }}>  
+        }}>
         <View>
           <KeyboardAvoidingView enabled>
-          <View>
-  <Image style={{width:'100%'}} source={logoBack}/>
-</View>
-            <View  style={{...styles.SectionStyle,marginTop:150}}>
-            <MaterialIcons name="email" style={{top:8}} size={24} color="black" />
+            <View>
+              <Image style={{ width: '100%' }} source={logoBack} />
+            </View>
+
+            <View style={{ ...styles.SectionStyle }}>
+              <MaterialIcons name="email" style={{ top: 12, right: 4 }} size={16} color="#b1b6c6" />
 
               <TextInput
                 style={styles.inputStyle}
@@ -200,7 +184,7 @@ function loginUserWithGoogle(){
                   setUserEmail(UserEmail)
                 }
                 placeholder="Enter Email" //dummy@abc.com
-                placeholderTextColor="#8b9cb5"
+                placeholderTextColor="#9ea3b7"
                 autoCapitalize="none"
                 keyboardType="email-address"
                 returnKeyType="next"
@@ -213,9 +197,7 @@ function loginUserWithGoogle(){
               />
             </View>
             <View style={styles.SectionStyle}>
-            <MaterialCommunityIcons name="key" style={{
-              top:5
-            }} size={24} color="black" />
+              <MaterialCommunityIcons name="lock-outline" style={{ top: 12, right: 4 }} size={16} color="#b1b6c6" />
 
               <TextInput
                 style={styles.inputStyle}
@@ -223,7 +205,7 @@ function loginUserWithGoogle(){
                   setUserPassword(UserPassword)
                 }
                 placeholder="Enter Password" //12345
-                placeholderTextColor="#8b9cb5"
+                placeholderTextColor="#9ea3b7"
                 keyboardType="default"
                 ref={passwordInputRef}
                 onSubmitEditing={Keyboard.dismiss}
@@ -232,60 +214,51 @@ function loginUserWithGoogle(){
                 underlineColorAndroid="#f000"
                 returnKeyType="next"
               />
-              <Feather name={showPassword? "eye":"eye-off"} style={{top:6}} size={24} color="black"  onPress={()=>setShowPassword(!showPassword)}/>
+              <Feather name={showPassword ? "eye" : "eye-off"} style={{ top: 12, right: 4 }} size={16} color="#b1b6c6" onPress={() => setShowPassword(!showPassword)} />
             </View>
-            {errortext != '' ? (
-              <Text style={styles.errorTextStyle}>
-                {errortext}
-              </Text>
-            ) : null}
-          <TouchableOpacity
-style={{justifyContent:'center',flex:1,alignItems:'center',marginVertical:10}}
-            activeOpacity={0.5}
-            onPress={()=>{
+
+            {errortext != '' ? ( <Text style={styles.errorTextStyle}>  {errortext}</Text> ) : null}
+
+            <TouchableOpacity
+              style={{ justifyContent: 'center', flex: 1, alignItems: 'center',backgroundColor:"#14a5f4",marginHorizontal:18, borderRadius:6 }}
+              activeOpacity={0.5}
+              onPress={() => {
                 // props.navigation.navigate("home")
                 loginUser()
-                
+              }}>
+              {/* <Image style={{ borderRadius: 10, marginVertical: 10 }} source={signInButton}>
+              </Image> */}
 
-                
-            }}>
-<Image style={{borderRadius:10,marginVertical:10}}  source={signInButton}>
+              <Text style={styles.buttonTextStyle}>Login</Text>
+            </TouchableOpacity>
 
+            <View style={{ flex: 1, flexDirection: 'row', marginTop: 10, marginHorizontal: 18 , alignSelf: 'center',}}>
+              <View style={styles.socialMediaIcon}>
+                <Image style={styles.socialMediaImg} source={facebook} />
+              </View>
+              {/* <TouchableOpacity onPress={() => onGoogleButtonPress()}> */}
+              <TouchableOpacity onPress={() => promptAsync()}>
+                <View style={styles.socialMediaIcon}>
+                  <Image style={styles.socialMediaImg} source={google} />
+                </View>
+              </TouchableOpacity>
 
+              <View style={styles.socialMediaIcon}>
+                <Image style={styles.socialMediaImg} source={apple} />
+              </View>
 
-</Image>
-          
-            {/* <Text style={styles.buttonTextStyle}>Create Account</Text> */}
-          </TouchableOpacity>
-          <View style={{flex:1,flexDirection:'row',marginTop:10,marginHorizontal:100}}>
-          <View >
-            <Image style={styles.socialMediaIcon} source={facebook}/>
-          </View>
-
-<TouchableOpacity onPress={()=>promptAsync()}>
-          <View >
-            <Image style={styles.socialMediaIcon} source={google}/>
-          </View>
-
-          </TouchableOpacity>
-          <View>
-            <Image style={styles.socialMediaIcon} source={apple}/>
-          </View>
-
-
-        </View>
+            </View>
+            
             <Text
               style={styles.registerTextStyle}
               onPress={() => navigation.navigate('signUp')}>
-              Don't have a Account  ? <Text style={{color:'#4d97f0'}}>Sign Up</Text>
+              Don't have a Account ? <Text style={{ color: '#4d97f0' }}>Sign Up</Text>
             </Text>
-
 
           </KeyboardAvoidingView>
 
-
         </View>
-       
+
       </ScrollView>
     </View>
   );
@@ -302,16 +275,17 @@ const styles = StyleSheet.create({
   SectionStyle: {
     flexDirection: 'row',
     height: 40,
-    top:-100,
-    marginTop: 20,
-    marginLeft: 35,
-    marginRight: 35,
-    margin: 10,
+    // top: -100,
+    // marginTop: 20,
+    marginLeft: "5%",
+    marginRight: "5%",
+    marginVertical: 10,
     paddingLeft: 15,
     paddingRight: 15,
-    borderWidth: 0.8,
-    borderRadius: 30,
-    borderColor: 'black',
+    borderWidth: 0.2,
+    borderRadius: 2,
+    borderColor: '#E5E4E2',
+    backgroundColor: "#e9ebf2"
   },
   buttonStyle: {
     backgroundColor: '#4d97f0',
@@ -327,14 +301,16 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
   buttonTextStyle: {
-    color: '#FFFFFF',
+    color: 'white',
     paddingVertical: 10,
-    fontSize: 16,
+    fontSize: 18,
+    fontWeight:"bold"
+
   },
   inputStyle: {
     flex: 1,
     color: 'black',
-    marginLeft:5
+    marginLeft: 5
   },
   registerTextStyle: {
     color: 'black',
@@ -349,9 +325,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14,
   },
-  socialMediaIcon:{
-    height:50,
-    width:50,
-    borderWidth:2,marginHorizontal:10,borderRadius:10,borderColor:'grey'
-  }
+  socialMediaIcon: {
+    height: 35,
+    width: 35,
+    borderWidth: 1, 
+    borderRadius: 10, 
+    borderColor: 'grey',
+    margin:10
+  },
+  socialMediaImg:{height:20,width:20,alignSelf: 'center',marginTop:6}
 });

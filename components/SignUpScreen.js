@@ -2,7 +2,7 @@
 // https://aboutreact.com/react-native-login-and-signup/
 
 // Import React and Component
-import React, {useState, createRef, useCallback} from 'react';
+import React, { useState, createRef, useCallback } from 'react';
 import {
   StyleSheet,
   TextInput,
@@ -16,25 +16,27 @@ import {
   ImageBackground,
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { AntDesign, Feather } from '@expo/vector-icons'; 
+import { AntDesign, Feather } from '@expo/vector-icons';
 import { addDoc, collection, getFirestore } from "firebase/firestore";
 import countryList from './countryList'
 // import DropDownPicker from "react-native-dropdown-picker";
 import Loader from './Loader';
 import logo from './Images/logo.png'
 import { getAuth, createUserWithEmailAndPassword, parseActionCodeURL } from "firebase/auth";
-import { FontAwesome } from '@expo/vector-icons'; 
-import { MaterialCommunityIcons } from '@expo/vector-icons'; 
-import app, {auth, createUser} from '../firebaseConfig'
-import { MaterialIcons } from '@expo/vector-icons'; 
+import { FontAwesome } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import app, { auth, createUser } from '../firebaseConfig'
+import { MaterialIcons } from '@expo/vector-icons';
 import { async } from '@firebase/util';
 import getCities from '../firebaseConfig';
 import logoBack from './Images/logoback.png'
 import { LinearGradient } from 'expo-linear-gradient';
 import facebook from './Images/facebook.png'
-import google from './Images/google.webp'
+import google from './Images/google.png'
 import apple from './Images/apple.png'
 import button from './Images/signUpButton.png'
+import HeyAlliImg from "./Images/heyAllis.png"
+
 // import db from '../firebaseConfig';
 const RegisterScreen = (props) => {
   const [userName, setUserName] = useState('');
@@ -51,7 +53,7 @@ const RegisterScreen = (props) => {
   const [companyOpen, setCompanyOpen] = useState(false);
   const [companyValue, setCompanyValue] = useState(null);
   const [country, setCountry] = useState(countryList);
-  const [showPassword,setShowPassword]=useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [
     isRegistraionSuccess,
@@ -61,24 +63,24 @@ const RegisterScreen = (props) => {
   const handleSignUp = async () => {
 
 
-       createUserWithEmailAndPassword( auth,userEmail, userPassword)
+    createUserWithEmailAndPassword(auth, userEmail, userPassword)
       .then(async userCredentials => {
         const user = userCredentials.user;
         createUser({
-          uid:user.uid,
-          userEmail:userEmail,
-          userName:userName,
-          userAge:userAge,
-          userMobileNumber:userMobileNumber,
-          userCountry:userCountry,
-          zipCode:zipCode
-    
-        },"users")
+          uid: user.uid,
+          userEmail: userEmail,
+          userName: userName,
+          userAge: userAge,
+          userMobileNumber: userMobileNumber,
+          userCountry: userCountry,
+          zipCode: zipCode
+
+        }, "users")
           .then((responseJson) => {
             //Hide Loader
             setLoading(false);
             console.log(responseJson);
-    
+
             // If server response message same as Data Matched
             // if (responseJson.status === 'success') {
             //   setIsRegistraionSuccess(true);
@@ -96,21 +98,22 @@ const RegisterScreen = (props) => {
             console.error(error);
           });
         // handleSubmitButton(user.uid)
-        
 
- 
-        
+
+
+
         console.log('Registered with:', user.email);
       })
-      .catch(error =>{
-        
-        
-        alert(error.message)})
+      .catch(error => {
+
+
+        alert(error.message)
+      })
   }
 
 
-  async function addUser(user){
-   
+  async function addUser(user) {
+
   }
   const emailInputRef = createRef();
   const ageInputRef = createRef();
@@ -145,9 +148,9 @@ const RegisterScreen = (props) => {
     //   alert('Please fill Mobile');
     //   return;
     // }
-    
-handleSignUp()
-    
+
+    handleSignUp()
+
   };
   if (isRegistraionSuccess) {
     return (
@@ -178,22 +181,28 @@ handleSignUp()
     );
   }
   return (
-    <View style={{flex: 1, backgroundColor: 'white'}}>
-      <Loader loading={loading} /> 
 
-      <ScrollView
-      nestedScrollEnabled={true}
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{
-          justifyContent: 'center',
-          alignContent: 'center',
-        }}>      
-        {/* <View style={{alignSelf:'flex-start',width:60,height:60,backgroundColor:'#4d97f0',borderBottomRightRadius:200}}/> */}
-<View>
-  <Image style={{width:'100%'}} source={logoBack}/>
-</View>
-        <View style={{alignItems: 'center',marginTop:8,borderTopEndRadius:50}}>
-          {/* <Image
+    <View >
+      <LinearGradient
+        locations={[0.5, 2, 0.8, 0.5]}
+        colors={["#021227", "#041a3d", "#03193b", "#031735"]}
+        style={{ height: "100%" }}
+      >
+        <Loader loading={loading} />
+
+        <ScrollView nestedScrollEnabled={true} keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{
+            justifyContent: 'center',
+            alignContent: 'center',
+          }}>
+
+          <View style={{marginTop:50}}>
+            <Image style={{ width: 130, height:110 , alignSelf:"center" }} source={HeyAlliImg} />
+            {/* <Text style={{fontWeight:"bold" , color:"#0d82ec" , fontSize:50 , textAlign:"center"}}>Hey Alli</Text> */}
+          </View>
+
+          <View style={{ alignItems: 'center', marginTop: 8, borderTopEndRadius: 50 }}>
+            {/* <Image
             source={logo}
             style={{
               width:1000,
@@ -202,197 +211,114 @@ handleSignUp()
               margin: 0,
             }}
           /> */}
-        </View>
-        <KeyboardAvoidingView enabled>
-          <View style={styles.SectionStyle}>
-          <View> 
-          <FontAwesome name="user" size={24} style={{top:8}} color="black" />
+          </View>
+
+          <KeyboardAvoidingView enabled>
+
+            <View style={styles.SectionStyle}>
+              <View>
+                <FontAwesome name="user" style={{ top: 12, right: 4 }} size={16} color="#36415f" />
+              </View>
+              <TextInput
+                style={styles.inputStyle}
+                onChangeText={(UserName) => setUserName(UserName)}
+                // underlineColorAndroid="#f000"
+                placeholder="Enter Name"
+                placeholderTextColor="white"
+                autoCapitalize="sentences"
+                returnKeyType="next"
+                onSubmitEditing={() => emailInputRef.current && emailInputRef.current.focus()}
+                blurOnSubmit={false}
+              />
             </View>
-            <TextInput
-              style={styles.inputStyle}
-              onChangeText={(UserName) => setUserName(UserName)}
-              underlineColorAndroid="#f000"
-              placeholder="Enter Name"
-              placeholderTextColor="#8b9cb5"
-              autoCapitalize="sentences"
-              returnKeyType="next"
-              onSubmitEditing={() =>
-                emailInputRef.current && emailInputRef.current.focus()
-              }
-              blurOnSubmit={false}
-            />
-          </View>
-          <View style={styles.SectionStyle}>
-          <View> 
-            <MaterialIcons name="email" style={{top:8}} size={24} color="black" />
-           </View>
-         
-                      <TextInput
-              style={styles.inputStyle}
-              onChangeText={(UserEmail) => setUserEmail(UserEmail)}
-              underlineColorAndroid="#f000"
-              placeholder="Enter Email"
-              placeholderTextColor="#8b9cb5"
-              keyboardType="email-address"
-              ref={emailInputRef}
-              returnKeyType="next"
-              onSubmitEditing={() =>
-                passwordInputRef.current &&
-                passwordInputRef.current.focus()
-              }
-              blurOnSubmit={false}
-            >
-            </TextInput>
-          </View>
-          <View style={styles.SectionStyle}>
-           <View> 
-           <MaterialCommunityIcons name="key" size={24} color="black" />
+
+            <View style={styles.SectionStyle}>
+              <View>
+                <MaterialIcons name="email" style={{ top: 12, right: 4 }} size={16} color="#36415f" />
+              </View>
+
+              <TextInput
+                style={styles.inputStyle}
+                onChangeText={(UserEmail) => setUserEmail(UserEmail)}
+                underlineColorAndroid="#f000"
+                placeholder="Enter Email"
+                placeholderTextColor="white"
+                keyboardType="email-address"
+                ref={emailInputRef}
+                returnKeyType="next"
+                onSubmitEditing={() => passwordInputRef.current && passwordInputRef.current.focus()}
+                blurOnSubmit={false}
+              >
+              </TextInput>
             </View>
-            <TextInput
-              style={styles.inputStyle}
-              onChangeText={(UserPassword) =>
-                setUserPassword(UserPassword)
-              }
-              underlineColorAndroid="#f000"
-             
-              placeholder="Enter Password"
-              placeholderTextColor="#8b9cb5"
-              ref={passwordInputRef}
-              returnKeyType="next"
-              secureTextEntry={!showPassword}
-              onSubmitEditing={() =>
-                ageInputRef.current &&
-                ageInputRef.current.focus()
-              }
-              blurOnSubmit={false}
-            />
-                          <Feather name={showPassword? "eye":"eye-off"} style={{top:6}} size={24} color="black"  onPress={()=>setShowPassword(!showPassword)}/>
 
-          </View>
-          {/* <View style={styles.SectionStyle}>
-          <View> 
-          <FontAwesome name="user" size={24} style={{top:8}} color="black" />
-           </View>
-            <TextInput
-              style={styles.inputStyle}
-              onChangeText={(UserAge) => setUserAge(UserAge)}
-              underlineColorAndroid="#f000"
-              placeholder="Enter Age"
-              placeholderTextColor="#8b9cb5"
-              keyboardType="numeric"
-              ref={ageInputRef}
-              returnKeyType="next"
-              onSubmitEditing={() =>
-                addressInputRef.current &&
-                addressInputRef.current.focus()
-              }
-              blurOnSubmit={false}
-            />
-          </View> 
-           <View style={styles.SectionStyle}>
-           <AntDesign name="qrcode" style={{
-            top:8
-           }} size={24} color="black" />
-            <TextInput
-              style={styles.inputStyle}
-              onChangeText={(zipCode) =>
-                setZipCode(zipCode)
-              }
-              underlineColorAndroid="#f000"
-              placeholder="Zip code"
-              placeholderTextColor="#8b9cb5"
-              autoCapitalize="sentences"
-              ref={addressInputRef}
-              returnKeyType="next"
-              onSubmitEditing={Keyboard.dismiss}
-              blurOnSubmit={false}
-            />
-          </View>
-          <View style={styles.SectionStyle}>
-          <AntDesign name="mobile1" size={24} style={{top:8}} color="black" />
-            <TextInput
-              style={styles.inputStyle}
-              onChangeText={(number) =>
-                setUserMobileNumber(number)
-              }
-              underlineColorAndroid="#f000"
-              placeholder="telephone"
-              placeholderTextColor="#8b9cb5"
-              autoCapitalize="sentences"
-              keyboardType='numeric'
-              ref={addressInputRef}
-              returnKeyType="next"
-              onSubmitEditing={Keyboard.dismiss}
-              blurOnSubmit={false}
-            />
-          </View>
-           <View style={styles.DropDown}>
-          <DropDownPicker
-              style={styles.dropdown}
-              open={companyOpen}
-              value={companyValue} //companyValue
-              items={country}
-              setOpen={setCompanyOpen}
-              setValue={setCompanyValue}
-              setItems={setCountry}
-              placeholder="Select Country"
-              placeholderStyle={styles.placeholderStyles}
-              // loading={loading}
-              activityIndicatorColor="#5188E3"
-              searchable={true}
-              searchPlaceholder="Search your country here..."
-              // onOpen={onCompanyOpen}
-              onChangeValue={setUserCountry}
-               zIndex={1000}
-              zIndexInverse={3000}
-            />
-          </View> */}
-          
-         
-          
-         
-         
-          {errortext != '' ? (
-            <Text style={styles.errorTextStyle}>
-              {errortext}
-            </Text>
-          ) : null}
+            <View style={styles.SectionStyle}>
+              <View>
+                <MaterialIcons name="phone" style={{ top: 12, right: 4 }} size={16} color="#36415f" />
+              </View>
 
-<TouchableOpacity
-style={{justifyContent:'center',flex:1,alignItems:'center'}}
-            activeOpacity={0.5}
-            onPress={()=>{
-                // props.navigation.navigate("home")
-                handleSubmitButton()
-                
+              <TextInput
+                style={styles.inputStyle}
+                onChangeText={(userMobileNumber) => setUserEmail(userMobileNumber)}
+                underlineColorAndroid="#f000"
+                placeholder="Enter Mobile"
+                placeholderTextColor="white"
+                keyboardType="number-pad"
+                ref={emailInputRef}
+                returnKeyType="next"
+                onSubmitEditing={() => passwordInputRef.current && passwordInputRef.current.focus()}
+                blurOnSubmit={false}
+              >
+              </TextInput>
+            </View>
 
-                
-            }}>
-<Image style={{borderRadius:10,marginVertical:30}}  source={button}/>
-          
-            {/* <Text style={styles.buttonTextStyle}>Create Account</Text> */}
-          </TouchableOpacity>
-          <View style={{flex:1,flexDirection:'row',marginTop:10,marginHorizontal:100}}>
-          <View >
-            <Image style={styles.socialMediaIcon} source={facebook}/>
-          </View>
-          <View>
-            <Image style={styles.socialMediaIcon} source={google}/>
-          </View>
-          <View>
-            <Image style={styles.socialMediaIcon} source={apple}/>
-          </View>
+            <View style={styles.SectionStyle}>
+              <View>
+                <MaterialCommunityIcons name="key" style={{ top: 12, right: 4 }} size={16} color="#36415f" />
+              </View>
+              <TextInput
+                style={styles.inputStyle}
+                onChangeText={(UserPassword) => setUserPassword(UserPassword)}
+                underlineColorAndroid="#f000"
+                placeholder="Enter Password"
+                placeholderTextColor="white"
+                ref={passwordInputRef}
+                returnKeyType="next"
+                secureTextEntry={!showPassword}
+                onSubmitEditing={() => ageInputRef.current && ageInputRef.current.focus()}
+                blurOnSubmit={false}
+              />
+              <Feather name={showPassword ? "eye" : "eye-off"} style={{ top: 12, right: 4 }} size={16} color="#36415f" onPress={() => setShowPassword(!showPassword)} />
+            </View>
 
+            {errortext != '' ? (<Text style={styles.errorTextStyle}>{errortext} </Text>) : null}
 
-        </View>
-          <Text
+            <TouchableOpacity style={{ justifyContent: 'center', flex: 1, alignItems: 'center', backgroundColor: "#159df3", marginHorizontal: 18, borderRadius: 6, marginTop: 10 }} activeOpacity={0.5}
+              onPress={() => { handleSubmitButton() }}>
+              <Text style={styles.buttonTextStyle}>Create account</Text>
+            </TouchableOpacity>
+
+            <View style={{ flex: 1, flexDirection: 'row', marginTop: 10, marginHorizontal: 18, alignSelf: 'center', }}>
+              <View style={styles.socialMediaIcon} >
+                <Image style={styles.socialMediaImg} source={facebook} />
+              </View>
+              <View style={styles.socialMediaIcon}>
+                <Image style={styles.socialMediaImg} source={google} />
+              </View>
+              <View style={styles.socialMediaIcon}>
+                <AntDesign style={{marginHorizontal:5,marginTop:4}} name="apple1" size={22} color="white" />
+              </View>
+            </View>
+
+            <Text
               style={styles.registerTextStyle}
-              onPress={() =>props.navigation.navigate('login')}>
-              Already Have an account   ? <Text style={{color:'#4d97f0'}}>Sign In</Text>
+              onPress={() => props.navigation.navigate('login')}>
+              Already Have an account ? <Text style={{ color: 'white' }}>Sign In</Text>
             </Text>
-        </KeyboardAvoidingView>
-        
-      </ScrollView>
+          </KeyboardAvoidingView>
+
+        </ScrollView>
+      </LinearGradient>
     </View>
   );
 };
@@ -402,15 +328,17 @@ const styles = StyleSheet.create({
   SectionStyle: {
     flexDirection: 'row',
     height: 40,
-    marginTop: 20,
-    marginLeft: 35,
-    marginRight: 35,
-    margin: 10,
+    // top: -100,
+    // marginTop: 20,
+    marginLeft: "5%",
+    marginRight: "5%",
+    marginVertical: 10,
     paddingLeft: 15,
     paddingRight: 15,
-    borderWidth: 0.8,
-    borderRadius: 30,
-    borderColor: 'black',
+    borderWidth: 1,
+    borderRadius: 8,
+    borderColor: '#36415f',
+    backgroundColor: "transparent"
   },
   DropDown: {
     flexDirection: 'row',
@@ -421,7 +349,7 @@ const styles = StyleSheet.create({
     margin: 10,
     paddingLeft: 15,
     paddingRight: 15,
-    
+
   },
   buttonStyle: {
     backgroundColor: '#4d97f0',
@@ -435,20 +363,22 @@ const styles = StyleSheet.create({
     marginRight: 35,
     marginTop: 20,
     marginBottom: 20,
-  
+
   },
   buttonTextStyle: {
-    color: '#FFFFFF',
+    color: 'white',
     paddingVertical: 10,
-    fontSize: 16,
+    fontSize: 18,
+    fontWeight: "bold"
   },
   inputStyle: {
     flex: 1,
-    color: 'black',
-    marginLeft:30
+    color: 'white',
+    marginLeft: 5,
+
   },
   registerTextStyle: {
-    color: 'black',
+    color: '#8f8f8f',
     textAlign: 'center',
     fontWeight: 'bold',
     fontSize: 14,
@@ -469,21 +399,25 @@ const styles = StyleSheet.create({
   dropdown: {
     borderColor: "#B7B7B7",
     height: 40,
-   
-    
-   
+
+
+
     borderWidth: 0.8,
     borderRadius: 30,
     borderColor: 'black',
 
-    
+
   },
-  placeholderStyles:{
-    height:20
+  placeholderStyles: {
+    height: 20
   },
-  socialMediaIcon:{
-    height:50,
-    width:50,
-    borderWidth:2,marginHorizontal:10,borderRadius:10,borderColor:'grey'
-  }
+  socialMediaIcon: {
+    height: 35,
+    width: 35,
+    borderWidth: 1,
+    borderRadius: 10,
+    borderColor: 'grey',
+    margin: 10
+  },
+  socialMediaImg: { height: 20, width: 20, alignSelf: 'center', marginTop: 6 }
 });

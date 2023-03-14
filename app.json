@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "SpeectToTextApp",
-    "slug": "SpeectToTextApp",
+    "name": "HeyAlli",
+    "slug": "heyalli",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -12,7 +12,16 @@
       "backgroundColor": "#ffffff"
     },
     "plugins": [
-      "@react-native-voice/voice"
+      [
+        "@react-native-google-signin/google-signin"
+      ],
+      [
+        "@react-native-voice/voice",
+        {
+          "microphonePermission": "Allow Voice to Text Tutorial to access the microphone",
+          "speechRecognitionPermission": "Allow Voice to Text Tutorial to securely recognize user speech"
+        }
+      ]
     ],
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -22,13 +31,15 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.SpeectToTextApp",
+      "bundleIdentifier": "com.anonymous.HeyAlli",
       "infoPlist": {
         "NSSpeechRecognitionUsageDescription": "This app uses speech recognition to convert your speech to text.",
         "NSCameraUsageDescription": "This app uses the camera to let user put a photo in his profile page."
-      }
+      },
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
@@ -36,15 +47,16 @@
       "permissions": [
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.anonymous.SpeectToTextApp"
+      "package": "com.anonymous.HeyAlli"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "747e4b44-1fa7-4625-8757-087935848fbb"
+        "projectId": "4bede61c-cf68-4366-944f-85f9a32ce86e"
       }
-    }
+    },
+    "owner": "shuvo140"
   }
 }

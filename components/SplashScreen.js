@@ -2,7 +2,7 @@
 // https://aboutreact.com/react-native-login-and-signup/
 
 // Import React and Component
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ActivityIndicator,
   View,
@@ -12,80 +12,54 @@ import {
   ImageBackground
 } from 'react-native';
 
-// import AsyncStorage from '@react-native-community/async-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import logo from './Images/splashScreen.png'
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-const SplashScreen = ({navigation}) => {
+const SplashScreen = ({ navigation }) => {
   //State for ActivityIndicator animation
   const [animating, setAnimating] = useState(true);
-  const getData = async () => {
-    try {
-      const value = await AsyncStorage.getItem('user_id')
-        // value previously stored
-        console.log(value)
-        navigation.navigate(
-            value === null ? 'login' : 'home'
-          )
-      
-    } catch(e) {
-      // error reading value
-    }
-  }
-  
+
+
   useEffect(() => {
     setTimeout(() => {
       setAnimating(false);
-    //   Check if user_id is set or not
-    //   If not then send for Authentication
-    //   else send to Home Screen
-    //   AsyncStorage.getItem('user_id').then((value) =>
-    //     navigation.replace(
-    //       value === null ? 'Auth' : 'DrawerNavigationRoutes'
-    //     ),
-    //   );
+      const auth = getAuth();
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          // User is signed in, see docs for a list of available properties
+          // https://firebase.google.com/docs/reference/js/firebase.User
+          console.log(user , "splashScreen")
+          navigation.navigate("home")
+          // ...  
+        } else {
+          // User is signed out
+          // ...
+          navigation.navigate("login")
 
-
-    //  getData()
-
-    const auth = getAuth();
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    // User is signed in, see docs for a list of available properties
-    // https://firebase.google.com/docs/reference/js/firebase.User
-    const uid = user.uid;
-    console.log(user)
-    navigation.navigate("home")
-
-    // ...  
-  } else {
-    // User is signed out
-    // ...
-    navigation.navigate("login")
-
-  }
-})
+        }
+      })
     }, 5000);
   }, []);
 
   return (
-    <View style={{height:'100%'}}>
+    <View style={{ height: '100%' }}>
       <ImageBackground
         source={logo}
-        style={{ width:"100%",height:'100%'}}
+        style={{ flex: 1 }}
+        resizeMode='stretch'
       >
- <ActivityIndicator
-        animating={animating}
-        color="#FFFFFF"
-        size="large"
-        style={styles.activityIndicator}
-      />
+        <ActivityIndicator
+          animating={animating}
+          color="#FFFFFF"
+          size="large"
+          style={styles.activityIndicator}
+        />
 
       </ImageBackground>
       {/* <Text style={{marginTop:30,fontSize:40,fontWeight:'bold',color:'white',fontFamily:'san'}}>Hey Alli</Text>
       <Text style={{marginTop:30,fontSize:20,color:'white'}}>THE WORLD'S MOST POWERFULL AI</Text> */}
 
-     
+
     </View>
   );
 };

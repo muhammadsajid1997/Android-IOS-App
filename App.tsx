@@ -15,37 +15,37 @@ import SignUpScreen from "./components/SignUpScreen";
 import SplashScreen from "./components/SplashScreen";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import Whisper from "./components/Whisper";
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import AppNavigator from "./components/Navigation/AppNavigator";
 
 const Tab = createBottomTabNavigator();
-const Stack=createNativeStackNavigator()
+const Stack = createNativeStackNavigator()
 const queryClient = new QueryClient();
+const Drawer = createDrawerNavigator();
 
-export default function App() {
-
+export default function App(props:any) {
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="splashScreen"  screenOptions={{
-    headerShown: false
-  }}>
-      <Stack.Screen options={{title:"",headerStyle: {
-            backgroundColor: '#307ecc',
-          }}}  name="splashScreen" component={SplashScreen} />
+    <AppNavigator {...props} />
+    // <AppNavigator />
 
-        <Stack.Screen  name="home" component={Whisper} />
-        <Stack.Screen options={{title:"",headerStyle: {
-            backgroundColor: '#307ecc',
-          },
-          headerBackVisible:false}} name="login" component={LoginScreen} />
-        <Stack.Screen options={{title:"",
-      
-        
-        headerStyle: {
-            backgroundColor: '#307ecc',
-          },headerBackVisible:false}}  name="signUp" component={SignUpScreen} />
+    // <NavigationContainer>
+    //   {/* <Drawer.Navigator>
+    //     <Drawer.Screen name="splashScreen" component={SplashScreen} />
+    //     <Drawer.Screen name="home" component={Whisper} />
+    //     <Drawer.Screen name="login" component={LoginScreen} />
+    //     <Drawer.Screen name="signUp" component={SignUpScreen} />
+    //   </Drawer.Navigator> */}
+    //   <Stack.Navigator initialRouteName="splashScreen" screenOptions={{ headerShown: false}}>
 
-      </Stack.Navigator>
-    </NavigationContainer>
+    //   <Stack.Screen options={{title:"",headerStyle: { backgroundColor: '#307ecc' }}}  name="splashScreen" component={SplashScreen} />
+
+    //     <Stack.Screen  name="home"  component={Whisper} />
+    //     <Stack.Screen options={{title:"",headerStyle: {  backgroundColor: '#307ecc' }, headerBackVisible:false}} name="login" component={LoginScreen} />
+    //     <Stack.Screen options={{title:"",  headerStyle: {  backgroundColor: '#307ecc' },headerBackVisible:false}}  name="signUp" component={SignUpScreen} />
+
+    //   </Stack.Navigator>
+    // </NavigationContainer>
   );
 }
 

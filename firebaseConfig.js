@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider,signOut } from "firebase/auth";
 
 // import { collection, getFirestore } from "firebase/firestore";
 import firebase from 'firebase/compat/app'
@@ -24,6 +24,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
+const auth = getAuth()
+const signOutFunc = signOut(auth)
+
+export {signOutFunc,auth}
 
 // Get a list of cities from your database
 export async function getCities() {
