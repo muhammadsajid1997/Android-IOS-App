@@ -6,7 +6,7 @@ import HomeStack from './HomeStack';
 import DrawerStack from './DrawerStep';
 
 const Stack = createStackNavigator();
-
+  {/* <Drawer.Screen name="home"options={{ headerShown: false,drawerPosition:"right" }} component={HomeStack} /> */}
 function MyStack() {
     return (
       <NavigationContainer>
@@ -20,10 +20,12 @@ function MyStack() {
           />
            <Stack.Screen
             name="Home"
-            component={HomeStack}
+            component={(DrawerStack)}
             options={{
               headerShown: false,
+              
             }}
+            
           />
             <Stack.Screen
             name="Drawer"

@@ -1,20 +1,22 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, Button, View, ActivityIndicator, Image, TouchableOpacity, ScrollView } from 'react-native';
+import {Platform, StyleSheet, Text, Button, View, ActivityIndicator, Image, TouchableOpacity, ScrollView, Modal, Alert, Pressable } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import Voice from '@react-native-voice/voice';
 import axios from "axios";
 import { Audio } from "expo-av";
 import Logo from './Images/homeLogo.jpg'
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, Entypo } from "@expo/vector-icons";
 import TextEffect from "./Shared/typeEffect"
 import CustomInput from './Shared/customInput';
 import ChatUI from './Shared/chatUI';
 import { AntDesign } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { signOutFunc,auth } from "../firebaseConfig";
+import { signOutFunc, auth } from "../firebaseConfig";
+import { DrawerActions, useNavigation } from '@react-navigation/native';
 
+import * as Location from 'expo-location';
 
-export default function App({ navigation }) {
+export default function App({  }) {
   let [started, setStarted] = useState(false);
   let [results, setResults] = useState("");
   let [voiceResult, setVoiceResult] = useState("");
@@ -22,9 +24,12 @@ export default function App({ navigation }) {
   const [showInput, setShowInput] = useState(false);
   const [typeText, setTypeText] = useState("");
   const [receivedText, setReceivedText] = useState("");
-
+  const [modalVisible, setModalVisible] = useState(false);
   const soundRef = useRef(null);
+  const navigation = useNavigation();
 
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
   useEffect(() => {
     Voice.onSpeechError = onSpeechError;
     Voice.onSpeechResults = onSpeechResults;
@@ -33,6 +38,31 @@ export default function App({ navigation }) {
       Voice.destroy().then(Voice.removeAllListeners);
     }
   }, []);
+
+
+  useEffect(() => {
+    (async () => {
+      
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      // console.log(location)
+      setLocation(location);
+    })();
+  }, []);
+
+  let text = 'Waiting..';
+  if (errorMsg) {
+    text = errorMsg;
+  } else if (location) {
+    text = JSON.stringify(location);
+  }
+
+
 
   useEffect(() => {
     setReceivedText("")
@@ -66,6 +96,7 @@ export default function App({ navigation }) {
     const url = `https://heyalli.azurewebsites.net/api/HeyAlli/brain?text=${text}`
     axios.get(url)
       .then(function (response) {
+        console.log("sendAnswer", response);
         getAnswerVoice(response?.data)
         setIsLoading(true)
       })
@@ -133,15 +164,15 @@ export default function App({ navigation }) {
     sendAnswer(text)
   };
 
-  const logout = async () => {
-    try {
-      await signOutFunc;
-      navigation.navigate('login')
-      console.log('User signed out successfully.');
-    } catch (error) {
-      console.error('Error signing out: ', error);
-    }
-  }
+  // const logout = async () => {
+  //   try {
+  //     await signOutFunc;
+  //     navigation.navigate('login')
+  //     console.log('User signed out successfully.');
+  //   } catch (error) {
+  //     console.error('Error signing out: ', error);
+  //   }
+  // }
 
   return (
 
@@ -158,6 +189,10 @@ export default function App({ navigation }) {
               {!results ?
                 <>
                   <Text style={styles.title}>Start Speaking </Text>
+                  <Text>{text}</Text>
+
+
+
                   <Text style={styles.title}> To Activate Alli </Text>
                 </>
                 :
@@ -192,8 +227,7 @@ export default function App({ navigation }) {
         :
         <>
           <View style={{ marginTop: 10, width: "100%" }}>
-      <Text style={{...styles.title,fontWeight: "700",fontSize: 35, color:"#0f87cf",marginVertical: 10,}}>Hey Alli </Text>
-
+            <Text style={{ ...styles.title, fontWeight: "700", fontSize: 35, color: "#0f87cf", marginVertical: 10, }}>Hey Alli </Text>
             <CustomInput onSend={handleSend} isLoading={isLoading} />
           </View>
           <View style={{ marginTop: 10, width: "100%" }}>
@@ -203,19 +237,36 @@ export default function App({ navigation }) {
       }
       <View style={styles.bottomBar}>
         <TouchableOpacity onPress={handleInputField}>
-
           {!showInput ?
             <AntDesign name="form" size={24} color="black" />
             :
             <AntDesign name="enter" size={24} color="black" />}
         </TouchableOpacity>
-
-        <TouchableOpacity onPress={logout}>
-          {/* <AntDesign name="bars" size={28} color={"#000"} /> */}
-          <AntDesign name="logout" size={28} color={"#000"} />
-        </TouchableOpacity>
-
+        <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+        <Entypo name="menu" size={28} color={"#000"} />
+  </TouchableOpacity> 
+       
       </View>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Hello World!</Text>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}>
+              <Text style={styles.textStyle}>Hide Modal</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
 
     </View>
   )
@@ -323,5 +374,46 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderTopWidth: 1,
     borderTopColor: '#ddd',
-  }
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
 });
