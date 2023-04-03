@@ -1,23 +1,22 @@
 import { StatusBar } from 'expo-status-bar';
-import { Platform, StyleSheet, Text, Button, View, ActivityIndicator, TextInput, Image, TouchableOpacity, ScrollView, Modal, Alert, Pressable, BackHandler } from 'react-native';
+import { StyleSheet, Text, Button, View, ActivityIndicator, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import Voice from '@react-native-voice/voice';
 import axios from "axios";
 import { Audio } from "expo-av";
 import Logo from './Images/homeLogo.jpg'
-import { FontAwesome, Entypo } from "@expo/vector-icons";
+// import { FontAwesome ,AntDesign } from "@expo/vector-icons";
+import { FontAwesome ,AntDesign } from "react-native-vector-icons";
+
 import TextEffect from "./Shared/typeEffect"
 import CustomInput from './Shared/customInput';
 import ChatUI from './Shared/chatUI';
-import { AntDesign } from '@expo/vector-icons';
+// import { AntDesign } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { signOutFunc, auth } from "../firebaseConfig";
-import { DrawerActions, useNavigation } from '@react-navigation/native';
+import { signOutFunc,auth } from "../firebaseConfig";
 
-import * as Location from 'expo-location';
-// import { TextInput } from 'react-native-paper';
 
-export default function App({ }) {
+export default function App({ navigation }) {
   let [started, setStarted] = useState(false);
   let [results, setResults] = useState("");
   let [voiceResult, setVoiceResult] = useState("");
@@ -25,13 +24,9 @@ export default function App({ }) {
   const [showInput, setShowInput] = useState(false);
   const [typeText, setTypeText] = useState("");
   const [receivedText, setReceivedText] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalSection, setSection] = useState("Home");
-  const soundRef = useRef(null);
-  const navigation = useNavigation();
 
-  const [location, setLocation] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
+  const soundRef = useRef(null);
+
   useEffect(() => {
     Voice.onSpeechError = onSpeechError;
     Voice.onSpeechResults = onSpeechResults;
@@ -40,46 +35,6 @@ export default function App({ }) {
       Voice.destroy().then(Voice.removeAllListeners);
     }
   }, []);
-
-
-  useEffect(() => {
-    const backAction = () => {
-      setModalVisible(false),
-        setSection("Home")
-      return true;
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction,
-    );
-
-    return () => backHandler.remove();
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
-        return;
-      }
-
-      let location = await Location.getCurrentPositionAsync({});
-      console.log(location)
-      setLocation(location);
-    })();
-  }, []);
-
-  let text = 'Waiting..';
-  if (errorMsg) {
-    text = errorMsg;
-  } else if (location) {
-    text = JSON.stringify(location);
-  }
-
-
 
   useEffect(() => {
     setReceivedText("")
@@ -113,7 +68,6 @@ export default function App({ }) {
     const url = `https://heyalli.azurewebsites.net/api/HeyAlli/brain?text=${text}`
     axios.get(url)
       .then(function (response) {
-        console.log("sendAnswer", response);
         getAnswerVoice(response?.data)
         setIsLoading(true)
       })
@@ -181,294 +135,91 @@ export default function App({ }) {
     sendAnswer(text)
   };
 
-  // const logout = async () => {
-  //   try {
-  //     await signOutFunc;
-  //     navigation.navigate('login')
-  //     console.log('User signed out successfully.');
-  //   } catch (error) {
-  //     console.error('Error signing out: ', error);
-  //   }
-  // }
-
-
-  const RenderSections = () => {
-    if (modalSection == 'Home') {
-      return <View style={styles.root}>
-        {!showInput ?
-          <>
-            <View style={{ alignSelf: 'flex-end', margin: 30, backgroundColor: 'black', padding: 1 }}>
-              <Text style={{ color: 'white' }}> CC </Text>
-            </View>
-
-            <View style={{ flex: 1, marginHorizontal: 20, alignItems: 'center' }}>
-              <View>
-                {!results ?
-                  <>
-                    <Text style={styles.title}>Start Speaking </Text>
-                    {/* <Text>{text}</Text> */}
-
-
-
-                    <Text style={styles.title}> To Activate Alli </Text>
-                  </>
-                  :
-                  <ScrollView ref={scrollViewRef} style={styles.scrollViewText}>
-                    <TextEffect text={results} />
-                  </ScrollView>
-
-                }
-
-              </View>
-            </View>
-
-            <View style={styles.settingsSection}>
-              <Image style={{ borderRadius: 80 }} source={Logo} />
-            </View>
-
-            <View style={styles.container}>
-
-              {!isLoading ?
-                <TouchableOpacity style={[styles.circleButton, { backgroundColor: !started ? '#fff' : "#000" },]}
-                  onPress={!started ? startSpeechToText : stopSpeechToText}>
-                  <FontAwesome name="microphone" size={32} color={!started ? "#000" : "#fff"} />
-                </TouchableOpacity>
-                :
-                <TouchableOpacity style={[styles.circleButton, { backgroundColor: "#000" }]} disabled>
-                  <ActivityIndicator size={32} color="#fff" />
-                </TouchableOpacity>
-              }
-
-            </View>
-          </>
-          :
-          <>
-            <View style={{ marginTop: 10, width: "100%" }}>
-              <Text style={{ ...styles.title, fontWeight: "700", fontSize: 35, color: "#0f87cf", marginVertical: 10, }}>Hey Alli </Text>
-              <CustomInput onSend={handleSend} isLoading={isLoading} />
-            </View>
-            <View style={{ marginTop: 10, width: "100%" }}>
-              <ChatUI TypeText={typeText} ReceivedText={receivedText} />
-            </View>
-          </>
-        }
-        <View style={styles.bottomBar}>
-          <TouchableOpacity onPress={handleInputField}>
-            {!showInput ?
-              <AntDesign name="form" size={24} color="black" />
-              :
-              <AntDesign name="enter" size={24} color="black" />}
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setModalVisible(true)}>
-            <Entypo name="menu" size={28} color={"#000"} />
-          </TouchableOpacity>
-
-        </View>
-
-        <View style={styles.centeredView}>
-          <Modal
-
-            animationType="none"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => {
-              Alert.alert('Modal has been closed.');
-
-              setModalVisible(!modalVisible);
-            }}>
-            <View style={{ flex: 1 }}>
-              <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-                <View style={styles.centeredView}>
-                  <View style={styles.modalView}>
-                    <View style={{ marginTop: 10, width: "100%" }}>
-                      <Text style={{ ...styles.title, fontWeight: "700", fontSize: 35, color: "#0f87cf", marginVertical: 10, }}>Hey Alli </Text>
-                      {/* <CustomInput onSend={handleSend} isLoading={isLoading} /> */}
-                    </View>
-
-                    <View style={{ padding: 10 }}>
-
-
-                      <View style={{ width: '85%', paddingVertical: 5, }} onPress={() => { setModalVisible(false), setSection("Profile") }}>
-                        <Text style={{ fontWeight: 'bold', fontSize: 15 }}>Profile</Text>
-                      </View>
-                      {/* <View style={{ flexDirection: 'row', width: '100%' }}>
-
-
-
-
-
-                        <View style={{ padding: 5 }}>
-                          <TextInput
-                            style={{
-                              flex: 0.9,
-                              height: 40,
-                            }}
-                            placeholder="Type your message here..."
-
-
-                            blurOnSubmit={false}
-                            returnKeyType="send"
-                          />
-
-                        </View> */}
-
-                      <View style={{ padding: 5 }}>
-                        <TextInput
-                          label="First name"
-                          mode="outlined"
-                          style={{
-                            width: 150,
-                            // paddingHorizontal: 5,
-                            fontSize: 15,
-                          }}
-                        />
-                        <View style={{ padding: 5 }}>
-                          <TextInput
-                            label="last name"
-                            mode="outlined"
-                            style={{
-                              width: 150,
-                              // paddingHorizontal: 5,
-                              fontSize: 15,
-                            }}
-                          />
-
-                        </View>
-                      </View>
-                      <View style={{ padding: 5 }}>
-                        <TextInput
-                          label="Mobile"
-                          mode="outlined"
-                        />
-
-                      </View>
-                      <View style={{ padding: 5 }}>
-                        <TextInput
-                          label="email"
-                          mode="outlined"
-                        />
-
-                      </View>
-                      <View style={{ padding: 5 }}>
-                        <TextInput
-                          label="Age"
-                          mode="outlined"
-                        />
-
-                      </View>
-                      <View style={{ padding: 5 }}>
-                        <TextInput
-                          label="Gender"
-                          mode="outlined"
-                        />
-
-                      </View>
-                      <View style={{ padding: 5 }}>
-                        <TextInput
-                          label="Height"
-                          mode="outlined"
-                        />
-
-                      </View>
-                      <View style={{ padding: 5 }}>
-                        <TextInput
-                          label="Weight"
-                          mode="outlined"
-                        />
-
-                      </View>
-
-                      {/* <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 10 }}> */}
-
-
-                      {/* <TouchableOpacity style={{ width: '85%', borderWidth: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 50 }} onPress={() => { setModalVisible(false), setSection("Profile") }}>
-                        <Text>Submit</Text>
-                      </TouchableOpacity> */}
-
-                      {/* </View> */}
-
-
-                      <View style={{ width: '100%', paddingVertical: 5, marginTop: 10, }} onPress={() => { setModalVisible(false), setSection("Profile") }}>
-                        <Text style={{ fontWeight: 'bold', fontSize: 15 }}>Settings</Text>
-                        <View style={{ alignItems: 'center', justifyContent: 'center', height: 50, width: "100%", marginTop: 10 }}>
-                          <Text>Settings Sections</Text>
-                        </View>
-                      </View>
-
-                      <View style={{ width: '85%', paddingVertical: 5, marginTop: 10 }} onPress={() => { setModalVisible(false), setSection("Profile") }}>
-                        <Text style={{ fontWeight: 'bold', fontSize: 15 }}>Connected Apps</Text>
-                        <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 10 }}>
-
-
-
-                          <Image
-                            style={{
-                              width: 100,
-                              height: 100,
-
-                            }}
-                            source={{
-                              uri: 'https://reactnative.dev/img/tiny_logo.png',
-                            }}
-                          />
-                        </View>
-                      </View>
-
-
-
-
-
-                      <View style={{ width: '100%', paddingVertical: 5, marginTop: 10, }} onPress={() => { setModalVisible(false), setSection("Profile") }}>
-                        <Text style={{ fontWeight: 'bold', fontSize: 15 }}>Secret code</Text>
-                        <View style={{ alignItems: 'center', justifyContent: 'center', height: 50, width: "100%", marginTop: 10 }}>
-                          <Text>Secret code Sections</Text>
-                        </View>
-                      </View>
-
-                      <View style={{ width: '100%', paddingVertical: 5, marginTop: 10, }} onPress={() => { setModalVisible(false), setSection("Profile") }}>
-                        <Text style={{ fontWeight: 'bold', fontSize: 15 }}>Logout</Text>
-                        {/* <View style={{ alignItems: 'center', justifyContent: 'center', height: 50, width: "100%", marginTop: 10 }}>
-                        <Text>Secret code Sections</Text>
-                      </View> */}
-                      </View>
-
-
-
-
-
-                      {/* <TouchableOpacity style={{ width: '85%', borderWidth: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 50, marginTop: 10 }} onPress={() => { setModalVisible(false), setSection("ConnectedApps") }}>
-                      <Text>Secret code</Text>
-                    </TouchableOpacity> */}
-                      {/* <TouchableOpacity style={{ width: '85%', borderWidth: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 50, marginTop: 10 }} onPress={() => { setModalVisible(false), setSection("ConnectedApps") }}>
-                      <Text>Logout</Text>
-                    </TouchableOpacity> */}
-                    </View>
-
-                    {/* <Text style={styles.modalText}>Hello World!</Text>    
-              <Text style={styles.modalText}>Hello World!</Text>     */}
-
-
-
-
-                  </View>
-                </View>
-              </ScrollView>
-            </View>
-          </Modal>
-
-        </View>
-
-      </View>
+  const logout = async () => {
+    try {
+      await signOutFunc;
+      navigation.navigate('login')
+      console.log('User signed out successfully.');
+    } catch (error) {
+      console.error('Error signing out: ', error);
     }
-
   }
 
   return (
 
+    <View style={styles.root}>
 
-    RenderSections()
+      {!showInput ?
+        <>
+          <View style={{ alignSelf: 'flex-end', margin: 30, backgroundColor: 'black', padding: 1 }}>
+            <Text style={{ color: 'white' }}> CC </Text>
+          </View>
 
+          <View style={{ flex: 1, marginHorizontal: 20, alignItems: 'center' }}>
+            <View>
+              {!results ?
+                <>
+                  <Text style={styles.title}>Start Speaking </Text>
+                  <Text style={styles.title}> To Activate Alli </Text>
+                </>
+                :
+                <ScrollView ref={scrollViewRef} style={styles.scrollViewText}>
+                  <TextEffect text={results} />
+                </ScrollView>
 
+              }
+
+            </View>
+          </View>
+
+          <View style={styles.settingsSection}>
+            <Image style={{ borderRadius: 80 }} source={Logo} />
+          </View>
+
+          <View style={styles.container}>
+
+            {!isLoading ?
+              <TouchableOpacity style={[styles.circleButton, { backgroundColor: !started ? '#fff' : "#000" },]}
+                onPress={!started ? startSpeechToText : stopSpeechToText}>
+                <FontAwesome name="microphone" size={32} color={!started ? "#000" : "#fff"} />
+              </TouchableOpacity>
+              :
+              <TouchableOpacity style={[styles.circleButton, { backgroundColor: "#000" }]} disabled>
+                <ActivityIndicator size={32} color="#fff" />
+              </TouchableOpacity>
+            }
+
+          </View>
+        </>
+        :
+        <>
+          <View style={{ marginTop: 10, width: "100%" }}>
+      <Text style={{...styles.title,fontWeight: "700",fontSize: 35, color:"#0f87cf",marginVertical: 10,}}>Hey Alli </Text>
+
+            <CustomInput onSend={handleSend} isLoading={isLoading} />
+          </View>
+          <View style={{ marginTop: 10, width: "100%" }}>
+            <ChatUI TypeText={typeText} ReceivedText={receivedText} />
+          </View>
+        </>
+      }
+      <View style={styles.bottomBar}>
+        <TouchableOpacity onPress={handleInputField}>
+
+          {!showInput ?
+            <AntDesign name="form" size={24} color="black" />
+            :
+            <AntDesign name="enter" size={24} color="black" />}
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={logout}>
+          {/* <AntDesign name="bars" size={28} color={"#000"} /> */}
+          <AntDesign name="logout" size={28} color={"#000"} />
+        </TouchableOpacity>
+
+      </View>
+
+    </View>
   )
 }
 
@@ -574,41 +325,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderTopWidth: 1,
     borderTopColor: '#ddd',
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: "100%",
-    // marginTop: 22,
-    backgroundColor: '#fff'
-  },
-  modalView: {
-    flex: 1,
-    borderWidth: 1,
-    width: "100%",
-    // height: 800,
-  },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-  },
-  buttonOpen: {
-    backgroundColor: '#F194FF',
-  },
-  buttonClose: {
-    backgroundColor: '#2196F3',
-  },
-  textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
-    fontSize: 20,
-    fontWeight: 'bold'
-  },
+  }
 });

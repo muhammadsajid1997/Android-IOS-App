@@ -16,17 +16,19 @@ import {
   ImageBackground,
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { AntDesign, Feather } from '@expo/vector-icons';
+// import { AntDesign, Feather,FontAwesome,MaterialCommunityIcons,MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, Feather,FontAwesome,MaterialCommunityIcons,MaterialIcons } from "react-native-vector-icons";
+
 import { addDoc, collection, getFirestore } from "firebase/firestore";
 import countryList from './countryList'
 // import DropDownPicker from "react-native-dropdown-picker";
 import Loader from './Loader';
 import logo from './Images/logo.png'
-import { getAuth, createUserWithEmailAndPassword, parseActionCodeURL } from "firebase/auth";
-import { FontAwesome } from '@expo/vector-icons';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+// import { getAuth, createUserWithEmailAndPassword, parseActionCodeURL } from "firebase/auth";
+// import { FontAwesome } from '@expo/vector-icons';
+// import { MaterialCommunityIcons } from '@expo/vector-icons';
 import app, { auth, createUser } from '../firebaseConfig'
-import { MaterialIcons } from '@expo/vector-icons';
+// import { MaterialIcons } from '@expo/vector-icons';
 import { async } from '@firebase/util';
 import getCities from '../firebaseConfig';
 import logoBack from './Images/logoback.png'

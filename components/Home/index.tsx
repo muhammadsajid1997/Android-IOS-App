@@ -199,6 +199,7 @@ import {
   StyleSheet,
   Button,
   Pressable,
+  Alert
 } from "react-native";
 import { getAuth, signOut } from "firebase/auth";
 
@@ -247,8 +248,8 @@ setAnimating(false)
 // setSpeechText(res.data.choices[0]["text"])
 
 
-  }).catch((error)=>{
-  alert("something went wrong "+error)});
+  }).catch((error: string)=>{
+  Alert.alert("something went wrong "+error)});
 
 
 }
@@ -256,7 +257,7 @@ setAnimating(false)
  function logOut(){
   
 const auth = getAuth();
-signOut(auth).then((res) => {
+signOut(auth).then((res: any) => {
   // Sign-out successful.
   console.log(res,"signou")
 }).catch((error) => {
@@ -314,8 +315,6 @@ signOut(auth).then((res) => {
         </Text>
         </View>
         </ScrollView>
-
-
         <Record
         animating={animating}
           onSpeechEnd={(value) => {

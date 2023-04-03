@@ -14,7 +14,7 @@ import {
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import logo from './Images/splashScreen.png'
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+// import { getAuth, onAuthStateChanged } from 'firebase/auth';
 const SplashScreen = ({ navigation }) => {
   //State for ActivityIndicator animation
   const [animating, setAnimating] = useState(true);

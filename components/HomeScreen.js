@@ -1,10 +1,11 @@
 import { StatusBar } from "expo-status-bar";
-import { FontAwesome5 } from "@expo/vector-icons";
+// import { FontAwesome5 } from "@expo/vector-icons";
+import {FontAwesomr5} from "react-native-vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { QueryClient, QueryClientProvider } from "react-query";
-import "react-native-reanimated";
+// import "react-native-reanimated";
 
 import Home from "./Home";
 import Notes from "./Notes/list";

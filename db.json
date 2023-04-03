@@ -1,12 +1,13 @@
 {
-  "notes": [
-    {
-      "note": "Welcome to log rocket blog",
-      "id": 1
-    },
-    {
-      "note": "Checking if this is working fine",
-      "id": 2
-    }
-  ]
-}
+    "notes": [
+      {
+        "note": "Welcome to log rocket blog",
+        "id": 1
+      },
+      {
+        "note": "Checking if this is working fine",
+        "id": 2
+      }
+    ]
+  }
+  

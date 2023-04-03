@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, TextInput, StyleSheet, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
-import { FontAwesome } from "@expo/vector-icons";
+// import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome } from "react-native-vector-icons";
+
 
 const ChatInput = ({ onSend, isLoading, }) => {
     const [text, setText] = useState('');

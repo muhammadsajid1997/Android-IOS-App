@@ -1,11 +1,9 @@
-import { StatusBar } from "expo-status-bar";
-import { FontAwesome5 } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { QueryClient, QueryClientProvider } from "react-query";
-import "react-native-reanimated";
+// import "react-native-reanimated";
 
 import Home from "./components/Home";
 import Notes from "./components/Notes/list";
@@ -13,7 +11,7 @@ import HomeScreen from "./components/HomeScreen";
 import LoginScreen from "./components/LoginScreen";
 import SignUpScreen from "./components/SignUpScreen";
 import SplashScreen from "./components/SplashScreen";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+// import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import Whisper from "./components/Whisper";
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import AppNavigator from "./components/Navigation/AppNavigator";
@@ -57,3 +55,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
+
+
+
+
+

@@ -22,24 +22,39 @@ import { LinearGradient } from 'expo-linear-gradient';
 import facebook from './Images/facebook.png'
 import google from './Images/google.png'
 import apple from './Images/apple.png'
-import * as WebBrowser from 'expo-web-browser';
-import * as Google from 'expo-auth-session/providers/google';
-import { MaterialIcons } from '@expo/vector-icons';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithRedirect } from 'firebase/auth';
-import { Feather } from '@expo/vector-icons';
-// import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { useAuthRequest } from 'expo-auth-session/providers/google';
+// import * as WebBrowser from 'expo-web-browser';
+// import * as Google from 'expo-auth-session/providers/google';
+// import { MaterialIcons } from '@expo/vector-icons';
+import {MaterialIcons} from "react-native-vector-icons";
+// import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from "react-native-vector-icons";
+// import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithRedirect } from 'firebase/auth';
+// import { Feather } from '@expo/vector-icons';
+import { Feather } from "react-native-vector-icons";
+
+// import { useAuthRequest } from 'expo-auth-session/providers/google';  
+
+//  import { useAuthRequest } from 'react-native-google-signin';  
+ import {Google} from "react-native-google-signin"
+ import auth from '@react-native-firebase/auth';
+ import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
+//  import { GoogleSignin } from 'react-native-google-signin';
 // import auth from '@react-native-firebase/auth';
 
+GoogleSignin.configure({
+  webClientId: '249729703415-11i1h0hrdvaut5s8dfdgi0cal1724f0g.apps.googleusercontent.com',
+});
+
 const LoginScreen = ({ navigation }) => {
-  WebBrowser.maybeCompleteAuthSession();
+  // WebBrowser.maybeCompleteAuthSession();
 
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    expoClientId: '44373533249-4eatu4snl2fhth2cqc7sf848fh19sqvk.apps.googleusercontent.com',
-    androidClientId: '44373533249-k414100f72pkrcrm4s9i0p3kinm9s3q0.apps.googleusercontent.com'
 
-  });
+  // const [request, response, promptAsync] = Google.useAuthRequest({
+  //   expoClientId: '44373533249-4eatu4snl2fhth2cqc7sf848fh19sqvk.apps.googleusercontent.com',
+  //   androidClientId: '44373533249-k414100f72pkrcrm4s9i0p3kinm9s3q0.apps.googleusercontent.com'
+
+  // });
   
   // GoogleSignin.configure({
   //   webClientId: '127065750913-8r60ecto94cbq64rvghk0gepguatgs3l.apps.googleusercontent.com',
@@ -50,13 +65,13 @@ const LoginScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [errortext, setErrortext] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const auths = getAuth();
-  const provider = new GoogleAuthProvider();
+  // const auths = getAuth();
+  // const provider = new GoogleAuthProvider();
   const passwordInputRef = createRef();
 
   function loginUser() {
     setLoading(true)
-    signInWithEmailAndPassword(auths, userEmail, userPassword)
+    auth().createUserWithEmailAndPassword(auths, userEmail, userPassword)
       .then((userCredential) => {
         // Signed in 
         const user = userCredential.user;
@@ -74,35 +89,46 @@ const LoginScreen = ({ navigation }) => {
   }
 
 
-  function loginUserWithGoogle() {
-    console.log("login test")
-    setLoading(true)
+    async function onGoogleButtonPress() {
+      setLoading(true)
+      // Check if your device supports Google Play
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      // Get the users ID token
+      const { idToken } = await GoogleSignin.signIn();
+    
+      // Create a Google credential with the token
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      setLoading(false)  
+      // Sign-in the user with the credential
+      return auth().signInWithCredential(googleCredential);
+  
+ 
     // const auth = getAuth();
 
-    signInWithPopup(useAuthRequest, provider)
-      .then((result) => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
-        // The signed-in user info.
-        const user = result.user;
+    // signInWithPopup(useAuthRequest, provider)
+    //   .then((result) => {
+    //     // This gives you a Google Access Token. You can use it to access the Google API.
+    //     const credential = GoogleAuthProvider.credentialFromResult(result);
+    //     const token = credential.accessToken;
+    //     // The signed-in user info.
+    //     const user = result.user;
 
-        // onst user = userCredential.user;
-        navigation.navigate("home")
-        console.log(user)
-        setLoading(false)
-        // IdP data available using getAdditionalUserInfo(result)
-        // ...
-      }).catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.customData.email;
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
-        // ...
-      });
+    //     // onst user = userCredential.user;
+    //     navigation.navigate("home")
+    //     console.log(user)
+    //     setLoading(false)
+    //     // IdP data available using getAdditionalUserInfo(result)
+    //     // ...
+    //   }).catch((error) => {
+    //     // Handle Errors here.
+    //     const errorCode = error.code;
+    //     const errorMessage = error.message;
+    //     // The email of the user's account used.
+    //     const email = error.customData.email;
+    //     // The AuthCredential type that was used.
+    //     const credential = GoogleAuthProvider.credentialFromError(error);
+    //     // ...
+    //   });
 
 
   }
@@ -231,6 +257,11 @@ const LoginScreen = ({ navigation }) => {
 
               <Text style={styles.buttonTextStyle}>Login</Text>
             </TouchableOpacity>
+
+            {/* <Button
+      title="Google Sign-In"
+      onPress={() => onGoogleButtonPress().then(() => console.log('Signed in with Google!'))}
+    /> */}
 
             <View style={{ flex: 1, flexDirection: 'row', marginTop: 10, marginHorizontal: 18 , alignSelf: 'center',}}>
               <View style={styles.socialMediaIcon}>

@@ -1,5 +1,7 @@
 import React, { Component } from "react";
-import { FontAwesome } from "@expo/vector-icons";
+// import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome } from "react-native-vector-icons";
+
 import { MotiView } from "@motify/components";
 import {
   StyleSheet,
@@ -15,7 +17,7 @@ import Voice, {
   SpeechResultsEvent,
   SpeechErrorEvent,
 } from "@react-native-voice/voice";
-import { Easing, Value } from "react-native-reanimated";
+// import { Easing, Value } from "react-native-reanimated";
 
 type Props = {
   onSpeechStart: () => void;
