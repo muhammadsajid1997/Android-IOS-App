@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { Platform, StyleSheet, Text, Button, View, ActivityIndicator, TextInput, Image, TouchableOpacity, ScrollView, Modal, Alert, Pressable, BackHandler } from 'react-native';
+import { Platform, StyleSheet, Text, Button, View, ActivityIndicator, Image, TouchableOpacity, ScrollView, Modal, Alert, Pressable, BackHandler } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import Voice from '@react-native-voice/voice';
 import axios from "axios";
@@ -15,7 +15,7 @@ import { signOutFunc, auth } from "../firebaseConfig";
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 
 import * as Location from 'expo-location';
-// import { TextInput } from 'react-native-paper';
+import { TextInput } from 'react-native-paper';
 
 export default function App({ }) {
   let [started, setStarted] = useState(false);
@@ -317,9 +317,9 @@ export default function App({ }) {
                           label="First name"
                           mode="outlined"
                           style={{
-                            width: 150,
+                            // width: 150,
                             // paddingHorizontal: 5,
-                            fontSize: 15,
+                            // fontSize: 15,
                           }}
                         />
                         <View style={{ padding: 5 }}>
@@ -327,7 +327,7 @@ export default function App({ }) {
                             label="last name"
                             mode="outlined"
                             style={{
-                              width: 150,
+                              // width: 150,
                               // paddingHorizontal: 5,
                               fontSize: 15,
                             }}
