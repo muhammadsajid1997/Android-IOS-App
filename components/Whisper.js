@@ -391,7 +391,7 @@ export default function App({ }) {
                       <View style={{ width: '100%', paddingVertical: 5, marginTop: 10, }} onPress={() => { setModalVisible(false), setSection("Profile") }}>
                         <Text style={{ fontWeight: 'bold', fontSize: 15 }}>Settings</Text>
                         <View style={{ alignItems: 'center', justifyContent: 'center', height: 50, width: "100%", marginTop: 10 }}>
-                          <Text>Settings Sections</Text>
+                          <Text>Settings Sections </Text>
                         </View>
                       </View>
 
