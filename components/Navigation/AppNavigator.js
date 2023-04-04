@@ -4,6 +4,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import AuthStack from './AuthNavigator';
 import HomeStack from './HomeStack';
 import DrawerStack from './DrawerStep';
+import MyApps from '../MyApps';
 
 const Stack = createStackNavigator();
   {/* <Drawer.Screen name="home"options={{ headerShown: false,drawerPosition:"right" }} component={HomeStack} /> */}
@@ -27,6 +28,14 @@ function MyStack() {
             }}
             
           />
+           <Stack.Screen
+        name="MyApps"
+        component={MyApps}
+        options={{ 
+          headerShown: false  ,
+        }}
+        
+      />
             <Stack.Screen
             name="Drawer"
             component={DrawerStack}

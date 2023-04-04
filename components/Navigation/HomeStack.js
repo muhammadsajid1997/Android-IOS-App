@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { TouchableOpacity } from 'react-native';
 import LoginScreen from '../LoginScreen';
 import Whisper from '../Whisper';
+import MyApps from '../MyApps';
 
 
 const Stack = createStackNavigator();
@@ -17,12 +18,18 @@ const HomeStack = () => {
         component={Whisper}
         options={{ 
           headerShown: false  ,
-        
-        
-        
         }}
         
       />
+      <Stack.Screen
+        name="MyApps"
+        component={MyApps}
+        options={{ 
+          headerShown: false  ,
+        }}
+        
+      />
+      
        <Stack.Screen
         name="login"
         component={LoginScreen}
