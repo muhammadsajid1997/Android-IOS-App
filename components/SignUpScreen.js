@@ -32,12 +32,17 @@ import app, { auth, createUser } from '../firebaseConfig'
 import { async } from '@firebase/util';
 import getCities from '../firebaseConfig';
 import logoBack from './Images/logoback.png'
-import { LinearGradient } from 'expo-linear-gradient';
+// import { LinearGradient } from 'expo-linear-gradient';
+import LinearGradient from 'react-native-linear-gradient';
 import facebook from './Images/facebook.png'
 import google from './Images/google.png'
 import apple from './Images/apple.png'
 import button from './Images/signUpButton.png'
 import HeyAlliImg from "./Images/heyAllis.png"
+
+import { firebase } from '../firebaseConfig';
+
+
 
 // import db from '../firebaseConfig';
 const RegisterScreen = (props) => {
@@ -105,6 +110,7 @@ const RegisterScreen = (props) => {
 
 
         console.log('Registered with:', user.email);
+        console.log("check firebase",firebase);
       })
       .catch(error => {
 

@@ -17,7 +17,7 @@ import Voice, {
   SpeechResultsEvent,
   SpeechErrorEvent,
 } from "@react-native-voice/voice";
-// import { Easing, Value } from "react-native-reanimated";
+import { Easing, Value } from "react-native-reanimated";
 
 type Props = {
   onSpeechStart: () => void;

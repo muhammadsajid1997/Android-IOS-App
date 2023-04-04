@@ -18,7 +18,8 @@ import Loader from './Loader';
 import logo from './Images/heyAlliTitle.jpg'
 import logoBack from './Images/logoback.png'
 import signInButton from './Images/signIn.jpg'
-import { LinearGradient } from 'expo-linear-gradient';
+// import { LinearGradient } from 'expo-linear-gradient';
+import LinearGradient from 'react-native-linear-gradient';
 import facebook from './Images/facebook.png'
 import google from './Images/google.png'
 import apple from './Images/apple.png'

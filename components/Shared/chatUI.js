@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import TextEffect from "../Shared/typeEffect"
-import { LinearGradient } from 'expo-linear-gradient';
+// import { LinearGradient } from 'expo-linear-gradient';
+import LinearGradient from 'react-native-linear-gradient';
 
 const ChatScreen = ({ TypeText, ReceivedText }) => {
     return (
