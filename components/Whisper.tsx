@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Audio } from "expo-av";
+import Sound from 'react-native-sound';
 import FormData from "form-data";
 import axios from "axios";
 import Mode from "./Mode";
@@ -17,9 +18,10 @@ import TranscribedOutput from "./TranscribeOutput";
 import logo from './Images/homeLogo.jpg'
 import * as Speech from 'expo-speech';
 
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome } from "react-native-vector-icons";
+
 import { MotiView } from "moti";
-// import { Easing } from "react-native-reanimated";
+import { Easing } from "react-native-reanimated";
 // import logo from './Images/heyAllilogo.jpg'
 import Voice, {
   SpeechRecognizedEvent,
@@ -37,15 +39,15 @@ const RECORDING_OPTIONS_PRESET_HIGH_QUALITY = {
   isMeteringEnabled: true,
   android: {
     extension: '.wav',
-    outputFormat: Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_DEFAULT,
-    audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_DEFAULT,
+    outputFormat: Sound.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_DEFAULT,
+    audioEncoder: Sound.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_DEFAULT,
     sampleRate: 44100,
     numberOfChannels: 2,
     bitRate: 128000,
   },
   ios: {
     extension: '.wav',
-    audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MAX,
+    audioQuality: Sound.RECORDING_OPTION_IOS_AUDIO_QUALITY_MAX,
     sampleRate: 44100,
     numberOfChannels: 2,
     bitRate: 128000,
@@ -103,12 +105,12 @@ export default () => {
 
     if (!isRecording) {
       try {
-        await Audio.requestPermissionsAsync();
-        await Audio.setAudioModeAsync({
+        await Sound.requestPermissionsAsync();
+        await Sound.setAudioModeAsync({
           allowsRecordingIOS: true,
           playsInSilentModeIOS: true,
         });
-        const recording = new Audio.Recording();
+        const recording = new Sound.Recording();
         await recording.prepareToRecordAsync(RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
         recordingRef.current = recording;
         await recording.startAsync();
@@ -210,7 +212,7 @@ export default () => {
 
 
     console.log('Loading Sound');
-    const { sound } = await Audio.Sound.createAsync({ uri: url })
+    const { sound } = await Sound.Sound.createAsync({ uri: url })
       ;
     setSound(sound);
 
@@ -235,9 +237,9 @@ export default () => {
     try {
       setStarted(true)
       console.log("Requesting permissions..");
-      const permission = await Audio.requestPermissionsAsync();
+      const permission = await Sound.requestPermissionsAsync();
       if (permission.status === "granted") {
-        await Audio.setAudioModeAsync({
+        await Sound.setAudioModeAsync({
           allowsRecordingIOS: true,
           playsInSilentModeIOS: true,
         });
@@ -245,15 +247,15 @@ export default () => {
         const RECORDING_OPTIONS_PRESET_HIGH_QUALITY: any = {
           android: {
             extension: ".wav",
-            outputFormat: Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
-            audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AMR_NB,
+            outputFormat: Sound.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
+            audioEncoder: Sound.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AMR_NB,
             sampleRate: 44100,
             numberOfChannels: 2,
             bitRate: 128000,
           },
           ios: {
             extension: ".wav",
-            audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MIN,
+            audioQuality: Sound.RECORDING_OPTION_IOS_AUDIO_QUALITY_MIN,
             sampleRate: 44100,
             numberOfChannels: 2,
             bitRate: 128000,
@@ -262,7 +264,7 @@ export default () => {
             linearPCMIsFloat: false,
           },
         };
-        const { recording }: any = await Audio.Recording.createAsync(
+        const { recording }: any = await Sound.Recording.createAsync(
           RECORDING_OPTIONS_PRESET_HIGH_QUALITY
         );
         setRecording(recording);
@@ -305,7 +307,7 @@ export default () => {
       type: `audio/${filetype}`,
       name: filename,
     })
-    const soundTest = new Audio.Sound();
+    const soundTest = new Sound();
 
     try {
       await soundTest.loadAsync({

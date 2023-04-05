@@ -30,8 +30,8 @@
         <true/>
         <key>GOOGLE_APP_ID</key>
         <string>1:999999999999:ios:0000000000000000</string>
-        <key>DATABASE_URL</key>
-        <string>https://test-do-not-use.firebaseio.com</string>
+        <!-- <key>DATABASE_URL</key> -->
+        <!-- <string>https://test-do-not-use.firebaseio.com</string> -->
 </dict>
 </plist>
 

@@ -11,7 +11,7 @@ import HomeScreen from "./components/HomeScreen";
 import LoginScreen from "./components/LoginScreen";
 import SignUpScreen from "./components/SignUpScreen";
 import SplashScreen from "./components/SplashScreen";
-// import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+// import { getAuth, createUserWithEmailAndPassword } from "firebase/auth"; 
 import Whisper from "./components/Whisper";
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import AppNavigator from "./components/Navigation/AppNavigator";
@@ -55,8 +55,4 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
-
-
-
-
 

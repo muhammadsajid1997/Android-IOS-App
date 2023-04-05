@@ -2,13 +2,15 @@ import React, { Component } from "react";
 // import { FontAwesome } from "@expo/vector-icons";
 import { FontAwesome } from "react-native-vector-icons";
 
+
 import { MotiView } from "@motify/components";
 import {
   StyleSheet,
   Text,
   View,
   Image,
-  TouchableHighlight,ActivityIndicator
+  TouchableHighlight,ActivityIndicator,
+  Animated
 } from "react-native";
 import * as Speech from 'expo-speech';
 
@@ -18,6 +20,21 @@ import Voice, {
   SpeechErrorEvent,
 } from "@react-native-voice/voice";
 import { Easing, Value } from "react-native-reanimated";
+
+
+const fadeAnim = React.useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
+
+
+React.useEffect(() => {
+  Animated.timing(
+    fadeAnim,
+    {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true
+    }
+  ).start();
+}, [fadeAnim]);
 
 type Props = {
   onSpeechStart: () => void;
@@ -58,6 +75,9 @@ class Record extends Component<Props, State> {
     Voice.onSpeechVolumeChanged = this.onSpeechVolumeChanged;
   }
 
+
+
+  
   componentWillUnmount() {
     Voice.destroy().then(Voice.removeAllListeners);
   }
@@ -260,6 +280,24 @@ class Record extends Component<Props, State> {
                       { backgroundColor: "black", borderRadius: 75 },
                     ]}
                   />
+                  // <Animated.View 
+                  //   from={{ opacity: 1, scale: 1 }}
+                  //   animate={{ opacity: 0, scale: 4 }}
+                  //   transition={{
+                  //     type: "timing",
+                  //     duration: 2000,
+                  //     easing: Easing.out(Easing.ease),
+                  //     delay: index * 200,
+                  //     repeatReverse: false,
+                  //     loop: true,
+                  //   }}
+                  //   key={index}
+                  //   style={[
+                  //     StyleSheet.absoluteFillObject,
+                  //     { backgroundColor: "black", borderRadius: 75 },
+                  //   ]}
+                  // />
+
                 );
               })}
               <FontAwesome name="microphone-slash" size={24} color="#fff" />

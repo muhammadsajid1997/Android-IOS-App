@@ -201,13 +201,16 @@ import {
   Pressable,
   Alert
 } from "react-native";
-import { getAuth, signOut } from "firebase/auth";
+// import { getAuth, signOut } from "firebase/auth";
+
+import auth from '@react-native-firebase/auth';
 
 // import { useMutation, useQueryClient } from "react-query";
 import useCreateNote from "../../hooks/useCreateNote";
 import Record from "../Record";
 import * as Speech from 'expo-speech';
 import { Audio } from 'expo-av';
+import Sound from 'react-native-sound';
 import axios from "axios";
 import { ScrollView } from "react-native-gesture-handler";
 
@@ -257,7 +260,7 @@ setAnimating(false)
  function logOut(){
   
 const auth = getAuth();
-signOut(auth).then((res: any) => {
+ auth().signOut(auth).then((res: any) => {
   // Sign-out successful.
   console.log(res,"signou")
 }).catch((error) => {
@@ -271,7 +274,7 @@ signOut(auth).then((res: any) => {
 
 
     console.log('Loading Sound');
-    const { sound } = await Audio.Sound.createAsync( {uri: url})
+    const { sound } = await Sound.createAsync( {uri: url})
     ;
     setSound(sound);
 

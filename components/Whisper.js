@@ -1,6 +1,6 @@
-import { StatusBar } from 'expo-status-bar';
+// import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, Button, View, ActivityIndicator, Image, TouchableOpacity, ScrollView } from 'react-native';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState,StatusBar } from 'react';
 import Voice from '@react-native-voice/voice';
 import axios from "axios";
 import { Audio } from "expo-av";
@@ -13,7 +13,7 @@ import CustomInput from './Shared/customInput';
 import ChatUI from './Shared/chatUI';
 // import { AntDesign } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { signOutFunc,auth } from "../firebaseConfig";
+// import { signOutFunc,auth } from "../firebaseConfig";
 
 
 export default function App({ navigation }) {
