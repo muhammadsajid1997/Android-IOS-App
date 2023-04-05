@@ -2,17 +2,21 @@ import React from 'react';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { AntDesign, Entypo, Ionicons } from '@expo/vector-icons';
 const MyApps = () => {
-  const Applist = [{ icon: 'youtube', name: "Youtube" }, { icon: 'facebook', name: "Facebook" }, { icon: 'google', name: "Google" }, { icon: 'gmail', name: "Gmail" }, { icon: 'messenger', name: "Messenger" }, { icon: 'map-pin', name: "Google Maps" }, { icon: 'instagram', name: "Instagram" }, { icon: 'amazon', name: "Amazon" }, { icon: 'shoppingcart', name: "Shoping" }, { icon: 'shoppingcart', name: "Shoping" }, { icon: 'tiktok', name: "Tiktok" }, { icon: 'whatsapp', name: "WhatsApp Messenger" }, { icon: 'telegram', name: "Telegram" }, { icon: 'snapchat', name: "Snapchat" }, { icon: 'netflix', name: "Netflix" }, { icon: 'reddit', name: "Reddit" }, { icon: 'slack', name: "Slack" }, { icon: 'twitter', name: "Twitter" }, { icon: 'discord', name: "Discord" }]
+
+
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
-      <ScrollView style={{ flexGrow: 1 }}>
-        <View style={{ paddingTop: 50, marginLeft: 20 ,flexDirection:'row',alignItems:'center'}}>
+       <View style={{ marginTop:50,flexDirection:'row',alignItems:'center'}}>
+          <View style={{marginLeft:25}}>
         <Ionicons name="ios-arrow-back-circle-sharp" size={30} color={"#000"} />
-        {/* <View style={{width}}>
-        <Text>My Apps</Text>
-        </View> */}
+        </View>
+        <View style={{width:'80%',alignItems:'center'}}>
+        <Text style={{fontSize:22,fontWeight:'bold'}}>My Apps</Text>
+        </View>
        
         </View>
+      <ScrollView style={{ flexGrow: 1 }}>
+       
         <View style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}>
           <View style={{ backgroundColor: '#FFFFFF', width: '100%' }}>
             {/* <Text style={{ fontSize: 25, padding: 10, color: '#000000', fontFamily: 'Roboto-Black' }}>All categories</Text>
@@ -103,6 +107,73 @@ const MyApps = () => {
                 <Image source={require('../assets/icons/reddit.png')}
                   style={{ width: 50, height: 50 }}></Image>
                 <Text style={{ marginTop: 5 }}>Reddit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{ width: '25%', alignItems: 'center', marginTop: 15 }}>
+                <Image source={require('../assets/icons/google-drive.png')}
+                  style={{ width: 50, height: 50 }}></Image>
+                <Text style={{ marginTop: 5 }}>Google Drive</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={{ width: '25%', alignItems: 'center', marginTop: 15 }}>
+                <Image source={require('../assets/icons/spotify.png')}
+                  style={{ width: 50, height: 50 }}></Image>
+                <Text style={{ marginTop: 5 }}>Spotify</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{ width: '25%', alignItems: 'center', marginTop: 15 }}>
+                <Image source={require('../assets/icons/outlook.png')}
+                  style={{ width: 50, height: 50 }}></Image>
+                <Text style={{ marginTop: 5 ,textAlign:'center'}}>Microsoft Outlook</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{ width: '25%', alignItems: 'center', marginTop: 15 }}>
+                <Image source={require('../assets/icons/yahoo.png')}
+                  style={{ width: 50, height: 50 }}></Image>
+                <Text style={{ marginTop: 5 ,textAlign:'center'}}>Yahoo</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{ width: '25%', alignItems: 'center', marginTop: 15 }}>
+                <Image source={require('../assets/icons/meet.png')}
+                  style={{ width: 50, height: 50 }}></Image>
+                <Text style={{ marginTop: 5 ,textAlign:'center'}}>Google Meet</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{ width: '25%', alignItems: 'center', marginTop: 15 }}>
+                <Image source={require('../assets/icons/notepad.png')}
+                  style={{ width: 50, height: 50 }}></Image>
+                <Text style={{ marginTop: 5 ,textAlign:'center'}}>Samsung Notes</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{ width: '25%', alignItems: 'center', marginTop: 15 }}>
+                <Image source={require('../assets/icons/pinterest.png')}
+                  style={{ width: 50, height: 50 }}></Image>
+                <Text style={{ marginTop: 5 ,textAlign:'center'}}>Pinterest</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{ width: '25%', alignItems: 'center', marginTop: 15 }}>
+                <Image source={require('../assets/icons/walmart.png')}
+                  style={{ width: 50, height: 50 }}></Image>
+                <Text style={{ marginTop: 5 ,textAlign:'center'}}>Walmart</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{ width: '25%', alignItems: 'center', marginTop: 15 }}>
+                <Image source={require('../assets/icons/google-photos.png')}
+                  style={{ width: 50, height: 50 }}></Image>
+                <Text style={{ marginTop: 5 ,textAlign:'center'}}>Google Photos</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{ width: '25%', alignItems: 'center', marginTop: 15 }}>
+                <Image source={require('../assets/icons/calculator.png')}
+                  style={{ width: 50, height: 50 }}></Image>
+                <Text style={{ marginTop: 5 ,textAlign:'center'}}>Calculator</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{ width: '25%', alignItems: 'center', marginTop: 15 }}>
+                <Image source={require('../assets/icons/internet.png')}
+                  style={{ width: 50, height: 50 }}></Image>
+                <Text style={{ marginTop: 5 ,textAlign:'center'}}>Internet Browser</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{ width: '25%', alignItems: 'center', marginTop: 15 }}>
+                <Image source={require('../assets/icons/google-calendar.png')}
+                  style={{ width: 50, height: 50 }}></Image>
+                <Text style={{ marginTop: 5 ,textAlign:'center'}}>Google Calendar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={{ width: '25%', alignItems: 'center', marginTop: 15 }}>
+                <Image source={require('../assets/icons/clock.png')}
+                  style={{ width: 50, height: 50 }}></Image>
+                <Text style={{ marginTop: 5 ,textAlign:'center'}}>Clock</Text>
               </TouchableOpacity>
 
             </View>

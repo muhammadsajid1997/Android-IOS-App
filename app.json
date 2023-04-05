@@ -27,6 +27,12 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
         }
+      ],
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
+        }
       ]
     ],
     "updates": {
@@ -62,7 +68,6 @@
       "eas": {
         "projectId": "4bede61c-cf68-4366-944f-85f9a32ce86e"
       }
-    },
-    "owner": "shuvo140"
+    }
   }
 }

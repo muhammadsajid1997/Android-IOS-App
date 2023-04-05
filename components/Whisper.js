@@ -1,26 +1,27 @@
 import { StatusBar } from 'expo-status-bar';
 import { Platform, StyleSheet, Text, Button, View, ActivityIndicator, TextInput, Image, TouchableOpacity, ScrollView, Modal, Alert, Pressable, BackHandler } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
-import Voice from '@react-native-voice/voice';
+
 import axios from "axios";
-import { Audio } from "expo-av";
+import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
 import Logo from './Images/homeLogo.jpg'
 import { FontAwesome, Entypo, Ionicons } from "@expo/vector-icons";
 import TextEffect from "./Shared/typeEffect"
 import CustomInput from './Shared/customInput';
 import ChatUI from './Shared/chatUI';
 import { AntDesign } from '@expo/vector-icons';
-
+import * as Speech from 'expo-speech';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { signOutFunc, auth } from "../firebaseConfig";
 import { DrawerActions, useNavigation } from '@react-navigation/native';
-
+import * as BackgroundFetch from "expo-background-fetch"
+import * as TaskManager from "expo-task-manager"
 import * as Location from 'expo-location';
 // import { TextInput } from 'react-native-paper';
-
+import Voice from '@react-native-voice/voice';
 export default function App({ }) {
   let [started, setStarted] = useState(false);
-  let [results, setResults] = useState("");
+  let [results, setResults] = useState([]);
   let [voiceResult, setVoiceResult] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showInput, setShowInput] = useState(false);
@@ -29,10 +30,14 @@ export default function App({ }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalSection, setSection] = useState("Home");
   const soundRef = useRef(null);
-  const navigation = useNavigation();
+  const [partialResults, setPartialResults] = useState([]);
+  const {navigate} = useNavigation();
 
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+
+
+
   useEffect(() => {
     Voice.onSpeechError = onSpeechError;
     Voice.onSpeechResults = onSpeechResults;
@@ -43,42 +48,93 @@ export default function App({ }) {
   }, []);
 
 
-  useEffect(() => {
-    const backAction = () => {
-      setModalVisible(false),
-        setSection("Home")
-      return true;
-    };
+  const startSpeechToText = async () => {
+    await Voice.start("en-NZ");
+    setStarted(true);
+    setResults("")
+    setVoiceResult("")
+  };
+;
 
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction,
-    );
+  const stopSpeechToText = async () => {
+    await Voice.stop();
+    setStarted(false);
+  };
 
-    return () => backHandler.remove();
-  }, []);
+  const onSpeechResults = (result) => {
+    setResults(result.value);
+  };
 
-  useEffect(() => {
-    (async () => {
+  const onSpeechError = (error) => {
+    console.log(error);
+  };
 
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
-        return;
-      }
 
-      let location = await Location.getCurrentPositionAsync({});
-      console.log(location)
-      setLocation(location);
-    })();
-  }, []);
 
-  let text = 'Waiting..';
-  if (errorMsg) {
-    text = errorMsg;
-  } else if (location) {
-    text = JSON.stringify(location);
+  const TASK_NAME = "BACKGROUND_TASK"
+
+  TaskManager.defineTask(TASK_NAME, () => {
+    try {
+      // fetch data here...
+      const receivedNewData = "Simulated fetch " + Math.random()
+      // console.log("My task ", receivedNewData)
+      return receivedNewData
+        ? BackgroundFetch.Result.NewData
+        : BackgroundFetch.Result.NoData
+    } catch (err) {
+      return BackgroundFetch.Result.Failed
+    }
+  })
+
+
+  RegisterBackgroundTask = async () => {
+    try {
+      await BackgroundFetch.registerTaskAsync(TASK_NAME, {
+        minimumInterval: 5, // seconds,
+      })
+      // console.log("Task registered")
+    } catch (err) {
+      // console.log("Task Register failed:", err)
+    }
   }
+
+  useEffect(() => {
+    // const backAction = () => {
+    //   setModalVisible(false),
+    //     setSection("Home")
+    //   return true;
+    // };
+
+    // const backHandler = BackHandler.addEventListener(
+    //   'hardwareBackPress',
+    //   backAction,
+    // );
+
+    // return () => backHandler.remove();
+  }, []);
+
+
+  // useEffect(() => {
+  //   (async () => {
+
+  //     let { status } = await Location.requestForegroundPermissionsAsync();
+  //     if (status !== 'granted') {
+  //       setErrorMsg('Permission to access location was denied');
+  //       return;
+  //     }
+
+  //     let location = await Location.getCurrentPositionAsync({});
+  //     console.log(location)
+  //     setLocation(location);
+  //   })();
+  // }, []);
+
+  // let text = 'Waiting..';
+  // if (errorMsg) {
+  //   text = errorMsg;
+  // } else if (location) {
+  //   text = JSON.stringify(location);
+  // }
 
 
 
@@ -89,32 +145,13 @@ export default function App({ }) {
     setVoiceResult('')
   }, [showInput]);
 
-  const startSpeechToText = async () => {
-    await Voice.start("en-NZ");
-    setStarted(true);
-    setResults("")
-    setVoiceResult("")
-  };
 
-  const stopSpeechToText = async () => {
-    await Voice.stop();
-    setStarted(false);
-  };
-
-  const onSpeechResults = (result) => {
-    sendAnswer(result?.value)
-  };
-
-  const onSpeechError = (error) => {
-    console.log(error);
-  };
 
   const sendAnswer = (text) => {
     setIsLoading(true)
     const url = `https://heyalli.azurewebsites.net/api/HeyAlli/brain?text=${text}`
     axios.get(url)
       .then(function (response) {
-        console.log("sendAnswer", response);
         getAnswerVoice(response?.data)
         setIsLoading(true)
       })
@@ -158,6 +195,15 @@ export default function App({ }) {
         { uri: 'data:audio/wav;base64,' + voiceResult },
         { shouldPlay: true }
       );
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        staysActiveInBackground: true,
+        interruptionModeIOS: InterruptionModeIOS.DuckOthers,
+        playsInSilentModeIOS: true,
+        shouldDuckAndroid: true,
+        interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
+        playThroughEarpieceAndroid: false
+      });
       soundRef.current = sound;
     } catch (err) {
       // console.error('Failed to play audio', err);
@@ -171,6 +217,7 @@ export default function App({ }) {
     }, 3000);
     return () => clearInterval(interval);
   }, []);
+
 
 
   const handleInputField = () => {
@@ -198,6 +245,7 @@ export default function App({ }) {
       return <View style={styles.root}>
         {!showInput ?
           <>
+
             <View style={{ alignSelf: 'flex-end', margin: 30, backgroundColor: 'black', padding: 1 }}>
               <Text style={{ color: 'white' }}> CC </Text>
             </View>
@@ -226,21 +274,18 @@ export default function App({ }) {
             <View style={styles.settingsSection}>
               <Image style={{ borderRadius: 80 }} source={Logo} />
             </View>
+            {!isLoading ?
+              <TouchableOpacity style={[styles.circleButton, { backgroundColor: !started ? '#fff' : "#000" },]}
+                onPress={!started ? startSpeechToText : stopSpeechToText}>
+                <FontAwesome name="microphone" size={32} color={!started ? "#000" : "#fff"} />
+              </TouchableOpacity>
+              :
+              <TouchableOpacity style={[styles.circleButton, { backgroundColor: "#000" }]} disabled>
+                <ActivityIndicator size={32} color="#fff" />
+              </TouchableOpacity>
+            }
 
-            <View style={styles.container}>
 
-              {!isLoading ?
-                <TouchableOpacity style={[styles.circleButton, { backgroundColor: !started ? '#fff' : "#000" },]}
-                  onPress={!started ? startSpeechToText : stopSpeechToText}>
-                  <FontAwesome name="microphone" size={32} color={!started ? "#000" : "#fff"} />
-                </TouchableOpacity>
-                :
-                <TouchableOpacity style={[styles.circleButton, { backgroundColor: "#000" }]} disabled>
-                  <ActivityIndicator size={32} color="#fff" />
-                </TouchableOpacity>
-              }
-
-            </View>
           </>
           :
           <>
@@ -266,6 +311,7 @@ export default function App({ }) {
 
         </View>
 
+
         <View style={styles.centeredView}>
           <Modal
 
@@ -274,7 +320,6 @@ export default function App({ }) {
             visible={modalVisible}
             onRequestClose={() => {
               Alert.alert('Modal has been closed.');
-
               setModalVisible(!modalVisible);
             }}>
             <View style={{ flex: 1, }}>
@@ -492,36 +537,36 @@ export default function App({ }) {
 
                       <View style={styles.container}>
                         <View style={{ width: '100%', }} onPress={() => { setModalVisible(false), setSection("Profile") }}>
-                          <Text style={{ fontSize: 15,fontWeight: '500' }}>Settings</Text>
+                          <Text style={{ fontSize: 15, fontWeight: '500' }}>Settings</Text>
                           <View style={{ flexDirection: 'column', }}>
-                            <TouchableOpacity style={{ flexDirection: 'row', height: 50, borderBottomWidth: 1, borderBottomColor: '#d9d9d9', alignItems: 'center',flex:3}}>
+                            <TouchableOpacity style={{ flexDirection: 'row', height: 50, borderBottomWidth: 1, borderBottomColor: '#d9d9d9', alignItems: 'center', flex: 3 }}>
                               <View style={{}}>
                                 <AntDesign name="appstore-o" size={22} color="#0f87cf" />
                               </View>
                               <TouchableOpacity style={{ marginLeft: 10 }}>
                                 <Text>Apps</Text>
                               </TouchableOpacity>
-                              <View style={{justifyContent:'flex-end',alignItems:'flex-end',flex:0.9}}>
+                              <View style={{ justifyContent: 'flex-end', alignItems: 'flex-end', flex: 0.9 }}>
                                 <AntDesign name="right" size={22} color="#0f87cf" />
                               </View>
                             </TouchableOpacity>
                           </View>
                         </View>
                         <View style={{ flexDirection: 'column', }}>
-                            <TouchableOpacity style={{ flexDirection: 'row', height: 50, borderBottomWidth: 1, borderBottomColor: '#d9d9d9', alignItems: 'center',flex:3}}>
-                              <View style={{}}>
-                                <AntDesign name="appstore1" size={22} color="#0f87cf" />
-                              </View>
+                          <TouchableOpacity onPress={() =>{setModalVisible(false),navigate("MyApps")}}  style={{ flexDirection: 'row', height: 50, borderBottomWidth: 1, borderBottomColor: '#d9d9d9', alignItems: 'center', flex: 3 }}>
+                            <View style={{}}>
+                              <AntDesign name="appstore1" size={22} color="#0f87cf" />
+                            </View>
 
-                              <TouchableOpacity style={{ marginLeft: 10 }} onPress={()=>{setModalVisible(false),navigation.navigate("MyApps")}}>
-                                <Text>My Apps</Text>
-                              </TouchableOpacity>
-                              <View style={{justifyContent:'flex-end',alignItems:'flex-end',flex:0.9}}>
-                                <AntDesign name="right" size={22} color="#0f87cf" />
-                              </View>
-
+                            <TouchableOpacity style={{ marginLeft: 10 }} >
+                              <Text>My Apps</Text>
                             </TouchableOpacity>
-                            {/* <TouchableOpacity>
+                            <View style={{ justifyContent: 'flex-end', alignItems: 'flex-end', flex: 0.9 }}>
+                              <AntDesign name="right" size={22} color="#0f87cf" />
+                            </View>
+
+                          </TouchableOpacity>
+                          {/* <TouchableOpacity>
                           <Text>Apps</Text>
                           </TouchableOpacity>
                           <TouchableOpacity>
@@ -530,22 +575,22 @@ export default function App({ }) {
                           <TouchableOpacity>
                           <Text>Apps</Text>
                           </TouchableOpacity> */}
-                          </View>
-                          <View style={{ flexDirection: 'column', }}>
-                            <TouchableOpacity style={{ flexDirection: 'row', height: 50, borderBottomWidth: 1, borderBottomColor: '#d9d9d9', alignItems: 'center',flex:3}}>
-                              <View style={{}}>
-                                <Entypo name="code" size={22} color="#0f87cf" />
-                              </View>
+                        </View>
+                        <View style={{ flexDirection: 'column', }}>
+                          <TouchableOpacity style={{ flexDirection: 'row', height: 50, borderBottomWidth: 1, borderBottomColor: '#d9d9d9', alignItems: 'center', flex: 3 }}>
+                            <View style={{}}>
+                              <Entypo name="code" size={22} color="#0f87cf" />
+                            </View>
 
-                              <TouchableOpacity style={{ marginLeft: 10 }}>
-                                <Text>Secret Code</Text>
-                              </TouchableOpacity>
-                              <View style={{justifyContent:'flex-end',alignItems:'flex-end',flex:0.9}}>
-                                <AntDesign name="right" size={22} color="#0f87cf" />
-                              </View>
-
+                            <TouchableOpacity style={{ marginLeft: 10 }}>
+                              <Text>Secret Code</Text>
                             </TouchableOpacity>
-                            {/* <TouchableOpacity>
+                            <View style={{ justifyContent: 'flex-end', alignItems: 'flex-end', flex: 0.9 }}>
+                              <AntDesign name="right" size={22} color="#0f87cf" />
+                            </View>
+
+                          </TouchableOpacity>
+                          {/* <TouchableOpacity>
                           <Text>Apps</Text>
                           </TouchableOpacity>
                           <TouchableOpacity>
@@ -554,15 +599,15 @@ export default function App({ }) {
                           <TouchableOpacity>
                           <Text>Apps</Text>
                           </TouchableOpacity> */}
-                          </View>
+                        </View>
 
                       </View>
-                      
+
 
                       <View style={styles.container}>
-                      <View style={{ width: '90%',alignItems:'center',flexDirection:'row',justifyContent:'space-between',marginTop:5}} onPress={() => { setModalVisible(false), setSection("Profile") }}>
-                        <Text style={{ fontSize: 15,fontWeight: '500' }}>Connected Apps</Text>
-                       
+                        <View style={{ width: '90%', alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }} onPress={() => { setModalVisible(false), setSection("Profile") }}>
+                          <Text style={{ fontSize: 15, fontWeight: '500' }}>Connected Apps</Text>
+
 
 
 
@@ -570,23 +615,23 @@ export default function App({ }) {
                             style={{
                               width: 50,
                               height: 50,
-                              borderRadius:10
+                              borderRadius: 10
 
                             }}
                             source={{
                               uri: 'https://reactnative.dev/img/tiny_logo.png',
                             }}
                           />
-                       
-                      </View>
+
+                        </View>
 
                       </View>
-                      
 
 
 
 
-{/* 
+
+                      {/* 
                       <View style={{ width: '100%', paddingVertical: 5, marginTop: 10, }} onPress={() => { setModalVisible(false), setSection("Profile") }}>
                         <Text style={{ fontSize: 15 }}>Secret code</Text>
                         <View style={{ alignItems: 'center', justifyContent: 'center', height: 50, width: "100%", marginTop: 10 }}>
@@ -594,13 +639,13 @@ export default function App({ }) {
                         </View>
                       </View> */}
 
-                      <View style={{ width: '90%',alignItems:'center',marginTop:10}} onPress={() => { setModalVisible(false), setSection("Profile") }}>
-                        <View style={{flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
-                        <Ionicons name="md-exit-outline" size={22} color="#0f87cf" />
-                        
-                        <Text style={{ marginLeft:5,fontSize: 18 ,fontWeight: '500',color:'#0f87cf'}}>Logout</Text>
+                      <View style={{ width: '90%', alignItems: 'center', marginTop: 10 }} onPress={() => { setModalVisible(false), setSection("Profile") }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                          <Ionicons name="md-exit-outline" size={22} color="#0f87cf" />
+
+                          <Text style={{ marginLeft: 5, fontSize: 18, fontWeight: '500', color: '#0f87cf' }}>Logout</Text>
                         </View>
-                       
+
                         {/* <View style={{ alignItems: 'center', justifyContent: 'center', height: 50, width: "100%", marginTop: 10 }}>
                         <Text>Secret code Sections</Text>
                       </View> */}
@@ -707,7 +752,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth:1
+    borderWidth: 1
     // backgroundColor: '#fff',
   },
   button: {
