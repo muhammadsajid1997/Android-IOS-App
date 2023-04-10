@@ -6,6 +6,7 @@ import AuthStack from "./AuthNavigator";
 import whisper from "../Whisper";
 import HomeStack from "./HomeStack";
 import DrawerStack from "./DrawerStep";
+import myApps from "../myApps";
 const Stack = createNativeStackNavigator();
 
 function MyStack() {
@@ -29,8 +30,15 @@ function MyStack() {
           }}
         />
         <Stack.Screen
-          name="whisper"
+          name="Home"
           component={whisper}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="myApps"
+          component={myApps}
           options={{
             headerShown: false,
           }}

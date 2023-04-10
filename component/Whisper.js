@@ -10,6 +10,9 @@ import {
   ScrollView,
   PermissionsAndroid,
   Platform,
+  Modal,
+  Alert,
+  TextInput,
 } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import Voice from "@react-native-voice/voice";
@@ -28,6 +31,10 @@ import RNFetchBlob from "rn-fetch-blob";
 import AudioRecord from "react-native-audio-record";
 import SoundPlayer from "react-native-sound-player";
 import FontAwesome from "react-native-vector-icons/FontAwesome5";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import Entypo from "react-native-vector-icons/Entypo";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { useNavigation } from "@react-navigation/native";
 var RNFS = require("react-native-fs");
 const dirs = RNFetchBlob.fs.dirs;
 
@@ -45,11 +52,12 @@ export default function whisper({ navigation }) {
   const [isLoading, setIsLoading] = useState(false);
   let [results, setResults] = useState("");
   //   let [voiceResult, setVoiceResult] = useState("");
-
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalSection, setSection] = useState("Home");
   const [showInput, setShowInput] = useState(false);
   const [typeText, setTypeText] = useState("");
   const [receivedText, setReceivedText] = useState("");
-
+  const { navigate } = useNavigation();
   //   const soundRef = useRef(null);
 
   //   useEffect(() => {
@@ -288,34 +296,36 @@ export default function whisper({ navigation }) {
           <View style={styles.settingsSection}>
             {/* <Image style={{ borderRadius: 80 }} source={Logo} /> */}
           </View>
-
-          <View style={styles.container}>
-            {!isLoggingIn ? (
-              <TouchableOpacity
-                style={{
-                  backgroundColor: !started ? "#fff" : "#000",
-                  width: 64,
-                  height: 64,
-                  borderRadius: 32,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-                onPress={!started ? onStartRecord : onStopRecord}
-              >
-                <FontAwesome
-                  name="microphone"
-                  size={32}
-                  color={!started ? "#000" : "#fff"}
-                />
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                style={[styles.circleButton, { backgroundColor: "#000" }]}
-                disabled
-              >
-                <ActivityIndicator size={32} color="#fff" />
-              </TouchableOpacity>
-            )}
+          <View>
+            <View style={styles.container}>
+              {!isLoggingIn ? (
+                <TouchableOpacity
+                  style={{
+                    backgroundColor: !started ? "#fff" : "#000",
+                    width: 64,
+                    height: 64,
+                    borderRadius: 32,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    alignItems: "center",
+                  }}
+                  onPress={!started ? onStartRecord : onStopRecord}
+                >
+                  <FontAwesome
+                    name="microphone"
+                    size={32}
+                    color={!started ? "#000" : "#fff"}
+                  />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={[styles.circleButton, { backgroundColor: "#000" }]}
+                  disabled
+                >
+                  <ActivityIndicator size={32} color="#fff" />
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
         </>
       ) : (
@@ -355,13 +365,462 @@ export default function whisper({ navigation }) {
           )}
         </TouchableOpacity>
 
-        <TouchableOpacity>
-          {/* <AntDesign name="bars" size={28} color={"#000"} /> */}
-          <Image
-            source={require("./Images/arrow.png")}
-            style={{ height: 20, width: 20 }}
-          />
+        <TouchableOpacity onPress={() => setModalVisible(true)}>
+          <Entypo name="menu" size={28} color={"#000"} />
         </TouchableOpacity>
+      </View>
+      <View style={styles.centeredView}>
+        <Modal
+          animationType="none"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            // Alert.alert("Modal has been closed.");
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+              <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                  <View style={{ marginTop: 10, width: "100%" }}>
+                    <Text
+                      style={{
+                        ...styles.title,
+                        fontWeight: "700",
+                        fontSize: 35,
+                        color: "#0f87cf",
+                        marginVertical: 10,
+                      }}
+                    >
+                      Hey Alli{" "}
+                    </Text>
+                    {/* <CustomInput onSend={handleSend} isLoading={isLoading} /> */}
+                  </View>
+
+                  <View style={{ padding: 10 }}>
+                    <View style={styles.container}>
+                      <View
+                        style={{ width: "90%", paddingVertical: 10 }}
+                        onPress={() => {
+                          setModalVisible(false), setSection("Profile");
+                        }}
+                      >
+                        <Text style={{ fontSize: 15, fontWeight: "500" }}>
+                          Profile
+                        </Text>
+                      </View>
+                      <View style={styles.inputContainer}>
+                        <TextInput
+                          style={styles.input}
+                          placeholder="First name"
+                          // value={text}
+                          // onChangeText={setText}
+                          // onSubmitEditing={handleSend}
+                          blurOnSubmit={false}
+                          returnKeyType="next"
+                        />
+                        <TextInput
+                          style={[styles.input, { marginLeft: 10 }]}
+                          placeholder="Last name"
+                          // value={text}
+                          // onChangeText={setText}
+                          // onSubmitEditing={handleSend}
+                          blurOnSubmit={false}
+                          returnKeyType="next"
+                        />
+                      </View>
+                    </View>
+                    <View style={styles.container}>
+                      <View style={styles.inputContainer}>
+                        <TextInput
+                          style={styles.input}
+                          placeholder="Email"
+                          // value={text}
+                          // onChangeText={setText}
+                          // onSubmitEditing={handleSend}
+                          blurOnSubmit={false}
+                          returnKeyType="next"
+                        />
+                      </View>
+                    </View>
+                    <View style={styles.container}>
+                      <View style={styles.inputContainer}>
+                        <TextInput
+                          style={styles.input}
+                          placeholder="Mobile No"
+                          // value={text}
+                          // onChangeText={setText}
+                          // onSubmitEditing={handleSend}
+                          blurOnSubmit={false}
+                          returnKeyType="next"
+                        />
+                      </View>
+                    </View>
+                    <View style={styles.container}>
+                      <View style={styles.inputContainer}>
+                        <TextInput
+                          style={styles.input}
+                          placeholder="Age"
+                          // value={text}
+                          // onChangeText={setText}
+                          // onSubmitEditing={handleSend}
+                          blurOnSubmit={false}
+                          returnKeyType="next"
+                        />
+                        <TextInput
+                          style={[styles.input, { marginLeft: 10 }]}
+                          placeholder="Gender"
+                          // value={text}
+                          // onChangeText={setText}
+                          // onSubmitEditing={handleSend}
+                          blurOnSubmit={false}
+                          returnKeyType="next"
+                        />
+                      </View>
+                    </View>
+                    <View style={styles.container}>
+                      <View style={styles.inputContainer}>
+                        <TextInput
+                          style={styles.input}
+                          placeholder="Weight"
+                          // value={text}
+                          // onChangeText={setText}
+                          // onSubmitEditing={handleSend}
+                          blurOnSubmit={false}
+                          returnKeyType="next"
+                        />
+                        <TextInput
+                          style={[styles.input, { marginLeft: 10 }]}
+                          placeholder="Height"
+                          // value={text}
+                          // onChangeText={setText}
+                          // onSubmitEditing={handleSend}
+                          blurOnSubmit={false}
+                          returnKeyType="done"
+                        />
+                      </View>
+                    </View>
+                    {/* <View style={{ flexDirection: 'row', width: '100%' }}>
+
+
+
+
+
+                        <View style={{ padding: 5 }}>
+                          <TextInput
+                            style={{
+                              flex: 0.9,
+                              height: 40,
+                            }}
+                            placeholder="Type your message here..."
+
+
+                            blurOnSubmit={false}
+                            returnKeyType="send"
+                          />
+
+                        </View> */}
+
+                    {/* <View style={{ padding: 5 }}>
+                        <TextInput
+                          label="First name"
+                          mode="outlined"
+                          style={{
+                            // width: 150,
+                            // paddingHorizontal: 5,
+                            // fontSize: 15,
+                          }}
+                        />
+                        <View style={{ padding: 5 }}>
+                          <TextInput
+                            label="last name"
+                            mode="outlined"
+                            style={{
+                              // width: 150,
+                              // paddingHorizontal: 5,
+                              fontSize: 15,
+                            }}
+                          />
+
+                        </View>
+                      </View>
+                      <View style={{ padding: 5 }}>
+                        <TextInput
+                          label="Mobile"
+                          mode="outlined"
+                        />
+
+                      </View>
+                      <View style={{ padding: 5 }}>
+                        <TextInput
+                          label="email"
+                          mode="outlined"
+                        />
+
+                      </View>
+                      <View style={{ padding: 5 }}>
+                        <TextInput
+                          label="Age"
+                          mode="outlined"
+                        />
+
+                      </View>
+                      <View style={{ padding: 5 }}>
+                        <TextInput
+                          label="Gender"
+                          mode="outlined"
+                        />
+
+                      </View>
+                      <View style={{ padding: 5 }}>
+                        <TextInput
+                          label="Height"
+                          mode="outlined"
+                        />
+
+                      </View>
+                      <View style={{ padding: 5 }}>
+                        <TextInput
+                          label="Weight"
+                          mode="outlined"
+                        />
+
+                      </View> */}
+
+                    {/* <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 10 }}> */}
+
+                    {/* <TouchableOpacity style={{ width: '85%', borderWidth: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 50 }} onPress={() => { setModalVisible(false), setSection("Profile") }}>
+                        <Text>Submit</Text>
+                      </TouchableOpacity> */}
+
+                    {/* </View> */}
+
+                    <View style={styles.container}>
+                      <View
+                        style={{ width: "100%" }}
+                        onPress={() => {
+                          setModalVisible(false), setSection("Profile");
+                        }}
+                      >
+                        <Text style={{ fontSize: 15, fontWeight: "500" }}>
+                          Settings
+                        </Text>
+                        <View style={{ flexDirection: "column" }}>
+                          <TouchableOpacity
+                            style={{
+                              flexDirection: "row",
+                              height: 50,
+                              borderBottomWidth: 1,
+                              borderBottomColor: "#d9d9d9",
+                              alignItems: "center",
+                              flex: 3,
+                            }}
+                          >
+                            <View style={{}}>
+                              <AntDesign
+                                name="appstore-o"
+                                size={22}
+                                color="#0f87cf"
+                              />
+                            </View>
+                            <TouchableOpacity style={{ marginLeft: 10 }}>
+                              <Text>Apps</Text>
+                            </TouchableOpacity>
+                            <View
+                              style={{
+                                justifyContent: "flex-end",
+                                alignItems: "flex-end",
+                                flex: 0.9,
+                              }}
+                            >
+                              <AntDesign
+                                name="right"
+                                size={22}
+                                color="#0f87cf"
+                              />
+                            </View>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                      <View style={{ flexDirection: "column" }}>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setModalVisible(false), navigate("myApps");
+                          }}
+                          style={{
+                            flexDirection: "row",
+                            height: 50,
+                            borderBottomWidth: 1,
+                            borderBottomColor: "#d9d9d9",
+                            alignItems: "center",
+                            flex: 3,
+                          }}
+                        >
+                          <View style={{}}>
+                            <AntDesign
+                              name="appstore1"
+                              size={22}
+                              color="#0f87cf"
+                            />
+                          </View>
+
+                          <TouchableOpacity style={{ marginLeft: 10 }}>
+                            <Text>My Apps</Text>
+                          </TouchableOpacity>
+                          <View
+                            style={{
+                              justifyContent: "flex-end",
+                              alignItems: "flex-end",
+                              flex: 0.9,
+                            }}
+                          >
+                            <AntDesign name="right" size={22} color="#0f87cf" />
+                          </View>
+                        </TouchableOpacity>
+                        {/* <TouchableOpacity>
+                          <Text>Apps</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity>
+                          <Text>Apps</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity>
+                          <Text>Apps</Text>
+                          </TouchableOpacity> */}
+                      </View>
+                      <View style={{ flexDirection: "column" }}>
+                        <TouchableOpacity
+                          style={{
+                            flexDirection: "row",
+                            height: 50,
+                            borderBottomWidth: 1,
+                            borderBottomColor: "#d9d9d9",
+                            alignItems: "center",
+                            flex: 3,
+                          }}
+                        >
+                          <View style={{}}>
+                            <Entypo name="code" size={22} color="#0f87cf" />
+                          </View>
+
+                          <TouchableOpacity style={{ marginLeft: 10 }}>
+                            <Text>Secret Code</Text>
+                          </TouchableOpacity>
+                          <View
+                            style={{
+                              justifyContent: "flex-end",
+                              alignItems: "flex-end",
+                              flex: 0.9,
+                            }}
+                          >
+                            <AntDesign name="right" size={22} color="#0f87cf" />
+                          </View>
+                        </TouchableOpacity>
+                        {/* <TouchableOpacity>
+                          <Text>Apps</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity>
+                          <Text>Apps</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity>
+                          <Text>Apps</Text>
+                          </TouchableOpacity> */}
+                      </View>
+                    </View>
+
+                    <View style={styles.container}>
+                      <View
+                        style={{
+                          width: "90%",
+                          alignItems: "center",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          marginTop: 5,
+                        }}
+                        onPress={() => {
+                          setModalVisible(false), setSection("Profile");
+                        }}
+                      >
+                        <Text style={{ fontSize: 15, fontWeight: "500" }}>
+                          Connected Apps
+                        </Text>
+
+                        <Image
+                          style={{
+                            width: 50,
+                            height: 50,
+                            borderRadius: 10,
+                          }}
+                          source={{
+                            uri: "https://reactnative.dev/img/tiny_logo.png",
+                          }}
+                        />
+                      </View>
+                    </View>
+
+                    {/* 
+                      <View style={{ width: '100%', paddingVertical: 5, marginTop: 10, }} onPress={() => { setModalVisible(false), setSection("Profile") }}>
+                        <Text style={{ fontSize: 15 }}>Secret code</Text>
+                        <View style={{ alignItems: 'center', justifyContent: 'center', height: 50, width: "100%", marginTop: 10 }}>
+                          <Text>Secret code Sections</Text>
+                        </View>
+                      </View> */}
+
+                    <View
+                      style={{
+                        width: "90%",
+                        alignItems: "center",
+                        marginTop: 10,
+                      }}
+                      onPress={() => {
+                        setModalVisible(false), setSection("Profile");
+                      }}
+                    >
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Ionicons
+                          name="md-exit-outline"
+                          size={22}
+                          color="#0f87cf"
+                        />
+
+                        <Text
+                          style={{
+                            marginLeft: 5,
+                            fontSize: 18,
+                            fontWeight: "500",
+                            color: "#0f87cf",
+                          }}
+                        >
+                          Logout
+                        </Text>
+                      </View>
+
+                      {/* <View style={{ alignItems: 'center', justifyContent: 'center', height: 50, width: "100%", marginTop: 10 }}>
+                        <Text>Secret code Sections</Text>
+                      </View> */}
+                    </View>
+
+                    {/* <TouchableOpacity style={{ width: '85%', borderWidth: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 50, marginTop: 10 }} onPress={() => { setModalVisible(false), setSection("ConnectedApps") }}>
+                      <Text>Secret code</Text>
+                    </TouchableOpacity> */}
+                    {/* <TouchableOpacity style={{ width: '85%', borderWidth: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 50, marginTop: 10 }} onPress={() => { setModalVisible(false), setSection("ConnectedApps") }}>
+                      <Text>Logout</Text>
+                    </TouchableOpacity> */}
+                  </View>
+
+                  {/* <Text style={styles.modalText}>Hello World!</Text>    
+              <Text style={styles.modalText}>Hello World!</Text>     */}
+                </View>
+              </View>
+            </ScrollView>
+          </View>
+        </Modal>
       </View>
     </View>
   );
@@ -472,5 +931,83 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderTopWidth: 1,
     borderTopColor: "#ddd",
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100%",
+    // marginTop: 22,
+    backgroundColor: "#fff",
+    // backgroundColor: '#f1f1f1',
+  },
+  modalView: {
+    flex: 1,
+    // borderWidth: 1,
+    width: "100%",
+    // height: 800,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  container: {
+    padding: 5,
+    width: "100%",
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    // borderWidth:1,
+    // borderRadius: 20,
+    // paddingHorizontal: 10,
+  },
+  input: {
+    flex: 1,
+    backgroundColor: "#fff",
+    padding: 10,
+    // borderWidth: 1,
+    borderColor: "#d9d9d9",
+
+    // width: 20,
+    height: 40,
+    borderWidth: 1,
+    borderRadius: 10,
+    textAlign: "left",
+    // shadowColor: "#000",
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 2,
+    // },
+    // shadowOpacity: 0.25,
+    // shadowRadius: 3.84,
+
+    // elevation: 5,
+  },
+  sendButton: {
+    position: "absolute",
+    right: 17,
+  },
+  sendButtonText: {
+    color: "#007AFF",
+    fontWeight: "bold",
   },
 });
