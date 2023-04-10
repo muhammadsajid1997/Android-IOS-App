@@ -1,18 +1,23 @@
+import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 const myApps = () => {
+  const navigate = useNavigation();
+
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <View
         style={{ marginTop: 50, flexDirection: "row", alignItems: "center" }}
       >
         <View style={{ marginLeft: 25 }}>
-          <Ionicons
-            name="ios-arrow-back-circle-sharp"
-            size={30}
-            color={"#000"}
-          />
+          <TouchableOpacity onPress={() => navigate.goBack()}>
+            <Ionicons
+              name="ios-arrow-back-circle-sharp"
+              size={30}
+              color={"#000"}
+            />
+          </TouchableOpacity>
         </View>
         <View style={{ width: "80%", alignItems: "center" }}>
           <Text style={{ fontSize: 22, fontWeight: "bold" }}>My Apps</Text>
