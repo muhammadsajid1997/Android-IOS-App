@@ -1,3 +1,4 @@
+import { Axios } from 'axios';
 import React, { useState, createRef } from 'react';
 import {
     StyleSheet,
@@ -147,11 +148,31 @@ const RegisterScreen = ({ navigation }) => {
 
 
 const SingupUser=()=>{
-    console.log(firstName)
-    console.log(lastName)
-    console.log(phoneNumber)
+    // console.log(firstName)
+    // console.log(phoneNumber)
+
+    fetch('https://jsonplaceholder.typicode.com/todos/1', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+      },
+      body: JSON.stringify({
+        FullName: 'Baljit',
+        PhoneNumber: '123456789'
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+    })
+    .catch(error => {
+      console.error(error);
+    });
 
     }
+
+   
+
 
 
 
@@ -237,7 +258,7 @@ const SingupUser=()=>{
               style={{ justifyContent: 'center', flex: 1, alignItems: 'center',backgroundColor:"#14a5f4",marginHorizontal:18, borderRadius:6 }}
               activeOpacity={0.5}
               onPress={() => {
-                navigation.navigate("whisper")
+                // navigation.navigate("whisper")
             SingupUser()
               }}>
               {/* <Image style={{ borderRadius: 10, marginVertical: 10 }} source={signInButton}>
