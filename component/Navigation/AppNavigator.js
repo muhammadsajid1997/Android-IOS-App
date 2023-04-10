@@ -15,13 +15,6 @@ function MyStack() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
-          name="whisper"
-          component={whisper}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
           name={"auth"}
           component={AuthStack}
           options={{
@@ -31,6 +24,13 @@ function MyStack() {
         <Stack.Screen
           name="HomeScreen"
           component={HomeScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="whisper"
+          component={whisper}
           options={{
             headerShown: false,
           }}
