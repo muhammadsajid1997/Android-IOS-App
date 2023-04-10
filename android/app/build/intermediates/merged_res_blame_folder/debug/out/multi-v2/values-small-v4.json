@@ -4,7 +4,7 @@
             "outputFile": "com.heyalli.app-mergeDebugResources-27:/values-small-v4/values-small-v4.xml",
             "map": [
                 {
-                    "source": "/home/somnath/.gradle/caches/transforms-3/4af7f0d23266db3f5bdb15fc939a61bd/transformed/material-1.1.0/res/values-small-v4/values-small-v4.xml",
+                    "source": "/Users/cccm1/.gradle/caches/transforms-3/8b61f4e519ef56a5ef88c6edebccade0/transformed/material-1.1.0/res/values-small-v4/values-small-v4.xml",
                     "from": {
                         "startLines": "2,3,4,5",
                         "startColumns": "4,4,4,4",

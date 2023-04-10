@@ -13,12 +13,22 @@ import java.util.ArrayList;
 
 // @react-native-voice/voice
 import com.wenkesj.voice.VoicePackage;
+// react-native-audio-record
+import com.goodatlas.audiorecord.RNAudioRecordPackage;
+// react-native-fs
+import com.rnfs.RNFSPackage;
 // react-native-safe-area-context
 import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
 // react-native-screens
 import com.swmansion.rnscreens.RNScreensPackage;
+// react-native-sound-player
+import com.johnsonsu.rnsoundplayer.RNSoundPlayerPackage;
 // react-native-tts
 import net.no_mad.tts.TextToSpeechPackage;
+// react-native-vector-icons
+import com.oblador.vectoricons.VectorIconsPackage;
+// rn-fetch-blob
+import com.RNFetchBlob.RNFetchBlobPackage;
 
 public class PackageList {
   private Application application;
@@ -65,9 +75,14 @@ public class PackageList {
     return new ArrayList<>(Arrays.<ReactPackage>asList(
       new MainReactPackage(mConfig),
       new VoicePackage(),
+      new RNAudioRecordPackage(),
+      new RNFSPackage(),
       new SafeAreaContextPackage(),
       new RNScreensPackage(),
-      new TextToSpeechPackage()
+      new RNSoundPlayerPackage(),
+      new TextToSpeechPackage(),
+      new VectorIconsPackage(),
+      new RNFetchBlobPackage()
     ));
   }
 }
