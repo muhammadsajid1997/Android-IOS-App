@@ -1,4 +1,4 @@
-import { Axios } from 'axios';
+import axios from 'axios';
 import React, { useState, createRef } from 'react';
 import {
     StyleSheet,
@@ -10,6 +10,7 @@ import {
     Keyboard,
     TouchableOpacity,
     KeyboardAvoidingView,
+    Alert,
 } from 'react-native';
 
 // import AsyncStorage from '@react-native-community/async-storage';
@@ -36,145 +37,43 @@ import logoBack from './Images/logoback.png'
 const RegisterScreen = ({ navigation }) => {
 
     const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState(false);
     const [errortext, setErrortext] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
+    const [showPassword, setShowPassword] = useState(true);
     const passwordInputRef = createRef();
 
-    //   function loginUser() {
-    //     setLoading(true)
-    //     signInWithEmailAndPassword(auths, userEmail, userPassword)
-    //       .then((userCredential) => {
-    //         // Signed in 
-    //         const user = userCredential.user;
-    //         navigation.navigate("Home",{screen:"home"})
-    //         console.log(user,"loginScreen")
-    //         setLoading(false)
-    //         // ...
-    //       })
-    //       .catch((error) => {
-    //         setLoading(false)
-    //         const errorCode = error.code;
-    //         const errorMessage = error.message;
-    //         alert(error)
-    //       });
-    //   }
-
-
-    //   function loginUserWithGoogle() {
-    //     console.log("login test")
-    //     setLoading(true)
-    //     // const auth = getAuth();
-
-    //     signInWithPopup(useAuthRequest, provider)
-    //       .then((result) => {
-    //         // This gives you a Google Access Token. You can use it to access the Google API.
-    //         const credential = GoogleAuthProvider.credentialFromResult(result);
-    //         const token = credential.accessToken;
-    //         // The signed-in user info.
-    //         const user = result.user;
-
-    //         // onst user = userCredential.user;
-    //         navigation.navigate("home")
-    //         console.log(user)
-    //         setLoading(false)
-    //         // IdP data available using getAdditionalUserInfo(result)
-    //         // ...
-    //       }).catch((error) => {
-    //         // Handle Errors here.
-    //         const errorCode = error.code;
-    //         const errorMessage = error.message;
-    //         // The email of the user's account used.
-    //         const email = error.customData.email;
-    //         // The AuthCredential type that was used.
-    //         const credential = GoogleAuthProvider.credentialFromError(error);
-    //         // ...
-    //       });
-
-
-    //   }
-
-    //   const handleSubmitPress = () => {
-    //     setErrortext('');
-    //     if (!userEmail) {
-    //       alert('Please fill Email');
-    //       return;
-    //     }
-    //     if (!userPassword) {
-    //       alert('Please fill Password');
-    //       return;
-    //     }
-    //     setLoading(true);
-    //     let dataToSend = { email: userEmail, password: userPassword };
-    //     let formBody = [];
-    //     for (let key in dataToSend) {
-    //       let encodedKey = encodeURIComponent(key);
-    //       let encodedValue = encodeURIComponent(dataToSend[key]);
-    //       formBody.push(encodedKey + '=' + encodedValue);
-    //     }
-    //     formBody = formBody.join('&');
-
-    //     fetch('http://localhost:3000/api/user/login', {
-    //       method: 'POST',
-    //       body: formBody,
-    //       headers: {
-    //         //Header Defination
-    //         'Content-Type':
-    //           'application/x-www-form-urlencoded;charset=UTF-8',
-    //       },
-    //     })
-    //       .then((response) => response.json())
-    //       .then((responseJson) => {
-    //         //Hide Loader
-    //         setLoading(false);
-    //         console.log(responseJson);
-    //         // If server response message same as Data Matched
-    //         if (responseJson.status === 'success') {
-    //           AsyncStorage.setItem('user_id', userEmail);
-    //           console.log(responseJson.data.email);
-    //           navigation.navigate('Home');
-    //         } else {
-    //           setErrortext(responseJson.msg);
-    //           console.log('Please check your email id or password');
-    //         }
-    //       })
-    //       .catch((error) => {
-    //         //Hide Loader
-    //         setLoading(false);
-    //         console.error(error);
-    //       });
-    //   };
 
 
 const SingupUser=()=>{
-    // console.log(firstName)
-    // console.log(phoneNumber)
-
-    fetch('https://jsonplaceholder.typicode.com/todos/1', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-      },
-      body: JSON.stringify({
-        FullName: 'Baljit',
-        PhoneNumber: '123456789'
-      })
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log(data);
+  if(!firstName){
+    Alert.alert("Please enter your FullName");
+    return;
+  }
+  if(!phoneNumber){
+    Alert.alert("Please enter your Number");
+    return;
+  }
+  const formData = new FormData();
+  formData.append('FullName', firstName);
+  formData.append('PhoneNumber', phoneNumber);
+  fetch('https://heyalli.azurewebsites.net/api/Identity/register', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'multipart/form-data',
+    },
+    body: formData,
+  })
+    .then(res => res.json())
+    .then(json => {
+      console.log('check json', json);
+      Alert.alert(json)
+      navigation.navigate("otp")
     })
     .catch(error => {
-      console.error(error);
+      console.log(error);
     });
-
-    }
-
-   
-
-
-
+}
 
     return (
         <View style={{ flex: 1, backgroundColor: 'white' }}>

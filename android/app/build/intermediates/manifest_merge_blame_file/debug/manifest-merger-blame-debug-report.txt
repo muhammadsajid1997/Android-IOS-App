@@ -9,90 +9,135 @@
 9        android:targetSdkVersion="33" />
 10
 11    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-11-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/debug/AndroidManifest.xml:5:5-77
-11-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/debug/AndroidManifest.xml:5:22-75
+11-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/debug/AndroidManifest.xml:5:5-77
+11-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/debug/AndroidManifest.xml:5:22-75
 12    <uses-permission android:name="android.permission.INTERNET" />
-12-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/main/AndroidManifest.xml:3:5-67
-12-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/main/AndroidManifest.xml:3:22-64
-13    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-13-->[com.facebook.flipper:flipper:0.125.0] /home/somnath/.gradle/caches/transforms-3/236929aa564a4c4dfa1b417642a2a2ae/transformed/jetified-flipper-0.125.0/AndroidManifest.xml:16:5-76
-13-->[com.facebook.flipper:flipper:0.125.0] /home/somnath/.gradle/caches/transforms-3/236929aa564a4c4dfa1b417642a2a2ae/transformed/jetified-flipper-0.125.0/AndroidManifest.xml:16:22-73
-14    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-14-->[:react-native-voice_voice] /home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/node_modules/@react-native-voice/voice/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:11:5-71
-14-->[:react-native-voice_voice] /home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/node_modules/@react-native-voice/voice/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:11:22-68
-15
-16    <application
-16-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/main/AndroidManifest.xml:5:5-24:19
-17        android:name="com.heyalli.MainApplication"
-17-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/main/AndroidManifest.xml:6:7-38
-18        android:allowBackup="false"
-18-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/main/AndroidManifest.xml:10:7-34
-19        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-19-->[androidx.core:core:1.7.0] /home/somnath/.gradle/caches/transforms-3/08e1174eef2c209ea18090f1084adbcb/transformed/core-1.7.0/AndroidManifest.xml:24:18-86
-20        android:debuggable="true"
-21        android:icon="@mipmap/ic_launcher"
-21-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/main/AndroidManifest.xml:8:7-41
-22        android:label="@string/app_name"
-22-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/main/AndroidManifest.xml:7:7-39
-23        android:roundIcon="@mipmap/ic_launcher_round"
-23-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/main/AndroidManifest.xml:9:7-52
-24        android:theme="@style/AppTheme"
-24-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/main/AndroidManifest.xml:11:7-38
-25        android:usesCleartextTraffic="true" >
-25-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/debug/AndroidManifest.xml:8:9-44
-26        <activity
-26-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/debug/AndroidManifest.xml:11:9-111
-27            android:name="com.facebook.react.devsupport.DevSettingsActivity"
-27-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/debug/AndroidManifest.xml:11:19-83
-28            android:exported="false" />
-28-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/debug/AndroidManifest.xml:11:84-108
-29        <activity
-29-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/main/AndroidManifest.xml:12:7-23:18
-30            android:name="com.heyalli.MainActivity"
-30-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/main/AndroidManifest.xml:13:9-37
-31            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
-31-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/main/AndroidManifest.xml:15:9-118
-32            android:exported="true"
-32-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/main/AndroidManifest.xml:18:9-32
-33            android:label="@string/app_name"
-33-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/main/AndroidManifest.xml:14:9-41
-34            android:launchMode="singleTask"
-34-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/main/AndroidManifest.xml:16:9-40
-35            android:windowSoftInputMode="adjustResize" >
-35-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/main/AndroidManifest.xml:17:9-51
-36            <intent-filter>
-36-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/main/AndroidManifest.xml:19:9-22:25
-37                <action android:name="android.intent.action.MAIN" />
-37-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/main/AndroidManifest.xml:20:13-65
-37-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/main/AndroidManifest.xml:20:21-62
-38
-39                <category android:name="android.intent.category.LAUNCHER" />
-39-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/main/AndroidManifest.xml:21:13-73
-39-->/home/somnath/Desktop/New_HeyAlli/HeyAlli/HeyAlli/android/app/src/main/AndroidManifest.xml:21:23-70
-40            </intent-filter>
-41        </activity>
-42
-43        <provider
-43-->[androidx.emoji2:emoji2:1.0.0] /home/somnath/.gradle/caches/transforms-3/30102b16e64b2b966e993f978f0d77f3/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:26:9-34:20
-44            android:name="androidx.startup.InitializationProvider"
-44-->[androidx.emoji2:emoji2:1.0.0] /home/somnath/.gradle/caches/transforms-3/30102b16e64b2b966e993f978f0d77f3/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:27:13-67
-45            android:authorities="com.heyalli.androidx-startup"
-45-->[androidx.emoji2:emoji2:1.0.0] /home/somnath/.gradle/caches/transforms-3/30102b16e64b2b966e993f978f0d77f3/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:28:13-68
-46            android:exported="false" >
-46-->[androidx.emoji2:emoji2:1.0.0] /home/somnath/.gradle/caches/transforms-3/30102b16e64b2b966e993f978f0d77f3/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:29:13-37
-47            <meta-data
-47-->[androidx.emoji2:emoji2:1.0.0] /home/somnath/.gradle/caches/transforms-3/30102b16e64b2b966e993f978f0d77f3/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:31:13-33:52
-48                android:name="androidx.emoji2.text.EmojiCompatInitializer"
-48-->[androidx.emoji2:emoji2:1.0.0] /home/somnath/.gradle/caches/transforms-3/30102b16e64b2b966e993f978f0d77f3/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:32:17-75
-49                android:value="androidx.startup" />
-49-->[androidx.emoji2:emoji2:1.0.0] /home/somnath/.gradle/caches/transforms-3/30102b16e64b2b966e993f978f0d77f3/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:33:17-49
-50            <meta-data
-50-->[androidx.lifecycle:lifecycle-process:2.4.0] /home/somnath/.gradle/caches/transforms-3/168829b299da31b5f39d19c1353bb79f/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:31:13-33:52
-51                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-51-->[androidx.lifecycle:lifecycle-process:2.4.0] /home/somnath/.gradle/caches/transforms-3/168829b299da31b5f39d19c1353bb79f/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:32:17-78
-52                android:value="androidx.startup" />
-52-->[androidx.lifecycle:lifecycle-process:2.4.0] /home/somnath/.gradle/caches/transforms-3/168829b299da31b5f39d19c1353bb79f/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:33:17-49
-53        </provider>
-54    </application>
-55
-56</manifest>
+12-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:4:5-67
+12-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:4:22-64
+13    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+13-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:5:5-81
+13-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:5:22-78
+14    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+14-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:6:5-79
+14-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:6:22-77
+15    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+15-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:7:5-70
+15-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:7:22-68
+16    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+16-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:8:5-81
+16-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:8:22-79
+17    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- Required to access Google Play Licensing -->
+17-->[com.facebook.flipper:flipper:0.125.0] /home/somnath/.gradle/caches/transforms-3/b52eb36c170a4637a9334d50dcae5ac3/transformed/jetified-flipper-0.125.0/AndroidManifest.xml:16:5-76
+17-->[com.facebook.flipper:flipper:0.125.0] /home/somnath/.gradle/caches/transforms-3/b52eb36c170a4637a9334d50dcae5ac3/transformed/jetified-flipper-0.125.0/AndroidManifest.xml:16:22-73
+18    <uses-permission android:name="com.android.vending.CHECK_LICENSE" />
+18-->[:rn-fetch-blob] /home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/node_modules/rn-fetch-blob/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:10:5-73
+18-->[:rn-fetch-blob] /home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/node_modules/rn-fetch-blob/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:10:22-70
+19    <!--
+20         Required to keep CPU alive while downloading files
+21        (NOT to keep screen awake)
+22    -->
+23    <uses-permission android:name="android.permission.WAKE_LOCK" />
+23-->[:rn-fetch-blob] /home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/node_modules/rn-fetch-blob/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:19:5-68
+23-->[:rn-fetch-blob] /home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/node_modules/rn-fetch-blob/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:19:22-65
+24    <!--
+25         Required to poll the state of the network connection
+26        and respond to changes
+27    -->
+28    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+28-->[:rn-fetch-blob] /home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/node_modules/rn-fetch-blob/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:25:5-79
+28-->[:rn-fetch-blob] /home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/node_modules/rn-fetch-blob/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:25:22-76
+29
+30    <application
+30-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:11:5-31:19
+31        android:name="com.heyalli.MainApplication"
+31-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:12:9-40
+32        android:allowBackup="false"
+32-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:16:9-36
+33        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+33-->[androidx.core:core:1.7.0] /home/somnath/.gradle/caches/transforms-3/923469fa4f2917735f54fb873b7d3ca1/transformed/core-1.7.0/AndroidManifest.xml:24:18-86
+34        android:debuggable="true"
+35        android:icon="@mipmap/ic_launcher"
+35-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:14:9-43
+36        android:label="@string/app_name"
+36-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:13:9-41
+37        android:requestLegacyExternalStorage="true"
+37-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:17:9-52
+38        android:roundIcon="@mipmap/ic_launcher_round"
+38-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:15:9-54
+39        android:theme="@style/AppTheme"
+39-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:18:9-40
+40        android:usesCleartextTraffic="true" >
+40-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/debug/AndroidManifest.xml:8:9-44
+41        <activity
+41-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/debug/AndroidManifest.xml:11:9-111
+42            android:name="com.facebook.react.devsupport.DevSettingsActivity"
+42-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/debug/AndroidManifest.xml:11:19-83
+43            android:exported="false" />
+43-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/debug/AndroidManifest.xml:11:84-108
+44        <activity
+44-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:19:7-30:18
+45            android:name="com.heyalli.MainActivity"
+45-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:20:9-37
+46            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
+46-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:22:9-118
+47            android:exported="true"
+47-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:25:9-32
+48            android:label="@string/app_name"
+48-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:21:9-41
+49            android:launchMode="singleTask"
+49-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:23:9-40
+50            android:windowSoftInputMode="adjustResize" >
+50-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:24:9-51
+51            <intent-filter>
+51-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:26:9-29:25
+52                <action android:name="android.intent.action.MAIN" />
+52-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:27:13-65
+52-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:27:21-62
+53
+54                <category android:name="android.intent.category.LAUNCHER" />
+54-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:28:13-73
+54-->/home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/android/app/src/main/AndroidManifest.xml:28:23-70
+55            </intent-filter>
+56        </activity>
+57
+58        <provider
+58-->[:rn-fetch-blob] /home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/node_modules/rn-fetch-blob/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:34:9-42:20
+59            android:name="com.RNFetchBlob.Utils.FileProvider"
+59-->[:rn-fetch-blob] /home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/node_modules/rn-fetch-blob/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:35:13-62
+60            android:authorities="com.heyalli.provider"
+60-->[:rn-fetch-blob] /home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/node_modules/rn-fetch-blob/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:36:13-60
+61            android:exported="false"
+61-->[:rn-fetch-blob] /home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/node_modules/rn-fetch-blob/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:37:13-37
+62            android:grantUriPermissions="true" >
+62-->[:rn-fetch-blob] /home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/node_modules/rn-fetch-blob/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:38:13-47
+63            <meta-data
+63-->[:rn-fetch-blob] /home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/node_modules/rn-fetch-blob/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:39:13-41:58
+64                android:name="android.support.FILE_PROVIDER_PATHS"
+64-->[:rn-fetch-blob] /home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/node_modules/rn-fetch-blob/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:40:17-67
+65                android:resource="@xml/provider_paths" />
+65-->[:rn-fetch-blob] /home/somnath/Desktop/baljit-New-Rn/Android-IOS-App-baljit-New-RN/node_modules/rn-fetch-blob/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:41:17-55
+66        </provider>
+67        <provider
+67-->[androidx.emoji2:emoji2:1.0.0] /home/somnath/.gradle/caches/transforms-3/c634730487b72750c3285b1af84cd2c2/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:26:9-34:20
+68            android:name="androidx.startup.InitializationProvider"
+68-->[androidx.emoji2:emoji2:1.0.0] /home/somnath/.gradle/caches/transforms-3/c634730487b72750c3285b1af84cd2c2/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:27:13-67
+69            android:authorities="com.heyalli.androidx-startup"
+69-->[androidx.emoji2:emoji2:1.0.0] /home/somnath/.gradle/caches/transforms-3/c634730487b72750c3285b1af84cd2c2/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:28:13-68
+70            android:exported="false" >
+70-->[androidx.emoji2:emoji2:1.0.0] /home/somnath/.gradle/caches/transforms-3/c634730487b72750c3285b1af84cd2c2/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:29:13-37
+71            <meta-data
+71-->[androidx.emoji2:emoji2:1.0.0] /home/somnath/.gradle/caches/transforms-3/c634730487b72750c3285b1af84cd2c2/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:31:13-33:52
+72                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+72-->[androidx.emoji2:emoji2:1.0.0] /home/somnath/.gradle/caches/transforms-3/c634730487b72750c3285b1af84cd2c2/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:32:17-75
+73                android:value="androidx.startup" />
+73-->[androidx.emoji2:emoji2:1.0.0] /home/somnath/.gradle/caches/transforms-3/c634730487b72750c3285b1af84cd2c2/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:33:17-49
+74            <meta-data
+74-->[androidx.lifecycle:lifecycle-process:2.4.0] /home/somnath/.gradle/caches/transforms-3/074cbbd59adbdebe61718d62c4d39f5b/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:31:13-33:52
+75                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+75-->[androidx.lifecycle:lifecycle-process:2.4.0] /home/somnath/.gradle/caches/transforms-3/074cbbd59adbdebe61718d62c4d39f5b/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:32:17-78
+76                android:value="androidx.startup" />
+76-->[androidx.lifecycle:lifecycle-process:2.4.0] /home/somnath/.gradle/caches/transforms-3/074cbbd59adbdebe61718d62c4d39f5b/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:33:17-49
+77        </provider>
+78    </application>
+79
+80</manifest>
