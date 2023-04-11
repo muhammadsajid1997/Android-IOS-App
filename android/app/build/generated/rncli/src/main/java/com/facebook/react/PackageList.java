@@ -21,8 +21,8 @@ import com.rnfs.RNFSPackage;
 import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
 // react-native-screens
 import com.swmansion.rnscreens.RNScreensPackage;
-// react-native-sound-player
-import com.johnsonsu.rnsoundplayer.RNSoundPlayerPackage;
+// react-native-sound
+import com.zmxv.RNSound.RNSoundPackage;
 // react-native-tts
 import net.no_mad.tts.TextToSpeechPackage;
 // react-native-vector-icons
@@ -79,7 +79,7 @@ public class PackageList {
       new RNFSPackage(),
       new SafeAreaContextPackage(),
       new RNScreensPackage(),
-      new RNSoundPlayerPackage(),
+      new RNSoundPackage(),
       new TextToSpeechPackage(),
       new VectorIconsPackage(),
       new RNFetchBlobPackage()

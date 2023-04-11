@@ -29,13 +29,15 @@ import RNFetchBlob from "rn-fetch-blob";
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 // import { signOutFunc,auth } from "../firebaseConfig";
 import AudioRecord from "react-native-audio-record";
-import SoundPlayer from "react-native-sound-player";
+// import SoundPlayer from "react-native-sound-player";
 import FontAwesome from "react-native-vector-icons/FontAwesome5";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 var RNFS = require("react-native-fs");
+var Sound = require("react-native-sound");
+Sound.setCategory("Playback");
 const dirs = RNFetchBlob.fs.dirs;
 
 const options = {
@@ -70,7 +72,7 @@ export default function whisper({ navigation }) {
   //   }, []);
 
   useEffect(() => {
-    AudioRecord.init(options);
+    // AudioRecord.init(options);
     setReceivedText("");
     setTypeText("");
     setResults("");
@@ -254,7 +256,29 @@ export default function whisper({ navigation }) {
       // this.setState({isLoggingIn:false})
 
       try {
-        SoundPlayer.playUrl(filePath);
+        // SoundPlayer.playUrl(filePath);
+        var whoosh = new Sound(filePath, Sound.MAIN_BUNDLE, (error) => {
+          if (error) {
+            console.log("failed to load the sound", error);
+            return;
+          }
+          // loaded successfully
+          console.log(
+            "duration in seconds: " +
+              whoosh.getDuration() +
+              "number of channels: " +
+              whoosh.getNumberOfChannels()
+          );
+
+          // Play the sound with an onEnd callback
+          whoosh.play((success) => {
+            if (success) {
+              console.log("successfully finished playing");
+            } else {
+              console.log("playback failed due to audio decoding errors");
+            }
+          });
+        });
         setIsLoading(false);
       } catch (e) {
         // Alert('Cannot play the file');
