@@ -7,6 +7,7 @@ import {
   ScrollView,
   Image,
   Keyboard,
+  Alert,
   TouchableOpacity,
   KeyboardAvoidingView,
 } from "react-native";
@@ -14,7 +15,7 @@ import {
 // import AsyncStorage from '@react-native-community/async-storage';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// import Loader from './Loader';
+import Loader from "../component/Loader";
 // import logo from './Images/heyAlliTitle.jpg'
 import logoBack from "./Images/logoback.png";
 // import signInButton from './Images/signIn.jpg'
@@ -41,131 +42,22 @@ const LoginScreen = ({ navigation }) => {
   const [showPassword, setShowPassword] = useState(false);
   const passwordInputRef = createRef();
 
-  // const loginUser = async () => {
-  //   try {
-  //     const response = await axios.post('https://heyalli.azurewebsites.net/api/Identity/login', {
-  //       PhoneNumber: '9874563210',
-  //     }, {
-  //       headers: {
-  //         'Content-Type': 'application/json'
-  //       }
-  //     });
-  //     console.log(response.status);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // }
+  const loginUser = () => {
+    const loginUser = () => {
+      navigation.navigate("Home", { screen: "home" });
+    };
+    // console.log(userphoneNumber)
+    // const formData = new FormData();
+    // const data = {PhoneNumber:987643120}
+    // formData.append(data);
 
-  //       const loginUser = () => {
-  //         setErrortext('');
-  //         if (!userphoneNumber) {
-  //           alert('Please fill Phone Number');
-  //           return;
-  //         }
-  //         setLoading(true);
-  //         let dataToSend = { PhoneNumber: userphoneNumber };
-  //         let formBody = [];
-  //         // for (let key in dataToSend) {
-  //         //   let encodedKey = encodeURIComponent(key);
-  //         //   let encodedValue = encodeURIComponent(dataToSend[key]);
-  //         //   formBody.push(encodedKey + '=' + encodedValue);
-  //         // }
-  //         // formBody = formBody.join('&');
-  // console.log(dataToSend,"dataToSend")
-  //         fetch('https://heyalli.azurewebsites.net/api/Identity/login', {
-  //           method: 'POST',
-  //           body: dataToSend,
-  //           headers: {
-  //             //Header Defination
-  //             'Content-Type':
-  //               'application/x-www-form-urlencoded;charset=UTF-8',
-  //           },
-  //         })
-  //           .then((response) => response.json())
-  //           .then((responseJson) => {
-  //             //Hide Loader
-  //             setLoading(false);
-  //             console.log(responseJson,"check send Otp");
-  //             // If server response message same as Data Matched
-  //             if (responseJson.status === 'OTP sent successfully') {
-  //               AsyncStorage.setItem('user_id', userphoneNumber);
-  //               console.log(responseJson.data.userphoneNumber);
-  //               navigation.navigate('Home');
-  //             } else {
-  //               setErrortext(responseJson.msg);
-  //               console.log('Please check your phone number');
-  //             }
-  //           })
-  //           .catch((error) => {
-  //             //Hide Loader
-  //             setLoading(false);
-  //             console.error(error);
-  //           });
-  //       };
-
-  const loginUser = async () => {
-    // const form = new FormData();
-    // form.append("PhoneNumber", "9512058950");
-
-    // const response = await axios.post(
-    //   "https://heyalli.azurewebsites.net/api/Identity/login",
-    //   form,
-    //   {
-    //     headers: {
-    //       accept: "*/*",
-    //       "Content-Type": "multipart/form-data",
-    //     },
-    //   }
-    // );
-
-    // // const res = await response.json();
-    // console.log("dhdhbdbdbd", response);
-    navigation.navigate("Home", { screen: "Home" });
+    // })
+    // .catch(error => {
+    //   console.log(error);
+    //   Alert.alert(error)
+    //   setLoading(false)
+    // });
   };
-
-  // const formData = new FormData();
-  // const data = {PhoneNumber:987643120}
-  // formData.append(data);
-
-  // console.log(formData)
-
-  // fetch('https://heyalli.azurewebsites.net/api/Identity/login', {
-  //   method: 'POST',
-  //   headers: {
-  //     accept: '*/*',
-  //     'Content-Type': 'multipart/form-data'
-  //   },
-  //   body: formData
-
-  // })
-  // .then(response => response.json())
-  // .then(response => console.log(response))
-
-  // .catch(error => {
-  //   console.error(error);
-  // });
-  // }
-
-  // const loginUser =()=>{
-  // var formData = new FormData();
-  // fetch("https://heyalli.azurewebsites.net/api/Identity/login", {
-  //   method: "POST",
-  //   headers: {
-  //     // Accept: 'multipart/form-data',
-  //     "Content-Type": 'multipart/form-data',
-  //   },
-
-  //  body:  formData.append('PhoneNumber', '9876543210')
-  //   // JSON.stringify({
-  //   //   PhoneNumber : "9876543210"
-  //   // }),
-  // })
-
-  //   .then((response) => response.json())
-  //   .then((responseData) => {
-  //     console.log(JSON.stringify(responseData));
-  //   })
-  // }
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>

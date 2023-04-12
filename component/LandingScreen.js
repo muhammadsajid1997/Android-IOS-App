@@ -18,9 +18,9 @@ import Tts from "react-native-tts";
 import AudioRecord from "react-native-audio-record";
 import axios from "axios";
 import RNFetchBlob from "rn-fetch-blob";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 var RNFS = require("react-native-fs");
 var Sound = require("react-native-sound");
-Sound.setCategory("Playback");
 const dirs = RNFetchBlob.fs.dirs;
 
 const options = {
@@ -35,16 +35,19 @@ const LandingScreen = ({ navigation }) => {
   const appState = useRef(AppState.currentState);
 
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
+  const [name, setname] = useState("");
+  const [text, Settext] = useState();
   var index = 0;
   const String = [
     "Hello there! I am ALLI. My name stands for Artificial Language and Logic Interface. What is your name, please?",
-    "Please confirm should I call you as recording? yes or no",
-    "what is your cell phone number",
-    "Please confirm your cell phone number? yes or no",
+    `Please confirm should I call you as {name}Say yes tot confirm else Say no`,
+    "please Say your cell phone number ",
+    "Please confirm your cell phone number is {} . Say yes if correct  else Say no",
   ];
 
   var enterMobilesNo = false;
   var enterCallmsg = false;
+  var timer = true;
 
   const onStopAudio = async () => {
     AudioRecord.stop();
@@ -70,31 +73,67 @@ const LandingScreen = ({ navigation }) => {
       },
     });
     if (data) {
+      var name;
+      Settext("Listening mode");
       switch (index) {
         case 1:
-          console.log("case1");
-          SpeakAudio(data, false, String[index]);
+          SpeakAudio(
+            data,
+            false,
+            `Please confirm should I call you as ${data}Say yes tot confirm else Say no`
+          );
           index++;
+          await AsyncStorage.setItem("name", data);
           break;
+
         case 2:
-          SpeakAudio(data, false, String[index]);
-          index++;
+          if (data.toLowerCase() == "yes.") {
+            SpeakAudio(data, false, String[index], timer);
+            index++;
+          } else {
+            SpeakAudio(
+              data,
+              false,
+              "please tell me what should i call you again. Only speak the word that you want me to call you"
+            );
+            index = 1;
+          }
           break;
         case 3:
-          SpeakAudio(data, false, String[index]);
+          SpeakAudio(
+            data,
+            false,
+            `Please confirm your cell phone number is ${data} . Say yes if correct  else Say no`
+          );
           index++;
+
+          await AsyncStorage.setItem("mobileno", data);
           break;
         case 4:
           if (data.toLowerCase() == "yes.") {
-            navigation.navigate("Home");
+            const Name = await AsyncStorage.getItem("name");
+            const MO = await AsyncStorage.getItem("mobileno");
+
+            RegisterData(Name, MO);
+            // console.log("Name", Data);
+            // console.log("Mobileno", MO);
+            // navigation.navigate("Home");
             index++;
+          } else {
+            SpeakAudio(
+              data,
+              false,
+              "please tell your cell phone number Again "
+            );
+            index = 3;
           }
           break;
         default:
-          console.log("test...", "default case...");
+          // console.log("test...", "default case...");
           break;
         // code block
       }
+
       // console.log("datadatadata", data);
       // if (data.toLowerCase() == "yes.") {
       //   enterMobilesNo = true;
@@ -112,7 +151,24 @@ const LandingScreen = ({ navigation }) => {
     }
   };
 
-  const SpeakAudio = async (msg, record, nextMessage) => {
+  const RegisterData = async (name, mobile) => {
+    const form = new FormData();
+    form.append("FullName", "abddddd");
+    form.append("PhoneNumber", "52414524");
+
+    const { response } = await axios.post(
+      "https://heyalli.azurewebsites.net/api/Identity/register",
+      form,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    // console.log("response", response);
+  };
+
+  const SpeakAudio = async (msg, record, nextMessage, timer) => {
     const response = await axios.get(
       "https://heyalli.azurewebsites.net/api/convert/tts",
       {
@@ -125,57 +181,62 @@ const LandingScreen = ({ navigation }) => {
       }
     );
     if (response) {
-      console.log(response.data);
+      // console.log(response.data);
       const dirs = RNFetchBlob.fs.dirs;
       const filePath = RNFS.DownloadDirectoryPath + "/audio.mp3";
       const fileData = response.data.split(",")[1];
-
+      Settext("Listening mode");
       RNFetchBlob.fs
         .writeFile(filePath, response.data, "base64")
         .then(() => {
           console.log("File converted successfully");
+          playSound(filePath, record, nextMessage, timer);
         })
         .catch((error) => {
           console.log(`Error converting file: ${error}`);
         });
       // this.setState({isLoggingIn:false})
+    }
+  };
 
-      try {
-        // SoundPlayer.playUrl(filePath);
-        var whoosh = new Sound(filePath, Sound.MAIN_BUNDLE, (error) => {
-          if (error) {
-            console.log("failed to load the sound", error);
-            return;
-          }
-          // loaded successfully
-          console.log(
-            "duration in seconds: " +
-              whoosh.getDuration() +
-              "number of channels: " +
-              whoosh.getNumberOfChannels()
-          );
+  const playSound = (filePath, record, nextMessage, timer) => {
+    try {
+      // SoundPlayer.playUrl(filePath);
+      Sound.setCategory("Playback");
+      var whoosh = new Sound(filePath, Sound.MAIN_BUNDLE, (error) => {
+        if (error) {
+          console.log("failed to load the sound", error);
+          playSound(filePath, record, nextMessage, timer);
+          return;
+        }
 
-          // Play the sound with an onEnd callback
-          whoosh.play((success) => {
-            if (success) {
-              console.log("record ", record);
-              if (record) {
-                AudioRecord.init(options);
-                AudioRecord.start();
-                setTimeout(() => onStopAudio(), 4000);
-                console.log("successfully finished playing");
+        whoosh.play((success) => {
+          if (success) {
+            console.log("record ", record);
+            whoosh.stop();
+            whoosh.release();
+            if (record) {
+              AudioRecord.init(options);
+              AudioRecord.start();
+              Settext("Speek mode");
+              if (timer) {
+                setTimeout(() => onStopAudio(), 9000);
               } else {
-                SpeakAudio(nextMessage, true, null);
+                setTimeout(() => onStopAudio(), 4000);
               }
+
+              console.log("successfully finished playing");
             } else {
-              console.log("playback failed due to audio decoding errors");
+              SpeakAudio(nextMessage, true, null);
             }
-          });
+          } else {
+            console.log("playback failed due to audio decoding errors");
+          }
         });
-      } catch (e) {
-        // Alert('Cannot play the file');
-        console.log("cannot play the song file", e);
-      }
+      });
+    } catch (e) {
+      // Alert('Cannot play the file');
+      console.log("cannot play the song file", e);
     }
   };
   return (
@@ -213,7 +274,7 @@ const LandingScreen = ({ navigation }) => {
               activeOpacity={0.5}
               onPress={() => {
                 SpeakAudio(String[0], true, null);
-                index++;
+                index = 1;
                 // navigation.navigate("otp")
               }}
             >
@@ -222,6 +283,16 @@ const LandingScreen = ({ navigation }) => {
 
               <Text style={styles.buttonTextStyle}>Start</Text>
             </TouchableOpacity>
+
+            <View
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                height: 200,
+              }}
+            >
+              <Text>{text}</Text>
+            </View>
 
             {/* <Text
               style={styles.registerTextStyle}
