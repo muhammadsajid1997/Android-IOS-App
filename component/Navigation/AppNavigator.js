@@ -7,6 +7,7 @@ import whisper from "../Whisper";
 import HomeStack from "./HomeStack";
 import DrawerStack from "./DrawerStep";
 import myApps from "../myApps";
+import LandingScreen from "../LandingScreen";
 const Stack = createNativeStackNavigator();
 
 function MyStack() {
@@ -15,6 +16,13 @@ function MyStack() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
+        <Stack.Screen
+          name={"Landing"}
+          component={LandingScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
         <Stack.Screen
           name={"auth"}
           component={AuthStack}

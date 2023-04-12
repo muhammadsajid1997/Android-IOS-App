@@ -236,13 +236,12 @@ export default function whisper({ navigation }) {
       },
     });
 
-    console.log("sdnjsndndsnsdndnsdn", data);
-
     if (data) {
       setisLoggingIn(false);
       const dirs = RNFetchBlob.fs.dirs;
       const filePath = RNFS.DownloadDirectoryPath + "/audio.mp3";
       const fileData = data.split(",")[1];
+
       RNFetchBlob.fs
         .writeFile(filePath, data, "base64")
         .then(() => {

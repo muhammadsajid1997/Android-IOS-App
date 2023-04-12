@@ -32,6 +32,7 @@ import logoBack from "./Images/logoback.png";
 // import { useAuthRequest } from 'expo-auth-session/providers/google';
 // // import auth from '@react-native-firebase/auth';
 import axios from "axios";
+
 const LoginScreen = ({ navigation }) => {
   const [userphoneNumber, setUserphoneNumber] = useState();
   const [userPassword, setUserPassword] = useState("");
@@ -102,10 +103,26 @@ const LoginScreen = ({ navigation }) => {
   //           });
   //       };
 
-  const loginUser = () => {
-    navigation.navigate("Home", { screen: "home" });
+  const loginUser = async () => {
+    // const form = new FormData();
+    // form.append("PhoneNumber", "9512058950");
+
+    // const response = await axios.post(
+    //   "https://heyalli.azurewebsites.net/api/Identity/login",
+    //   form,
+    //   {
+    //     headers: {
+    //       accept: "*/*",
+    //       "Content-Type": "multipart/form-data",
+    //     },
+    //   }
+    // );
+
+    // // const res = await response.json();
+    // console.log("dhdhbdbdbd", response);
+    navigation.navigate("Home", { screen: "Home" });
   };
-  // console.log(userphoneNumber)
+
   // const formData = new FormData();
   // const data = {PhoneNumber:987643120}
   // formData.append(data);
