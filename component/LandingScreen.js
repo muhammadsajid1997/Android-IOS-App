@@ -12,6 +12,7 @@ import {
   AppState,
   PermissionsAndroid,
   Platform,
+  Alert,
 } from "react-native";
 import logoBack from "./Images/logoback.png";
 import Tts from "react-native-tts";
@@ -43,11 +44,13 @@ const LandingScreen = ({ navigation }) => {
     `Please confirm should I call you as {name}Say yes tot confirm else Say no`,
     "please Say your cell phone number ",
     "Please confirm your cell phone number is {} . Say yes if correct  else Say no",
+    "App will try to detect OTP on its own if not, please speak OTP",
   ];
 
   var enterMobilesNo = false;
   var enterCallmsg = false;
   var timer = true;
+  var otptimer = false;
 
   const onStopAudio = async () => {
     AudioRecord.stop();
@@ -113,12 +116,7 @@ const LandingScreen = ({ navigation }) => {
           if (data.toLowerCase() == "yes.") {
             const Name = await AsyncStorage.getItem("name");
             const MO = await AsyncStorage.getItem("mobileno");
-
             RegisterData(Name, MO);
-            // console.log("Name", Data);
-            // console.log("Mobileno", MO);
-            // navigation.navigate("Home");
-            index++;
           } else {
             SpeakAudio(
               data,
@@ -128,47 +126,149 @@ const LandingScreen = ({ navigation }) => {
             index = 3;
           }
           break;
+        case 5:
+          console.log("data", data);
+          SpeakAudio(data, false, null, otptimer);
+          TokenStore(data);
+          // case 5:
+          //   const Name = await AsyncStorage.getItem("name");
+          //   const MO = await AsyncStorage.getItem("mobileno");
+          //   RegisterData(Name, MO, data, data);
+          break;
         default:
           // console.log("test...", "default case...");
           break;
-        // code block
       }
-
-      // console.log("datadatadata", data);
-      // if (data.toLowerCase() == "yes.") {
-      //   enterMobilesNo = true;
-      //   SpeakAudio(data, false, String[2]);
-      // } else {
-      //   if (!enterMobilesNo) {
-      //     SpeakAudio(data, false, String[1]);
-      //   } else {
-      //     // if (!enterMobilesNo) {
-      //     SpeakAudio(data, false, String[3]);
-      //     // }
-      //     //
-      //   }
-      // }
     }
   };
 
   const RegisterData = async (name, mobile) => {
-    const form = new FormData();
-    form.append("FullName", "abddddd");
-    form.append("PhoneNumber", "52414524");
-
-    const { response } = await axios.post(
-      "https://heyalli.azurewebsites.net/api/Identity/register",
-      form,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
+    const mobileDAta = mobile.replace(/[\(\)\-\\.\s]+/g, "");
+    const username = name.replace(/[\(\)\-\\.\s]+/g, "");
+    console.log("mobileDAta", mobileDAta);
+    console.log("username", username);
+    axios
+      .post(
+        "https://heyalli.azurewebsites.net/api/Identity/register",
+        {
+          FullName: username,
+          PhoneNumber: `+91 ${mobileDAta}`,
         },
-      }
-    );
-    // console.log("response", response);
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
+      .then((data) => {
+        console.log(data.data);
+
+        SpeakAudio(
+          data.data,
+          false,
+          "App will try to detect OTP on its own if not, please speak OTP"
+        );
+        index++;
+      })
+      .catch((error) => {
+        // console.log("axios error:", error.request._response);
+        SpeakAudio(
+          error.request._response
+            ? error.request._response
+            : error.request._response.errors.FullName[0]
+            ? error.request._response.errors.FullName[0]
+            : error.request._response.errors.PhoneNumber[0],
+          false,
+          null
+        );
+
+        // Alert.alert(error.request._response.errors.PhoneNumber[0]);
+      });
+  };
+
+  const TokenStore = async (otp) => {
+    const mobile = await AsyncStorage.getItem("mobileno");
+    const mobileDAta = mobile.replace(/[\(\)\-\\\/\.\s]+/g, "");
+    const Otp = otp.replace(/[\(\)\-\\.\s]+/g, "");
+
+    console.log("mobile", mobileDAta);
+    console.log("otp", OTP);
+    axios
+      .post(
+        "https://heyalli.azurewebsites.net/api/Identity/token",
+        {
+          PhoneNumber: `+91${mobileDAta}`,
+          OTP: Otp,
+        },
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
+      .then(async (data) => {
+        if (data) {
+          await AsyncStorage.setItem("usersData", data.data);
+          ProfileStore();
+        }
+      })
+      .catch((error) => {
+        SpeakAudio(
+          error.request._response
+            ? error.request._response
+            : error.request._response.errors.OTP[0],
+          false,
+          null
+        );
+        console.log("axios error123:", error.request._response);
+        // Alert.alert(error.request._response);
+      });
+  };
+
+  const ProfileStore = async () => {
+    const Name = await AsyncStorage.getItem("name");
+    const MO = await AsyncStorage.getItem("mobileno");
+    const UsersData = await AsyncStorage.getItem("usersData");
+    const username = Name.replace(/[\(\)\-\\.\s]+/g, "");
+    const mobileDAta = MO.replace(/[\(\)\-\\.\s]+/g, "");
+    console.log("username", username);
+    console.log("mobileDAta", mobileDAta);
+    console.log("ALLData", UsersData);
+    axios
+      .post(
+        "https://heyalli.azurewebsites.net/api/Profile",
+        {
+          FullName: username,
+          PhoneNumber: `+91${mobileDAta}`,
+        },
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "multipart/form-data",
+            Authorization: UsersData.accessToken,
+          },
+        }
+      )
+      .then((data) => {
+        console.log("ProfileStore", data.data);
+        // SpeakAudio(
+        //   data.data,
+        //   false,
+        //   "App will try to detect OTP on its own if not, please speak OTP"
+        // );
+        // index++;
+      })
+      .catch((error) => {
+        console.log("axios error:", error.request._response);
+        // SpeakAudio(error.request._response, false, null);
+        // Alert.alert(error.request._response.errors.PhoneNumber[0]);
+      });
   };
 
   const SpeakAudio = async (msg, record, nextMessage, timer) => {
+    console.log("timer", timer);
     const response = await axios.get(
       "https://heyalli.azurewebsites.net/api/convert/tts",
       {
@@ -200,6 +300,7 @@ const LandingScreen = ({ navigation }) => {
   };
 
   const playSound = (filePath, record, nextMessage, timer) => {
+    console.log("timer", timer);
     try {
       // SoundPlayer.playUrl(filePath);
       Sound.setCategory("Playback");
@@ -218,9 +319,11 @@ const LandingScreen = ({ navigation }) => {
             if (record) {
               AudioRecord.init(options);
               AudioRecord.start();
-              Settext("Speek mode");
+              Settext("Speech mode");
               if (timer) {
-                setTimeout(() => onStopAudio(), 9000);
+                setTimeout(() => onStopAudio(), 10000);
+              } else if (timer == false) {
+                setTimeout(() => onStopAudio(), 60000);
               } else {
                 setTimeout(() => onStopAudio(), 4000);
               }
