@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, StyleSheet, TouchableOpacity, Text, ActivityIndicator,Image } from 'react-native';
+import { View, TextInput, StyleSheet, TouchableOpacity, Text, ActivityIndicator,Image,SafeAreaView } from 'react-native';
 // import { FontAwesome } from "@expo/vector-icons";
 
 const ChatInput = ({ onSend, isLoading, }) => {
@@ -12,6 +12,7 @@ const ChatInput = ({ onSend, isLoading, }) => {
 
     return (
         <View style={styles.container}>
+            <SafeAreaView/>
             <View style={styles.inputContainer}>
                 <TextInput
                     style={styles.input}

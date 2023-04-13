@@ -10,6 +10,7 @@ import {
   Alert,
   TouchableOpacity,
   KeyboardAvoidingView,
+  SafeAreaView
 } from "react-native";
 
 // import AsyncStorage from '@react-native-community/async-storage';
@@ -42,25 +43,33 @@ const LoginScreen = ({ navigation }) => {
   const [showPassword, setShowPassword] = useState(false);
   const passwordInputRef = createRef();
 
-  const loginUser = () => {
-    const loginUser = () => {
-      navigation.navigate("Home", { screen: "home" });
-    };
-    // console.log(userphoneNumber)
-    // const formData = new FormData();
-    // const data = {PhoneNumber:987643120}
-    // formData.append(data);
 
-    // })
-    // .catch(error => {
-    //   console.log(error);
-    //   Alert.alert(error)
-    //   setLoading(false)
-    // });
-  };
 
+  const loginUser=()=>{
+    axios.post('https://heyalli.azurewebsites.net/api/Identity/login',
+      {
+          'PhoneNumber': userphoneNumber,
+      },{
+          "headers": {
+            Accept: 'application/json',
+            'Content-Type': 'multipart/form-data',
+          }
+      }).then((response) => {
+         console.log("response get details:"+response.data);
+         Alert.alert(response.data)
+         navigation.navigate("Home", { screen: "home" });
+      })
+      .catch((error) => {
+         console.log("axios error:",error);
+         Alert.alert("Invalid PhoneNumber")
+      });
+    }
+
+
+   
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
+    <SafeAreaView/>
       {/* <Text>HELLO</Text>
             <View>
                 <Image style={{ width: '100%' }} source={logoBack} />

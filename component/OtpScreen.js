@@ -9,6 +9,7 @@ import {
     Keyboard,
     TouchableOpacity,
     KeyboardAvoidingView,
+    SafeAreaView
 } from 'react-native';
 import axios from "axios"
 import logoBack from './Images/logoback.png'
@@ -25,6 +26,7 @@ const OtpScreen = ({ navigation }) => {
 
     return (
         <View style={{ flex: 1, backgroundColor: 'white' }}>
+          <SafeAreaView/>
             <ScrollView
         nestedScrollEnabled={true}
         keyboardShouldPersistTaps="handled"
@@ -64,7 +66,7 @@ const OtpScreen = ({ navigation }) => {
               activeOpacity={0.5}
               onPress={() => {
                 // props.navigation.navigate("home")
-                navigation.navigate('HomeScreen')
+                navigation.navigate("Home", { screen: "home" })
                 userOtp()
               }}>
               <Text style={styles.buttonTextStyle}>Verify otp</Text>

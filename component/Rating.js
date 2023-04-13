@@ -8,6 +8,7 @@ import {
   Text,
   Image,
   TouchableOpacity,
+  SafeAreaView
 } from 'react-native';
 //import all the components we are going to use.
 
@@ -52,7 +53,7 @@ export default class Myapp extends Component {
     }
     return (
       <View style={styles.MainContainer}>
-        
+        <SafeAreaView/>
         <Text style={styles.textStyleSmall}>Please Rate the Response</Text>
         {/*View to hold our Stars*/}
         <View style={styles.childView}>{React_Native_Rating_Bar}</View>

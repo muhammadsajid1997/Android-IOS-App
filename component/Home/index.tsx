@@ -9,7 +9,8 @@ import {
   Button,
   Pressable,
   ScrollView,
-  Alert
+  Alert,
+  SafeAreaView
 } from "react-native";
 import Record from "../Record";
 
@@ -52,7 +53,7 @@ const Home = (props:any) => {
   
   return (
     <View >
-
+<SafeAreaView/>
       {/* <Text>{response}</Text> */}
       <ScrollView>
         <View style={{ paddingVertical: 50 }}>

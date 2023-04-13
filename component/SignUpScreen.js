@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Alert,
+  SafeAreaView
 } from "react-native";
 
 // import AsyncStorage from '@react-native-community/async-storage';
@@ -41,39 +42,64 @@ const RegisterScreen = ({ navigation }) => {
   const [showPassword, setShowPassword] = useState(true);
   const passwordInputRef = createRef();
 
-  const SingupUser = () => {
-    if (!firstName) {
-      Alert.alert("Please enter your FullName");
-      return;
-    }
-    if (!phoneNumber) {
-      Alert.alert("Please enter your Number");
-      return;
-    }
-    const formData = new FormData();
-    formData.append("FullName", firstName);
-    formData.append("PhoneNumber", phoneNumber);
-    fetch("https://heyalli.azurewebsites.net/api/Identity/register", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "multipart/form-data",
-      },
-      body: formData,
-    })
-      .then((res) => res.json())
-      .then((json) => {
-        console.log("check json", json);
-        Alert.alert(json);
-        navigation.navigate("otp");
+  // const SingupUser = () => {
+  //   if (!firstName) {
+  //     Alert.alert("Please enter your FullName");
+  //     return;
+  //   }
+  //   if (!phoneNumber) {
+  //     Alert.alert("Please enter your Number");
+  //     return;
+  //   }
+  //   const formData = new FormData();
+  //   formData.append("FullName", firstName);
+  //   formData.append("PhoneNumber", phoneNumber);
+  //   fetch("https://heyalli.azurewebsites.net/api/Identity/register", {
+  //     method: "POST",
+  //     headers: {
+  //       Accept: "application/json",
+  //       "Content-Type": "multipart/form-data",
+  //     },
+  //     body: formData,
+  //   })
+  //     .then((res) => res.json())
+  //     .then((json) => {
+  //       console.log("check json", json);
+  //       Alert.alert(json);
+  //       navigation.navigate("otp");
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // };
+
+
+  const SingupUser=()=>{
+    axios.post('https://heyalli.azurewebsites.net/api/Identity/register',
+      {
+          'FullName': firstName,
+          'PhoneNumber': phoneNumber,
+      },{
+          "headers": {
+            Accept: 'application/json',
+            'Content-Type': 'multipart/form-data',
+          }
+      }).then((response) => {
+         console.log("response get details:"+response.data);
+         Alert.alert(response.data)
       })
       .catch((error) => {
-        console.log(error);
+         console.log("axios error:",error);
+         Alert.alert("Invalid Credentials")
       });
-  };
+    }
+    
+
+
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
+      <SafeAreaView/>
       <ScrollView
         nestedScrollEnabled={true}
         keyboardShouldPersistTaps="handled"
@@ -83,6 +109,7 @@ const RegisterScreen = ({ navigation }) => {
         }}
       >
         <View>
+
           <KeyboardAvoidingView enabled>
             <View>
               <Image style={{ width: "100%" }} source={logoBack} />

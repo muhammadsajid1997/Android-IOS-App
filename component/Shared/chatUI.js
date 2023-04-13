@@ -1,11 +1,12 @@
 import React, { useState, useRef } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text,SafeAreaView } from 'react-native';
 import TextEffect from "../../component/Shared/typeEffect"
 // import { LinearGradient } from 'expo-linear-gradient';
 
 const ChatScreen = ({ TypeText, ReceivedText }) => {
     return (
         <View style={styles.container}>
+            <SafeAreaView/>
             <View style={styles.messageList}>
 
                 {TypeText && <View style={styles.messageContainer}>

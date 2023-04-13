@@ -13,6 +13,7 @@ import {
   Modal,
   Alert,
   TextInput,
+  SafeAreaView
 } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import Voice from "@react-native-voice/voice";
@@ -288,6 +289,7 @@ export default function whisper({ navigation }) {
 
   return (
     <View style={styles.root}>
+      <SafeAreaView/>
       {!showInput ? (
         <>
           <View

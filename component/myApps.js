@@ -1,12 +1,13 @@
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Image, ScrollView, Text, TouchableOpacity, SafeAreaView,View } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 const myApps = () => {
   const navigate = useNavigation();
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
+      <SafeAreaView/>
       <View
         style={{ marginTop: 50, flexDirection: "row", alignItems: "center" }}
       >

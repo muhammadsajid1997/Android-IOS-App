@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet,SafeAreaView } from "react-native";
 const TranscribedOutput = ({
   transcribedText,
   interimTranscribedText,
@@ -10,6 +10,7 @@ const TranscribedOutput = ({
 
   return (
     <View style={styles.box}>
+      <SafeAreaView/>
       <Text style={styles.text}>{transcribedText}</Text>
       <Text>{interimTranscribedText}</Text>
     </View>

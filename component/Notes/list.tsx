@@ -5,6 +5,7 @@ import {
   FlatList,
   TouchableOpacity,
   Text,
+  SafeAreaView
 } from "react-native";
 import useNotes from "../../hooks/useNotes";
 
@@ -15,6 +16,7 @@ export const Posts = ({}) => {
   console.log(data);
   return (
     <View style={styles.container}>
+      <SafeAreaView/>
       {isLoading && (
         <React.Fragment>
           <Text>Loading...</Text>

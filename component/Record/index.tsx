@@ -6,7 +6,8 @@ import {
   Text,
   View,
   Image,
-  TouchableHighlight,ActivityIndicator
+  TouchableHighlight,ActivityIndicator,
+  SafeAreaView
 } from "react-native";
 // import * as Speech from 'expo-speech';
 
@@ -225,7 +226,7 @@ class Record extends Component<Props, State> {
   render() {
     return (
       <View style={styles.container}>
-        
+        <SafeAreaView/>
         {this.state.started ? (
           <TouchableHighlight onPress={this._stopRecognizing}>
             <View

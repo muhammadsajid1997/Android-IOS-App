@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet,SafeAreaView } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 // import RNPickerSelect from "react-native-picker-select";
 
@@ -27,6 +27,7 @@ const Mode = ({
 
   return (
     <View>
+      <SafeAreaView/>
       <Text style={styles.title}>Model Size</Text>
       <View style={{ flexDirection: "row" }}>
         {/* <DropDownPicker
