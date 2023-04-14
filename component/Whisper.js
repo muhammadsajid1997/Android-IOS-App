@@ -13,7 +13,7 @@ import {
   Modal,
   Alert,
   TextInput,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import Voice from "@react-native-voice/voice";
@@ -216,7 +216,7 @@ export default function whisper({ navigation }) {
     uploadAudioAsync(audioFile);
   };
 
-  uploadAudioAsync = async (uri) => {
+  const uploadAudioAsync = async (uri) => {
     setisLoggingIn(true);
     const formData1 = new FormData();
 
@@ -238,6 +238,7 @@ export default function whisper({ navigation }) {
     });
 
     if (data) {
+      console.log("dataaaaa", data);
       setisLoggingIn(false);
       const dirs = RNFetchBlob.fs.dirs;
       const filePath = RNFS.DownloadDirectoryPath + "/audio.mp3";
@@ -289,7 +290,7 @@ export default function whisper({ navigation }) {
 
   return (
     <View style={styles.root}>
-      <SafeAreaView/>
+      <SafeAreaView />
       {!showInput ? (
         <>
           <View

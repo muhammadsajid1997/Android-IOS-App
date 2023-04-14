@@ -13,6 +13,7 @@ import {
   PermissionsAndroid,
   Platform,
   Alert,
+  EventEmitter,
 } from "react-native";
 import logoBack from "./Images/logoback.png";
 import Tts from "react-native-tts";
@@ -24,6 +25,8 @@ var RNFS = require("react-native-fs");
 var Sound = require("react-native-sound");
 const dirs = RNFetchBlob.fs.dirs;
 
+import { Buffer } from "buffer";
+
 const options = {
   sampleRate: 16000, // default 44100
   channels: 1, // 1 or 2, default 1
@@ -31,10 +34,9 @@ const options = {
   audioSource: 6, // android only (see below)
   wavFile: "test.wav", // default 'audio.wav'
 };
-
+import BackgroundTimer from "react-native-background-timer";
 const LandingScreen = ({ navigation }) => {
   const appState = useRef(AppState.currentState);
-
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const [name, setname] = useState("");
   const [text, Settext] = useState();
@@ -52,7 +54,75 @@ const LandingScreen = ({ navigation }) => {
   var timer = true;
   var otptimer = false;
 
+  // const PlayAudio = () => {
+  //   var whoosh = new Sound(filePath, Sound.MAIN_BUNDLE, (error) => {
+  //     if (error) {
+  //       console.log("failed to load the sound", error);
+  //       return;
+  //     }
+  //     whoosh.play((success) => {
+  //       if (success) {
+  //         whoosh.stop();
+  //         whoosh.release();
+  //       } else {
+  //         console.log("playback failed due to audio decoding errors");
+  //       }
+  //     });
+  //     // playSound(filePath, record, nextMessage, timer);
+  //   }).catch((error) => {
+  //     console.log(`Error converting file: ${error}`);
+  //   });
+  // };
+
+  // useEffect(() => {
+  //   const subscription = AppState.addEventListener("change", (nextAppState) => {
+  //     if (
+  //       appState.current.match(/inactive|background/) &&
+  //       nextAppState === "active"
+  //     ) {
+  //       console.log("App has come to the foreground!");
+  //     } else if (
+  //       appState.current.match(/inactive|active/) &&
+  //       nextAppState === "background"
+  //     ) {
+  //       console.log("app in bbb", nextAppState);
+  //     }
+
+  //   appState.current = nextAppState;
+  //   setAppStateVisible(appState.current);
+  //   console.log("AppState", appState.current);
+
+  //   if (appState.current == "background") {
+  //     AudioRecord.init(options);
+  //     AudioRecord.start();
+  //     AudioRecord.on("data", (data) => {
+  //       // console.log("daatatata", data);
+  //       chunk = Buffer.from(data, "base64");
+  //       chunk.toString("base64");
+  //       console.log(chunk);
+  //       // console.log("chunk", chunk);
+  //       const dirs = RNFetchBlob.fs.dirs;
+  //       const filePath = RNFS.DownloadDirectoryPath + "/audio.mp3";
+  //       RNFetchBlob.fs
+  //         .writeFile(filePath, chunk.toString("utf8"), "base64")
+  //         .then(() => {
+  //           console.log("File converted successfully");
+  //           PlayAudio(filePath);
+  //           // base64-encoded audio data chunks
+  //         });
+  //       //   /
+  //     });
+  //   }
+  //   });
+
+  //   // setTimeout(() => onStopAudio(), 4000);
+  //   return () => {
+  //     subscription.remove();
+  //   };
+  // }, []);
+
   const onStopAudio = async () => {
+    console.log("4 scound ");
     AudioRecord.stop();
     const audioFile = await AudioRecord.stop();
     SpeechtoTextData(audioFile);
@@ -127,7 +197,6 @@ const LandingScreen = ({ navigation }) => {
           }
           break;
         case 5:
-          console.log("data", data);
           SpeakAudio(data, false, null, otptimer);
           TokenStore(data);
           // case 5:
@@ -193,7 +262,8 @@ const LandingScreen = ({ navigation }) => {
     const Otp = otp.replace(/[\(\)\-\\.\s]+/g, "");
 
     console.log("mobile", mobileDAta);
-    console.log("otp", OTP);
+    console.log("Otp", Otp);
+
     axios
       .post(
         "https://heyalli.azurewebsites.net/api/Identity/token",
@@ -209,19 +279,15 @@ const LandingScreen = ({ navigation }) => {
         }
       )
       .then(async (data) => {
+        console.log("TokenStore", data);
         if (data) {
           await AsyncStorage.setItem("usersData", data.data);
+          navigation.navigate("Home");
           ProfileStore();
         }
       })
       .catch((error) => {
-        SpeakAudio(
-          error.request._response
-            ? error.request._response
-            : error.request._response.errors.OTP[0],
-          false,
-          null
-        );
+        SpeakAudio(error.request._response, false, null);
         console.log("axios error123:", error.request._response);
         // Alert.alert(error.request._response);
       });
@@ -233,6 +299,7 @@ const LandingScreen = ({ navigation }) => {
     const UsersData = await AsyncStorage.getItem("usersData");
     const username = Name.replace(/[\(\)\-\\.\s]+/g, "");
     const mobileDAta = MO.replace(/[\(\)\-\\.\s]+/g, "");
+
     console.log("username", username);
     console.log("mobileDAta", mobileDAta);
     console.log("ALLData", UsersData);

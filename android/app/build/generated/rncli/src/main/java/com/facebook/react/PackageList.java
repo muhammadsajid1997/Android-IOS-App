@@ -11,12 +11,16 @@ import com.facebook.react.shell.MainReactPackage;
 import java.util.Arrays;
 import java.util.ArrayList;
 
+// react-native-vector-icons
+import com.oblador.vectoricons.VectorIconsPackage;
 // @react-native-async-storage/async-storage
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 // @react-native-voice/voice
 import com.wenkesj.voice.VoicePackage;
 // react-native-audio-record
 import com.goodatlas.audiorecord.RNAudioRecordPackage;
+// react-native-background-timer
+import com.ocetnik.timer.BackgroundTimerPackage;
 // react-native-fs
 import com.rnfs.RNFSPackage;
 // react-native-safe-area-context
@@ -27,8 +31,6 @@ import com.swmansion.rnscreens.RNScreensPackage;
 import com.zmxv.RNSound.RNSoundPackage;
 // react-native-tts
 import net.no_mad.tts.TextToSpeechPackage;
-// react-native-vector-icons
-import com.oblador.vectoricons.VectorIconsPackage;
 // rn-fetch-blob
 import com.RNFetchBlob.RNFetchBlobPackage;
 
@@ -76,15 +78,16 @@ public class PackageList {
   public ArrayList<ReactPackage> getPackages() {
     return new ArrayList<>(Arrays.<ReactPackage>asList(
       new MainReactPackage(mConfig),
+      new VectorIconsPackage(),
       new AsyncStoragePackage(),
       new VoicePackage(),
       new RNAudioRecordPackage(),
+      new BackgroundTimerPackage(),
       new RNFSPackage(),
       new SafeAreaContextPackage(),
       new RNScreensPackage(),
       new RNSoundPackage(),
       new TextToSpeechPackage(),
-      new VectorIconsPackage(),
       new RNFetchBlobPackage()
     ));
   }
