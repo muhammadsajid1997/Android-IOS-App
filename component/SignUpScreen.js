@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Alert,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 
 // import AsyncStorage from '@react-native-community/async-storage';
@@ -73,33 +73,41 @@ const RegisterScreen = ({ navigation }) => {
   //     });
   // };
 
+  const SingupUser = () => {
+    axios
+      .post(
+        "https://heyalli.azurewebsites.net/api/Identity/register",
+        {
+          FullName: firstName,
+          PhoneNumber: `+91 ${phoneNumber}`,
+        },
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
+      .then((response) => {
+        console.log("response get details:" + response.data);
 
-  const SingupUser=()=>{
-    axios.post('https://heyalli.azurewebsites.net/api/Identity/register',
-      {
-          'FullName': firstName,
-          'PhoneNumber': phoneNumber,
-      },{
-          "headers": {
-            Accept: 'application/json',
-            'Content-Type': 'multipart/form-data',
-          }
-      }).then((response) => {
-         console.log("response get details:"+response.data);
-         Alert.alert(response.data)
+        if (response.data) {
+          navigation.navigate("otp", {
+            phoneNumber: phoneNumber,
+            name: firstName,
+          });
+        }
+        // Alert.alert(response.data);
       })
       .catch((error) => {
-         console.log("axios error:",error);
-         Alert.alert("Invalid Credentials")
+        console.log("axios error:", error);
+        Alert.alert("Invalid Credentials");
       });
-    }
-    
-
-
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
-      <SafeAreaView/>
+      <SafeAreaView />
       <ScrollView
         nestedScrollEnabled={true}
         keyboardShouldPersistTaps="handled"
@@ -109,7 +117,6 @@ const RegisterScreen = ({ navigation }) => {
         }}
       >
         <View>
-
           <KeyboardAvoidingView enabled>
             <View>
               <Image style={{ width: "100%" }} source={logoBack} />
@@ -192,7 +199,7 @@ const RegisterScreen = ({ navigation }) => {
 
             <Text
               style={styles.registerTextStyle}
-              onPress={() => navigation.navigate("")}
+              onPress={() => navigation.navigate("Auth")}
             >
               Don't have a Account ?{" "}
               <Text style={{ color: "#4d97f0" }}>Log In </Text>

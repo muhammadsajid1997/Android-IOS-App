@@ -36,6 +36,7 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 var RNFS = require("react-native-fs");
 var Sound = require("react-native-sound");
 Sound.setCategory("Playback");
@@ -100,11 +101,17 @@ export default function whisper({ navigation }) {
   //     console.log(error);
   //   };
 
-  const sendAnswer = (text) => {
+  const sendAnswer = async (text) => {
+    const UsersData = await AsyncStorage.getItem("Token");
     setIsLoading(true);
     const url = `https://heyalli.azurewebsites.net/api/HeyAlli/brain?text=${text}`;
     axios
-      .get(url)
+      .get(url, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${UsersData}`,
+        },
+      })
       .then(function (response) {
         getAnswerVoice(response?.data);
         setIsLoading(true);
@@ -218,6 +225,7 @@ export default function whisper({ navigation }) {
 
   const uploadAudioAsync = async (uri) => {
     setisLoggingIn(true);
+    const UsersData = await AsyncStorage.getItem("Token");
     const formData1 = new FormData();
 
     const apiUrl = "https://heyalli.azurewebsites.net/api/HeyAlli";
@@ -234,6 +242,7 @@ export default function whisper({ navigation }) {
     const { data } = await axios.post(apiUrl, formData1, {
       headers: {
         "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${UsersData}`,
       },
     });
 
@@ -286,6 +295,11 @@ export default function whisper({ navigation }) {
         console.log("cannot play the song file", e);
       }
     }
+  };
+
+  const logoutCall = async () => {
+    await AsyncStorage.clear();
+    navigate("Auth");
   };
 
   return (
@@ -802,31 +816,36 @@ export default function whisper({ navigation }) {
                         setModalVisible(false), setSection("Profile");
                       }}
                     >
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          alignItems: "center",
-                          justifyContent: "center",
+                      <TouchableOpacity
+                        onPress={() => {
+                          logoutCall();
                         }}
                       >
-                        <Ionicons
-                          name="md-exit-outline"
-                          size={22}
-                          color="#0f87cf"
-                        />
-
-                        <Text
+                        <View
                           style={{
-                            marginLeft: 5,
-                            fontSize: 18,
-                            fontWeight: "500",
-                            color: "#0f87cf",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "center",
                           }}
                         >
-                          Logout
-                        </Text>
-                      </View>
+                          <Ionicons
+                            name="md-exit-outline"
+                            size={22}
+                            color="#0f87cf"
+                          />
 
+                          <Text
+                            style={{
+                              marginLeft: 5,
+                              fontSize: 18,
+                              fontWeight: "500",
+                              color: "#0f87cf",
+                            }}
+                          >
+                            Logout
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
                       {/* <View style={{ alignItems: 'center', justifyContent: 'center', height: 50, width: "100%", marginTop: 10 }}>
                         <Text>Secret code Sections</Text>
                       </View> */}

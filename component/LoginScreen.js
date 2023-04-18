@@ -48,7 +48,7 @@ const LoginScreen = ({ navigation }) => {
       .post(
         "https://heyalli.azurewebsites.net/api/Identity/login",
         {
-          PhoneNumber: userphoneNumber,
+          PhoneNumber: `+91${userphoneNumber}`,
         },
         {
           headers: {
@@ -58,9 +58,14 @@ const LoginScreen = ({ navigation }) => {
         }
       )
       .then((response) => {
-        console.log("response get details:" + response.data);
-        Alert.alert(response.data);
-        navigation.navigate("Home", { screen: "home" });
+        if (response.data) {
+          navigation.navigate("otp", {
+            phoneNumber: userphoneNumber,
+          });
+        } else {
+          Alert.alert("Invalid PhoneNumber");
+        }
+        // navigation.navigate("Home", { screen: "home" });
       })
       .catch((error) => {
         console.log("axios error:", error);

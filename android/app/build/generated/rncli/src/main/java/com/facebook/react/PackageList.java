@@ -13,8 +13,14 @@ import java.util.ArrayList;
 
 // react-native-vector-icons
 import com.oblador.vectoricons.VectorIconsPackage;
+// @picovoice/porcupine-react-native
+import ai.picovoice.reactnative.porcupine.PorcupinePackage;
+// @picovoice/react-native-voice-processor
+import ai.picovoice.reactnative.voiceprocessor.VoiceProcessorPackage;
 // @react-native-async-storage/async-storage
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
+// @react-native-picker/picker
+import com.reactnativecommunity.picker.RNCPickerPackage;
 // @react-native-voice/voice
 import com.wenkesj.voice.VoicePackage;
 // react-native-audio-record
@@ -79,7 +85,10 @@ public class PackageList {
     return new ArrayList<>(Arrays.<ReactPackage>asList(
       new MainReactPackage(mConfig),
       new VectorIconsPackage(),
+      new PorcupinePackage(),
+      new VoiceProcessorPackage(),
       new AsyncStoragePackage(),
+      new RNCPickerPackage(),
       new VoicePackage(),
       new RNAudioRecordPackage(),
       new BackgroundTimerPackage(),
