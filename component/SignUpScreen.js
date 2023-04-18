@@ -79,7 +79,7 @@ const RegisterScreen = ({ navigation }) => {
         "https://heyalli.azurewebsites.net/api/Identity/register",
         {
           FullName: firstName,
-          PhoneNumber: `+91 ${phoneNumber}`,
+          PhoneNumber: phoneNumber,
         },
         {
           headers: {

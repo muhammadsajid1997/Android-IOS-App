@@ -48,7 +48,7 @@ const LoginScreen = ({ navigation }) => {
       .post(
         "https://heyalli.azurewebsites.net/api/Identity/login",
         {
-          PhoneNumber: `+91${userphoneNumber}`,
+          PhoneNumber: userphoneNumber,
         },
         {
           headers: {

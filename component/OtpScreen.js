@@ -14,12 +14,14 @@ import {
 } from "react-native";
 import axios from "axios";
 import logoBack from "./Images/logoback.png";
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 const OtpScreen = ({ navigation }) => {
   const [verifyOtp, setVerifyOtp] = useState("");
   const passwordInputRef = createRef();
   const route = useRoute();
+
+  const { navigate } = useNavigation();
 
   console.log("navigation", route.params.phoneNumber);
 
@@ -29,7 +31,8 @@ const OtpScreen = ({ navigation }) => {
   // };
 
   const userOtp = async () => {
-    navigation.navigate("HomeScreen");
+    // navigate("Home");
+    // navigation.navigate("HomeScreen");
     // const mobile = await AsyncStorage.getItem("mobileno");
     // const mobileDAta = mobile.replace(/[\(\)\-\\\/\.\s]+/g, "");
     // const Otp = otp.replace(/[\(\)\-\\.\s]+/g, "");
@@ -41,7 +44,7 @@ const OtpScreen = ({ navigation }) => {
       .post(
         "https://heyalli.azurewebsites.net/api/Identity/token",
         {
-          PhoneNumber: `+91${route.params.phoneNumber}`,
+          PhoneNumber: route.params.phoneNumber,
           OTP: verifyOtp,
         },
         {
@@ -52,12 +55,12 @@ const OtpScreen = ({ navigation }) => {
         }
       )
       .then(async (data) => {
-        console.log("TokenStore", data);
+        // console.log("TokenStore", data);
         if (data) {
           await AsyncStorage.setItem("Token", data.data.accessToken);
+          navigate("Home");
           // await AsyncStorage.setItem("name", data.data.accessToken);
           // ProfileStore();
-          navigation.navigate("Home");
         } else {
           Alert.alert("Invalid OTP");
         }

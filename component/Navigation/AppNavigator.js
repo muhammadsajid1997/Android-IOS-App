@@ -44,34 +44,50 @@ function MyStack() {
 
   return (
     <NavigationContainer>
-      {isAuthenticated == false ? (
-        <Stack.Navigator>
-          <Stack.Screen
-            name={"auth"}
-            component={AuthStack}
-            options={{
-              headerShown: false,
-            }}
-          />
-        </Stack.Navigator>
-      ) : (
-        <Stack.Navigator>
-          <Stack.Screen
-            name="Home"
-            component={whisper}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name="myApps"
-            component={myApps}
-            options={{
-              headerShown: false,
-            }}
-          />
-        </Stack.Navigator>
-      )}
+      <Stack.Navigator>
+        {isAuthenticated == false ? (
+          <>
+            <Stack.Screen
+              name={"auth"}
+              component={AuthStack}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="Home"
+              component={whisper}
+              options={{
+                headerShown: false,
+              }}
+            />
+          </>
+        ) : (
+          <>
+            <Stack.Screen
+              name="HomeScreen"
+              component={HomeStack}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="Home"
+              component={whisper}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="myApps"
+              component={myApps}
+              options={{
+                headerShown: false,
+              }}
+            />
+          </>
+        )}
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }

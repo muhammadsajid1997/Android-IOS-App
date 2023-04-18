@@ -299,7 +299,6 @@ export default function whisper({ navigation }) {
 
   const logoutCall = async () => {
     await AsyncStorage.clear();
-    navigate("Auth");
   };
 
   return (
