@@ -35,7 +35,7 @@ import logoBack from "./Images/logoback.png";
 // import { useAuthRequest } from 'expo-auth-session/providers/google';
 // // import auth from '@react-native-firebase/auth';
 
-const RegisterScreen = ({ navigation }) => {
+const SignUpScreen = ({ navigation }) => {
   const [firstName, setFirstName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState(false);
   const [errortext, setErrortext] = useState("");
@@ -74,35 +74,51 @@ const RegisterScreen = ({ navigation }) => {
   // };
 
   const SingupUser = () => {
-    axios
-      .post(
-        "https://heyalli.azurewebsites.net/api/Identity/register",
-        {
-          FullName: firstName,
-          PhoneNumber: phoneNumber,
-        },
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "multipart/form-data",
+    if (firstName == "" && phoneNumber == "") {
+      Alert.alert("Please Enter Field");
+    } else {
+      axios
+        .post(
+          "https://heyalli.azurewebsites.net/api/Identity/register",
+          {
+            FullName: firstName,
+            PhoneNumber: phoneNumber,
           },
-        }
-      )
-      .then((response) => {
-        console.log("response get details:" + response.data);
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
+        .then((response) => {
+          // console.log("response get details:" + response.data);
 
-        if (response.data) {
-          navigation.navigate("otp", {
-            phoneNumber: phoneNumber,
-            name: firstName,
-          });
-        }
-        // Alert.alert(response.data);
-      })
-      .catch((error) => {
-        console.log("axios error:", error);
-        Alert.alert("Invalid Credentials");
-      });
+          if (response.data) {
+            navigation.navigate("otp", {
+              phoneNumber: phoneNumber,
+              name: firstName,
+            });
+          }
+          // Alert.alert(response.data);
+        })
+        .catch((error) => {
+          console.log("axios error:", error);
+          if (
+            error.response.data == "User with this phone number already exists"
+          ) {
+            Alert.alert("User with this phone number already");
+          } else if (error.message == "Network Error") {
+            Alert.alert("Network Error");
+            // return null;
+          }
+          //     Alert.alert(
+          //       error.response.data
+          //         ? error.response.data
+          //         : error.response.data.title
+          //     );
+        });
+    }
   };
 
   return (
@@ -210,7 +226,7 @@ const RegisterScreen = ({ navigation }) => {
     </View>
   );
 };
-export default RegisterScreen;
+export default SignUpScreen;
 
 const styles = StyleSheet.create({
   mainBody: {

@@ -96,11 +96,6 @@ android {
 
  compileSdkVersion rootProject.ext.compileSdkVersion
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
 
     namespace "com.heyalli"
     defaultConfig {

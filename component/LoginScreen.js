@@ -36,7 +36,7 @@ import logoBack from "./Images/logoback.png";
 import axios from "axios";
 
 const LoginScreen = ({ navigation }) => {
-  const [userphoneNumber, setUserphoneNumber] = useState();
+  const [userphoneNumber, setUserphoneNumber] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errortext, setErrortext] = useState("");
@@ -44,33 +44,42 @@ const LoginScreen = ({ navigation }) => {
   const passwordInputRef = createRef();
 
   const loginUser = () => {
-    axios
-      .post(
-        "https://heyalli.azurewebsites.net/api/Identity/login",
-        {
-          PhoneNumber: userphoneNumber,
-        },
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "multipart/form-data",
+    // console.log(userphoneNumber);
+
+    if (userphoneNumber == "") {
+      Alert.alert("Please Enter PhoneNumber");
+    } else {
+      axios
+        .post(
+          "https://heyalli.azurewebsites.net/api/Identity/login",
+          {
+            PhoneNumber: userphoneNumber,
           },
-        }
-      )
-      .then((response) => {
-        if (response.data) {
-          navigation.navigate("otp", {
-            phoneNumber: userphoneNumber,
-          });
-        } else {
-          Alert.alert("Invalid PhoneNumber");
-        }
-        // navigation.navigate("Home", { screen: "home" });
-      })
-      .catch((error) => {
-        console.log("axios error:", error);
-        Alert.alert("Invalid PhoneNumber");
-      });
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response);
+          if (response.data) {
+            navigation.navigate("otp", {
+              phoneNumber: userphoneNumber,
+            });
+          } else {
+            Alert.alert("Invalid PhoneNumber");
+            console.log("erroe");
+          }
+          // navigation.navigate("Home", { screen: "home" });
+        })
+        .catch((error) => {
+          Alert.alert(error.response.data);
+          console.log("axios error:", error.response.data);
+        });
+    }
+    // console.log("called");
   };
 
   return (

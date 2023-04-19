@@ -37,6 +37,9 @@ import Entypo from "react-native-vector-icons/Entypo";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { logout } from "./Redux/authActions";
+import { useDispatch, useSelector } from "react-redux";
+import VoiceComponent from "./Record/Voice";
 var RNFS = require("react-native-fs");
 var Sound = require("react-native-sound");
 Sound.setCategory("Playback");
@@ -62,6 +65,9 @@ export default function whisper({ navigation }) {
   const [typeText, setTypeText] = useState("");
   const [receivedText, setReceivedText] = useState("");
   const { navigate } = useNavigation();
+  const dispatch = useDispatch();
+  const state = useSelector((state) => state.authReducers);
+  console.log(state.token);
   //   const soundRef = useRef(null);
 
   //   useEffect(() => {
@@ -102,14 +108,14 @@ export default function whisper({ navigation }) {
   //   };
 
   const sendAnswer = async (text) => {
-    const UsersData = await AsyncStorage.getItem("Token");
+    // const UsersData = await AsyncStorage.getItem("Token");
     setIsLoading(true);
     const url = `https://heyalli.azurewebsites.net/api/HeyAlli/brain?text=${text}`;
     axios
       .get(url, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${UsersData}`,
+          Authorization: `Bearer ${state.token}`,
         },
       })
       .then(function (response) {
@@ -180,39 +186,39 @@ export default function whisper({ navigation }) {
   };
 
   const onStartRecord = async () => {
-    if (Platform.OS === "android") {
-      try {
-        const grants = await PermissionsAndroid.requestMultiple([
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-          PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-        ]);
+    // if (Platform.OS === "android") {
+    //   try {
+    //     const grants = await PermissionsAndroid.requestMultiple([
+    //       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+    //       PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+    //       PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+    //     ]);
 
-        console.log("write external stroage", grants);
+    //     console.log("write external stroage", grants);
 
-        if (
-          grants["android.permission.WRITE_EXTERNAL_STORAGE"] ===
-            PermissionsAndroid.RESULTS.GRANTED &&
-          grants["android.permission.READ_EXTERNAL_STORAGE"] ===
-            PermissionsAndroid.RESULTS.GRANTED &&
-          grants["android.permission.RECORD_AUDIO"] ===
-            PermissionsAndroid.RESULTS.GRANTED
-        ) {
-          console.log("permissions granted");
-          AudioRecord.init(options);
-          setStarted(true);
-          AudioRecord.start();
-        } else {
-          console.log("All required permissions not granted");
+    //     if (
+    //       grants["android.permission.WRITE_EXTERNAL_STORAGE"] ===
+    //         PermissionsAndroid.RESULTS.GRANTED &&
+    //       grants["android.permission.READ_EXTERNAL_STORAGE"] ===
+    //         PermissionsAndroid.RESULTS.GRANTED &&
+    //       grants["android.permission.RECORD_AUDIO"] ===
+    //         PermissionsAndroid.RESULTS.GRANTED
+    //     ) {
+    console.log("permissions granted");
+    AudioRecord.init(options);
+    setStarted(true);
+    AudioRecord.start();
+    //   } else {
+    //     console.log("All required permissions not granted");
 
-          return;
-        }
-      } catch (err) {
-        // console.warn(err);
+    //     return;
+    //   }
+    // } catch (err) {
+    //   // console.warn(err);
 
-        return;
-      }
-    }
+    return;
+    // }
+    // }
   };
 
   const onStopRecord = async () => {
@@ -225,7 +231,8 @@ export default function whisper({ navigation }) {
 
   const uploadAudioAsync = async (uri) => {
     setisLoggingIn(true);
-    const UsersData = await AsyncStorage.getItem("Token");
+    // const UsersData = await AsyncStorage.getItem("Token");
+    console.log();
     const formData1 = new FormData();
 
     const apiUrl = "https://heyalli.azurewebsites.net/api/HeyAlli";
@@ -242,7 +249,7 @@ export default function whisper({ navigation }) {
     const { data } = await axios.post(apiUrl, formData1, {
       headers: {
         "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${UsersData}`,
+        Authorization: `Bearer ${state.token}`,
       },
     });
 
@@ -298,11 +305,12 @@ export default function whisper({ navigation }) {
   };
 
   const logoutCall = async () => {
-    await AsyncStorage.clear();
+    dispatch(logout());
   };
 
   return (
     <View style={styles.root}>
+      {/* <VoiceComponent /> */}
       <SafeAreaView />
       {!showInput ? (
         <>
@@ -389,6 +397,7 @@ export default function whisper({ navigation }) {
           </View>
         </>
       )}
+
       <View style={styles.bottomBar}>
         <TouchableOpacity onPress={handleInputField}>
           {!showInput ? (

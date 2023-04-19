@@ -16,12 +16,15 @@ import axios from "axios";
 import logoBack from "./Images/logoback.png";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDispatch } from "react-redux";
+import { loginUser } from "./Redux/authActions";
 const OtpScreen = ({ navigation }) => {
   const [verifyOtp, setVerifyOtp] = useState("");
   const passwordInputRef = createRef();
   const route = useRoute();
 
   const { navigate } = useNavigation();
+  const dispatch = useDispatch();
 
   console.log("navigation", route.params.phoneNumber);
 
@@ -31,6 +34,54 @@ const OtpScreen = ({ navigation }) => {
   // };
 
   const userOtp = async () => {
+    if (verifyOtp == "") {
+      Alert.alert("Please Enter OTP");
+    } else {
+      axios
+        .post(
+          "https://heyalli.azurewebsites.net/api/Identity/token",
+          {
+            PhoneNumber: route.params.phoneNumber,
+            OTP: verifyOtp,
+          },
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
+        .then(async (data) => {
+          // console.log("TokenStore", data);
+          if (data) {
+            // await AsyncStorage.setItem("Token", data.data.accessToken);
+            // navigate("Home");
+            dispatch(loginUser(data.data.accessToken));
+            // await AsyncStorage.setItem("name", data.data.accessToken);
+            // ProfileStore();
+          } else {
+            // console.log("data", data);
+          }
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+          if (error) {
+            if (error.response.data == "Invalid or expired OTP") {
+              Alert.alert("Invalid or expired OTP");
+            } else if (
+              error.response.data.errors.OTP[0] == "Please enter a valid OTP."
+            ) {
+              Alert.alert("Please enter a valid OTP.");
+            }
+            // console.log(error);
+          } else {
+            console.log("error", error);
+          }
+          // SpeakAudio(error.request._response, false, null);
+
+          // Alert.alert(error.request._response);
+        });
+    }
     // navigate("Home");
     // navigation.navigate("HomeScreen");
     // const mobile = await AsyncStorage.getItem("mobileno");
@@ -39,38 +90,6 @@ const OtpScreen = ({ navigation }) => {
 
     // console.log("mobile", mobileDAta);
     // console.log("Otp", Otp);
-
-    axios
-      .post(
-        "https://heyalli.azurewebsites.net/api/Identity/token",
-        {
-          PhoneNumber: route.params.phoneNumber,
-          OTP: verifyOtp,
-        },
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      )
-      .then(async (data) => {
-        // console.log("TokenStore", data);
-        if (data) {
-          await AsyncStorage.setItem("Token", data.data.accessToken);
-          navigate("Home");
-          // await AsyncStorage.setItem("name", data.data.accessToken);
-          // ProfileStore();
-        } else {
-          Alert.alert("Invalid OTP");
-        }
-      })
-      .catch((error) => {
-        Alert.alert(error.response.data);
-        // SpeakAudio(error.request._response, false, null);
-        console.log("axios error123:", error.response.data);
-        // Alert.alert(error.request._response);
-      });
   };
 
   // const ProfileStore = async () => {
@@ -135,6 +154,7 @@ const OtpScreen = ({ navigation }) => {
                 placeholderTextColor="#9ea3b7"
                 autoCapitalize="none"
                 keyboardType="email-address"
+                maxLength={6}
                 returnKeyType="next"
                 onSubmitEditing={() =>
                   passwordInputRef.current && passwordInputRef.current.focus()
