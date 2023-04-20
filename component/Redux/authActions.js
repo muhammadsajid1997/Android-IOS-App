@@ -2,7 +2,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const loginUser = (token) => async (dispatch) => {
   try {
-    console.log("TokenDtata", token);
     dispatch({ type: "TOKENSTORE", payload: { data: token } });
     await AsyncStorage.setItem("token", token);
   } catch (error) {

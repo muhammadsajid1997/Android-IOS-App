@@ -28,9 +28,11 @@ const Secratekey = () => {
   const [oldSecratepassword, setoldSecratepassword] = useState("");
   const [newSecratepassword, setnewSecratepassword] = useState("");
   const state = useSelector((state) => state.authReducers);
+
   const dispatch = useDispatch();
 
   const { navigate } = useNavigation();
+  const navigation = useNavigation();
 
   const SetSecratePasswords = async () => {
     axios
@@ -50,7 +52,7 @@ const Secratekey = () => {
       .then(async (data) => {
         console.log("data", data.data);
         if (data.data) {
-          Alert.alert("Secrate Key", data.data, [
+          Alert.alert("Secret Key", data.data, [
             {
               text: "OK",
               onPress: () => {
@@ -101,7 +103,7 @@ const Secratekey = () => {
               if (Changesecrate == true) {
                 SetChangesecrate(false);
               } else {
-                navigate.goBack();
+                navigate("homepage");
               }
             }}
           >
@@ -249,7 +251,7 @@ const Secratekey = () => {
               SetChangesecrate(true);
             }}
           >
-            Change Secrate code?{" "}
+            Change Secret code?{" "}
             <Text
               style={{
                 color: "#4d97f0",
@@ -326,8 +328,9 @@ const Secratekey = () => {
                 autoCorrect={false}
                 secureTextEntry={isSecureEntry1}
                 placeholder="Old Secret Password"
+                onChangeText={(password) => setoldSecratepassword(password)}
                 //   value={this.state.password}
-                //   onChangeText={this.onPasswordEntry}
+                // onChangeText={this.onPasswordEntry}
               />
 
               <View
@@ -380,6 +383,7 @@ const Secratekey = () => {
                 autoCorrect={false}
                 secureTextEntry={isSecureEntry2}
                 placeholder="New Secret Password"
+                onChangeText={(password) => setnewSecratepassword(password)}
                 //   value={this.state.password}
                 //   onChangeText={this.onPasswordEntry}
               />
@@ -435,7 +439,20 @@ const Secratekey = () => {
               paddingHorizontal: 40,
             }}
             activeOpacity={0.5}
-            onPress={() => {}}
+            onPress={() => {
+              if (oldSecratepassword == "") {
+                Alert.alert("Please Enter Old Secret Key");
+              } else if (newSecratepassword == "") {
+                Alert.alert("Please Enter New Secret Key");
+              } else if (oldSecratepassword != state.skey) {
+                Alert.alert("Please Enter Valid Old Secret Key");
+              } else {
+                dispatch(secratestore(newSecratepassword));
+
+                // Alert.alert("Please Enter Valid Old Secret Key");
+              }
+              // Alert.alert("Please Enter   ")
+            }}
           >
             <Text
               style={{

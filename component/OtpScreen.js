@@ -23,7 +23,7 @@ const OtpScreen = ({ navigation }) => {
   const passwordInputRef = createRef();
   const route = useRoute();
 
-  const { navigate } = useNavigation();
+  const navigate = useNavigation();
   const dispatch = useDispatch();
 
   // console.log("navigation", route.params.phoneNumber);
@@ -239,7 +239,7 @@ const OtpScreen = ({ navigation }) => {
           <TouchableOpacity
             style={{ justifyContent: "center", alignItems: "center" }}
             onPress={() => {
-              navigate("Auth");
+              navigate.goBack();
             }}
           >
             <Text style={{ color: "#ff0000cc" }}>Edit</Text>

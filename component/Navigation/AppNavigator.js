@@ -16,14 +16,15 @@ import { getuser } from "../Redux/authActions";
 export const AppNavContainer = () => {
   const dispatch = useDispatch();
   const [isLoading, setisLoading] = useState(true);
+
   const state = useSelector((state) => state.authReducers);
 
   const [authLoaded, setAuthLoaded] = useState(false);
 
   useEffect(() => {
     authLoaded && setAuthLoaded(false);
+    setisLoading(true);
     if (state.token == "") {
-      setisLoading(true);
       dispatch(getuser());
       setisLoading(false);
     } else {
@@ -31,9 +32,9 @@ export const AppNavContainer = () => {
     }
   }, [state.token]);
 
-  if (isLoading) {
-    return <ActivityIndicator />;
-  }
+  // if (isLoading) {
+  //   return <ActivityIndicator />;
+  // }
   // const Stack = createNativeStackNavigator();
   // const [isAuthenticated, setIsAuthenticated] = useState(false);
   // const [authLoaded, setAuthLoaded] = useState(false);
@@ -68,7 +69,15 @@ export const AppNavContainer = () => {
 
   return (
     <NavigationContainer>
-      {state.token == "" ? <AuthStack /> : <HomeStack />}
+      {isLoading ? (
+        <ActivityIndicator />
+      ) : state.token == "" ? (
+        <AuthStack />
+      ) : (
+        <HomeStack />
+      )}
+
+      {/* {state.token == "" ? <AuthStack /> : <HomeStack />} */}
       {/* {isAuthenticated == false ? ( */}
 
       {/* <Stack.Screen
