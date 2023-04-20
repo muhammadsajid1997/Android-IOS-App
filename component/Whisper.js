@@ -14,6 +14,8 @@ import {
   Alert,
   TextInput,
   SafeAreaView,
+  AppState,
+  BackHandler,
 } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import Voice from "@react-native-voice/voice";
@@ -23,9 +25,16 @@ import axios from "axios";
 // import { FontAwesome } from "@expo/vector-icons";
 // import TextEffect from "./Shared/typeEffect"
 
+import {
+  PorcupineManager,
+  BuiltInKeywords,
+  PorcupineErrors,
+} from "@picovoice/porcupine-react-native";
+
 import CustomInput from "../component/Shared/customInput";
 import ChatUI from "../component/Shared/chatUI";
 import RNFetchBlob from "rn-fetch-blob";
+
 // import { AntDesign } from '@expo/vector-icons';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 // import { signOutFunc,auth } from "../firebaseConfig";
@@ -40,6 +49,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { logout } from "./Redux/authActions";
 import { useDispatch, useSelector } from "react-redux";
 import VoiceComponent from "./Record/Voice";
+import Tts from "react-native-tts";
 var RNFS = require("react-native-fs");
 var Sound = require("react-native-sound");
 Sound.setCategory("Playback");
@@ -58,7 +68,7 @@ export default function whisper({ navigation }) {
   const [isLoggingIn, setisLoggingIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   let [results, setResults] = useState("");
-  //   let [voiceResult, setVoiceResult] = useState("");
+  let [voiceResult, setVoiceResult] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [modalSection, setSection] = useState("Home");
   const [showInput, setShowInput] = useState(false);
@@ -66,8 +76,175 @@ export default function whisper({ navigation }) {
   const [receivedText, setReceivedText] = useState("");
   const { navigate } = useNavigation();
   const dispatch = useDispatch();
+  const scrollViewRef = useRef();
   const state = useSelector((state) => state.authReducers);
-  console.log(state.token);
+  console.log(state);
+  const [isListening, setIsListening] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
+
+  let _accessKey = "qEufDJXOv4cnT4g4I3+ksyBgewy2MF0/320eWQAZ8QuQKkwILg4T1Q=="; // AccessKey obtained from Picovoice Console (https://console.picovoice.ai/)
+  let _keyword = "hey alli";
+
+  let _porcupineManager = PorcupineManager | undefined;
+
+  useEffect(() => {
+    abc();
+  }, [isListening]);
+
+  useEffect(() => {
+    abc();
+  }, [started]);
+
+  const _toggleListening = () => {
+    // console.log("isListening", isListening);
+    if (isListening) {
+      _stopProcessing();
+    } else {
+      _startProcessing();
+    }
+  };
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (nextAppState) => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === "active"
+      ) {
+        console.log("App has come to the foreground!");
+      } else if (
+        appState.current.match(/inactive|active/) &&
+        nextAppState === "background"
+      ) {
+        console.log("app in bbb");
+      }
+
+      appState.current = nextAppState;
+      setAppStateVisible(appState.current);
+      console.log("AppState", appState.current);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  const _startProcessing = async () => {
+    let recordAudioRequest;
+    if (Platform.OS === "android") {
+      console.log("android");
+      recordAudioRequest = _requestRecordAudioPermission();
+    } else {
+      console.log("android1");
+      recordAudioRequest = new Promise(function (resolve, _) {
+        resolve(true);
+      });
+    }
+
+    recordAudioRequest.then(async (hasPermission) => {
+      if (!hasPermission) {
+        console.error(
+          "Required permissions (Microphone)we're not found. Please add to platform code."
+        );
+        return;
+      } else {
+        try {
+          await _porcupineManager?.delete();
+          await _porcupineManager?.start().then((didStop) => {
+            console.log("start recording");
+            if (didStop) {
+              setIsListening(true);
+            }
+          });
+        } catch (e) {
+          console.log("start error -- ", e);
+        }
+      }
+    });
+  };
+  const _stopProcessing = async () => {
+    try {
+      await _porcupineManager?.delete();
+      await _porcupineManager?.stop().then((didStop) => {
+        console.log("stop recording");
+        if (didStop) {
+          setIsListening(false);
+        }
+      });
+    } catch (error) {
+      console.log("stop error", error);
+    }
+  };
+
+  const _requestRecordAudioPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+        {
+          title: "Microphone Permission",
+          message:
+            "Porcupine needs access to your microphone to listen for wake words.",
+          buttonNeutral: "Ask Me Later",
+          buttonNegative: "Cancel",
+          buttonPositive: "OK",
+        }
+      );
+      return granted === PermissionsAndroid.RESULTS.GRANTED;
+    } catch (err) {
+      setIsError(true);
+      setErrorMessage(err.toString());
+
+      return false;
+    }
+  };
+
+  const abc = async () => {
+    console.log(_keyword, "--speack--");
+    try {
+      _porcupineManager = await PorcupineManager.fromKeywordPaths(
+        _accessKey,
+        ["resource/hey-alli_en_android_v2_2_0.ppn"],
+        (keywordIndex) => {
+          if (keywordIndex >= 0) {
+            console.log("match hey alli");
+            Tts.speak("welcome");
+          }
+        },
+        (error) => {
+          _stopProcessing();
+          setIsError(true);
+          setErrorMessage(error.message);
+        },
+        "",
+        [0.5]
+      );
+    } catch (err) {
+      let errorMessage = "";
+      if (err instanceof PorcupineErrors.PorcupineInvalidArgumentError) {
+        errorMessage = `${err.message}\nPlease make sure accessKey ${this._accessKey} is a valid access key.`;
+      } else if (err instanceof PorcupineErrors.PorcupineActivationError) {
+        errorMessage = "AccessKey activation error";
+      } else if (err instanceof PorcupineErrors.PorcupineActivationLimitError) {
+        errorMessage = "AccessKey reached its device limit";
+      } else if (
+        err instanceof PorcupineErrors.PorcupineActivationRefusedError
+      ) {
+        errorMessage = "AccessKey refused";
+      } else if (
+        err instanceof PorcupineErrors.PorcupineActivationThrottledError
+      ) {
+        errorMessage = "AccessKey has been throttled";
+      } else {
+        errorMessage = err.toString();
+      }
+
+      setIsError(true);
+      setErrorMessage(errorMessage);
+    }
+  };
+  // console.log(state.token);
   //   const soundRef = useRef(null);
 
   //   useEffect(() => {
@@ -128,26 +305,77 @@ export default function whisper({ navigation }) {
       });
   };
 
-  //   const getAnswerVoice = (text) => {
-  //     setIsLoading(true)
-  //     const timer = (text.length * 50) + 20000
-  //     const url = `https://heyalli.azurewebsites.net/api/convert/tts?text=${text}`
-  //     axios.get(url)
-  //       .then(function (response) {
-  //         setVoiceResult(response?.data)
-  //         setResults(text)
-  //         setReceivedText(text)
-  //         setTimeout(() => {
-  //           setResults("")
-  //         }, timer);
-  //         setIsLoading(false)
-  //       })
-  //       .catch(function (error) {
-  //         console.log("getAnswerVoice", error);
-  //         setIsLoading(false)
+  const getAnswerVoice = (text) => {
+    setIsLoading(true);
+    const timer = text.length * 50 + 20000;
+    const url = `https://heyalli.azurewebsites.net/api/convert/tts?text=${text}`;
+    axios
+      .get(url, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${state.token}`,
+        },
+      })
+      .then(function (response) {
+        console.log("response", response);
+        setVoiceResult(response?.data);
 
-  //       });
-  //   }
+        setResults(text);
+        setReceivedText(text);
+        const dirs = RNFetchBlob.fs.dirs;
+        const filePath = RNFS.DownloadDirectoryPath + "/audio.mp3";
+        const fileData = response?.data.split(",")[1];
+
+        RNFetchBlob.fs
+          .writeFile(filePath, response?.data, "base64")
+          .then(() => {
+            console.log("File converted successfully");
+            setisLoggingIn(false);
+          })
+          .catch((error) => {
+            setisLoggingIn(false);
+            console.log(`Error converting file: ${error}`);
+          });
+        try {
+          // SoundPlayer.playUrl(filePath);
+          var whoosh = new Sound(filePath, Sound.MAIN_BUNDLE, (error) => {
+            if (error) {
+              console.log("failed to load the sound", error);
+              return;
+            }
+            // loaded successfully
+            console.log(
+              "duration in seconds: " +
+                whoosh.getDuration() +
+                "number of channels: " +
+                whoosh.getNumberOfChannels()
+            );
+
+            // Play the sound with an onEnd callback
+            whoosh.play((success) => {
+              if (success) {
+                console.log("successfully finished playing");
+              } else {
+                console.log("playback failed due to audio decoding errors");
+              }
+            });
+          });
+          setIsLoading(false);
+        } catch (e) {
+          // Alert('Cannot play the file');
+          console.log("cannot play the song file", e);
+        }
+
+        setTimeout(() => {
+          setResults("");
+        }, timer);
+        setIsLoading(false);
+      })
+      .catch(function (error) {
+        console.log("getAnswerVoice", error);
+        setIsLoading(false);
+      });
+  };
 
   //   useEffect(() => {
   //     handlePlayButtonPress()
@@ -178,6 +406,7 @@ export default function whisper({ navigation }) {
 
   const handleInputField = () => {
     setShowInput(!showInput);
+    // setShowInput(!showInput);
   };
   const handleSend = (text) => {
     // do something with the text (e.g. send a message to a server)
@@ -219,6 +448,41 @@ export default function whisper({ navigation }) {
     return;
     // }
     // }
+  };
+
+  const PlayAudio = (filePath) => {
+    try {
+      // SoundPlayer.playUrl(filePath);
+      var whoosh = new Sound(filePath, Sound.MAIN_BUNDLE, (error) => {
+        if (error) {
+          PlayAudio(filePath);
+          // console.log("failed to load the sound", error);
+          return;
+        }
+        // loaded successfully
+        console.log(
+          "duration in seconds: " +
+            whoosh.getDuration() +
+            "number of channels: " +
+            whoosh.getNumberOfChannels()
+        );
+
+        // Play the sound with an onEnd callback
+        whoosh.play((success) => {
+          if (success) {
+            whoosh.stop();
+            whoosh.release();
+            console.log("successfully finished playing");
+          } else {
+            console.log("playback failed due to audio decoding errors");
+          }
+        });
+      });
+      setIsLoading(false);
+    } catch (e) {
+      // Alert('Cannot play the file');
+      console.log("cannot play the song file", e);
+    }
   };
 
   const onStopRecord = async () => {
@@ -265,42 +529,13 @@ export default function whisper({ navigation }) {
         .then(() => {
           console.log("File converted successfully");
           setisLoggingIn(false);
+          PlayAudio(filePath);
         })
         .catch((error) => {
           setisLoggingIn(false);
           console.log(`Error converting file: ${error}`);
         });
       // this.setState({isLoggingIn:false})
-
-      try {
-        // SoundPlayer.playUrl(filePath);
-        var whoosh = new Sound(filePath, Sound.MAIN_BUNDLE, (error) => {
-          if (error) {
-            console.log("failed to load the sound", error);
-            return;
-          }
-          // loaded successfully
-          console.log(
-            "duration in seconds: " +
-              whoosh.getDuration() +
-              "number of channels: " +
-              whoosh.getNumberOfChannels()
-          );
-
-          // Play the sound with an onEnd callback
-          whoosh.play((success) => {
-            if (success) {
-              console.log("successfully finished playing");
-            } else {
-              console.log("playback failed due to audio decoding errors");
-            }
-          });
-        });
-        setIsLoading(false);
-      } catch (e) {
-        // Alert('Cannot play the file');
-        console.log("cannot play the song file", e);
-      }
     }
   };
 
@@ -332,11 +567,7 @@ export default function whisper({ navigation }) {
                   <Text style={styles.title}>Start Speaking </Text>
                   <Text style={styles.title}> To Activate Alli </Text>
                 </>
-              ) : (
-                <ScrollView ref={scrollViewRef} style={styles.scrollViewText}>
-                  <TextEffect text={results} />
-                </ScrollView>
-              )}
+              ) : null}
             </View>
           </View>
 
@@ -356,6 +587,7 @@ export default function whisper({ navigation }) {
                     alignItems: "center",
                     alignItems: "center",
                   }}
+                  // onPress={_toggleListening}
                   onPress={!started ? onStartRecord : onStopRecord}
                 >
                   <FontAwesome
@@ -375,48 +607,57 @@ export default function whisper({ navigation }) {
             </View>
           </View>
         </>
-      ) : (
-        <>
-          <View style={{ marginTop: 10, width: "100%" }}>
-            <Text
-              style={{
-                ...styles.title,
-                fontWeight: "700",
-                fontSize: 35,
-                color: "#0f87cf",
-                marginVertical: 10,
-              }}
-            >
-              Hey Alli{" "}
-            </Text>
+      ) : null}
 
-            <CustomInput onSend={handleSend} isLoading={isLoading} />
+      <View style={{ flex: 1 }}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showInput}
+          onRequestClose={() => {
+            // Alert.alert("Modal has been closed.");
+            // AudioRecord.stop();
+            setShowInput(!showInput);
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            <View style={{ marginTop: 10, width: "100%" }}>
+              <Text
+                style={{
+                  ...styles.title,
+                  fontWeight: "700",
+                  fontSize: 35,
+                  color: "#0f87cf",
+                  marginVertical: 10,
+                }}
+              >
+                Hey Alli{" "}
+              </Text>
+
+              <CustomInput onSend={handleSend} isLoading={isLoading} />
+            </View>
+            <View style={{ marginTop: 10, width: "100%" }}>
+              <ChatUI TypeText={typeText} ReceivedText={receivedText} />
+            </View>
           </View>
-          <View style={{ marginTop: 10, width: "100%" }}>
-            <ChatUI TypeText={typeText} ReceivedText={receivedText} />
-          </View>
-        </>
+        </Modal>
+      </View>
+
+      {showInput == true ? null : (
+        <View style={styles.bottomBar}>
+          <TouchableOpacity onPress={handleInputField}>
+            <Image
+              source={require("./Images/go-back-arrow.png")}
+              style={{ height: 20, width: 20 }}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => setModalVisible(true)}>
+            <Entypo name="menu" size={28} color={"#000"} />
+          </TouchableOpacity>
+        </View>
       )}
 
-      <View style={styles.bottomBar}>
-        <TouchableOpacity onPress={handleInputField}>
-          {!showInput ? (
-            <Image
-              source={require("./Images/go-back-arrow.png")}
-              style={{ height: 20, width: 20 }}
-            />
-          ) : (
-            <Image
-              source={require("./Images/go-back-arrow.png")}
-              style={{ height: 20, width: 20 }}
-            />
-          )}
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => setModalVisible(true)}>
-          <Entypo name="menu" size={28} color={"#000"} />
-        </TouchableOpacity>
-      </View>
       <View style={styles.centeredView}>
         <Modal
           animationType="none"
@@ -519,6 +760,79 @@ export default function whisper({ navigation }) {
                         <TextInput
                           style={[styles.input, { marginLeft: 10 }]}
                           placeholder="Gender"
+                          // value={text}
+                          // onChangeText={setText}
+                          // onSubmitEditing={handleSend}
+                          blurOnSubmit={false}
+                          returnKeyType="next"
+                        />
+                      </View>
+                    </View>
+                    <View style={styles.container}>
+                      <View style={styles.inputContainer}>
+                        <TextInput
+                          style={{
+                            flex: 1,
+                            backgroundColor: "#fff",
+                            padding: 10,
+                            // borderWidth: 1,
+                            borderColor: "#d9d9d9",
+
+                            // width: 20,
+                            height: 80,
+                            borderWidth: 1,
+                            borderRadius: 10,
+                            textAlign: "left",
+                          }}
+                          placeholder="Address"
+                          // value={text}
+                          // onChangeText={setText}
+                          // onSubmitEditing={handleSend}
+                          blurOnSubmit={false}
+                          returnKeyType="next"
+                        />
+                      </View>
+                    </View>
+
+                    <View style={styles.container}>
+                      <View style={styles.inputContainer}>
+                        <TextInput
+                          style={styles.input}
+                          placeholder="City"
+                          // value={text}
+                          // onChangeText={setText}
+                          // onSubmitEditing={handleSend}
+                          blurOnSubmit={false}
+                          returnKeyType="next"
+                        />
+                        <TextInput
+                          style={[styles.input, { marginLeft: 10 }]}
+                          placeholder="State"
+                          // value={text}
+                          // onChangeText={setText}
+                          // onSubmitEditing={handleSend}
+                          blurOnSubmit={false}
+                          returnKeyType="next"
+                        />
+                      </View>
+                    </View>
+                    <View style={styles.container}>
+                      <View style={styles.inputContainer}>
+                        <TextInput
+                          style={{
+                            flex: 1,
+                            backgroundColor: "#fff",
+                            padding: 10,
+                            // borderWidth: 1,
+                            borderColor: "#d9d9d9",
+
+                            // width: 20,
+                            height: 40,
+                            borderWidth: 1,
+                            borderRadius: 10,
+                            textAlign: "left",
+                          }}
+                          placeholder="Zip"
                           // value={text}
                           // onChangeText={setText}
                           // onSubmitEditing={handleSend}
@@ -713,9 +1027,9 @@ export default function whisper({ navigation }) {
                             />
                           </View>
 
-                          <TouchableOpacity style={{ marginLeft: 10 }}>
-                            <Text>My Apps</Text>
-                          </TouchableOpacity>
+                          {/* <TouchableOpacity style={{ marginLeft: 10 }}> */}
+                          <Text style={{ marginLeft: 10 }}>My Apps</Text>
+                          {/* </TouchableOpacity> */}
                           <View
                             style={{
                               justifyContent: "flex-end",
@@ -746,14 +1060,17 @@ export default function whisper({ navigation }) {
                             alignItems: "center",
                             flex: 3,
                           }}
+                          onPress={() => {
+                            setModalVisible(false), navigate("Secratekey");
+                          }}
                         >
                           <View style={{}}>
                             <Entypo name="code" size={22} color="#0f87cf" />
                           </View>
 
-                          <TouchableOpacity style={{ marginLeft: 10 }}>
-                            <Text>Secret Code</Text>
-                          </TouchableOpacity>
+                          {/* <TouchableOpacity style={{ marginLeft: 10 }}> */}
+                          <Text style={{ marginLeft: 10 }}>Secret Code</Text>
+                          {/* </TouchableOpacity> */}
                           <View
                             style={{
                               justifyContent: "flex-end",

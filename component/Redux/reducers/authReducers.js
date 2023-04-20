@@ -1,6 +1,7 @@
 const intialState = {
   token: "",
   resStatus: false,
+  skey: "",
 };
 const authReducers = (state = intialState, action) => {
   const payload = action.payload;
@@ -22,6 +23,19 @@ const authReducers = (state = intialState, action) => {
       return {
         ...state,
         token: payload.data,
+        skey: payload.data,
+      };
+    }
+    case "SECRATESTORE": {
+      return {
+        ...state,
+        skey: payload.data,
+      };
+    }
+    case "GETSECRATECODE": {
+      return {
+        ...state,
+        skey: payload.data,
       };
     }
     default:

@@ -19,9 +19,11 @@ export const AppNavContainer = () => {
   const state = useSelector((state) => state.authReducers);
 
   const [authLoaded, setAuthLoaded] = useState(false);
+
   useEffect(() => {
     authLoaded && setAuthLoaded(false);
     if (state.token == "") {
+      setisLoading(true);
       dispatch(getuser());
       setisLoading(false);
     } else {

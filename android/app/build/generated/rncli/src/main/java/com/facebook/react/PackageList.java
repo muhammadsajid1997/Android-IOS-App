@@ -29,6 +29,8 @@ import com.goodatlas.audiorecord.RNAudioRecordPackage;
 import com.ocetnik.timer.BackgroundTimerPackage;
 // react-native-fs
 import com.rnfs.RNFSPackage;
+// react-native-linear-gradient
+import com.BV.LinearGradient.LinearGradientPackage;
 // react-native-safe-area-context
 import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
 // react-native-screens
@@ -93,6 +95,7 @@ public class PackageList {
       new RNAudioRecordPackage(),
       new BackgroundTimerPackage(),
       new RNFSPackage(),
+      new LinearGradientPackage(),
       new SafeAreaContextPackage(),
       new RNScreensPackage(),
       new RNSoundPackage(),

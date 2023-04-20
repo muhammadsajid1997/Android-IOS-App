@@ -26,7 +26,7 @@ const OtpScreen = ({ navigation }) => {
   const { navigate } = useNavigation();
   const dispatch = useDispatch();
 
-  console.log("navigation", route.params.phoneNumber);
+  // console.log("navigation", route.params.phoneNumber);
 
   // const userOtp = () => {
   //   // console.log(verifyOtp);
@@ -36,7 +36,7 @@ const OtpScreen = ({ navigation }) => {
   const userOtp = async () => {
     if (verifyOtp == "") {
       Alert.alert("Please Enter OTP");
-    } else {
+    } else if (verifyOtp.length == 6) {
       axios
         .post(
           "https://heyalli.azurewebsites.net/api/Identity/token",
@@ -81,6 +81,8 @@ const OtpScreen = ({ navigation }) => {
 
           // Alert.alert(error.request._response);
         });
+    } else {
+      Alert.alert("Please Enter 6 Digit OTP");
     }
     // navigate("Home");
     // navigation.navigate("HomeScreen");
@@ -144,16 +146,47 @@ const OtpScreen = ({ navigation }) => {
         <View>
           <KeyboardAvoidingView enabled>
             <View>
-              <Image style={{ width: "100%" }} source={logoBack} />
+              <Image
+                style={{
+                  width: "100%",
+                }}
+                source={logoBack}
+              />
+            </View>
+
+            <View
+              style={{
+                marginHorizontal: 30,
+                flexDirection: "row",
+                marginVertical: 10,
+                flexWrap: "wrap",
+              }}
+            >
+              <Text
+                style={{
+                  color: "#00000080",
+                  fontSize: 16,
+                }}
+              >
+                Please enter the 6 digit verification code sent to{"  "}
+                <Text
+                  style={{
+                    color: "#000000aa",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {route.params.phoneNumber}
+                </Text>
+              </Text>
             </View>
             <View style={{ ...styles.SectionStyle }}>
               <TextInput
                 style={styles.inputStyle}
                 onChangeText={(verifyOtp) => setVerifyOtp(verifyOtp)}
-                placeholder="Enter your OTP" //dummy@abc.com
+                placeholder="Enter your OTP" //mailto:dummy@abc.com
                 placeholderTextColor="#9ea3b7"
                 autoCapitalize="none"
-                keyboardType="email-address"
+                keyboardType="numeric"
                 maxLength={6}
                 returnKeyType="next"
                 onSubmitEditing={() =>
@@ -164,8 +197,6 @@ const OtpScreen = ({ navigation }) => {
               />
             </View>
 
-            {/* {errortext != '' ? ( <Text style={styles.errorTextStyle}>  {errortext}</Text> ) : null} */}
-
             <TouchableOpacity
               style={{
                 justifyContent: "center",
@@ -173,7 +204,8 @@ const OtpScreen = ({ navigation }) => {
                 alignItems: "center",
                 backgroundColor: "#14a5f4",
                 marginHorizontal: 18,
-                borderRadius: 6,
+                borderRadius: 12,
+                marginTop: 10,
               }}
               activeOpacity={0.5}
               onPress={() => {
@@ -192,6 +224,27 @@ const OtpScreen = ({ navigation }) => {
             </Text> */}
           </KeyboardAvoidingView>
         </View>
+        <View
+          style={{
+            justifyContent: "center",
+            marginHorizontal: 30,
+            marginTop: 30,
+            flexDirection: "row",
+            marginBottom: 15,
+          }}
+        >
+          <Text style={{ color: "#00000090" }}>
+            Do you want to change the number?{" "}
+          </Text>
+          <TouchableOpacity
+            style={{ justifyContent: "center", alignItems: "center" }}
+            onPress={() => {
+              navigate("Auth");
+            }}
+          >
+            <Text style={{ color: "#ff0000cc" }}>Edit</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </View>
   );
@@ -207,16 +260,12 @@ const styles = StyleSheet.create({
   },
   SectionStyle: {
     flexDirection: "row",
-    height: 40,
-    // top: -100,
-    // marginTop: 20,
-    marginLeft: "5%",
-    marginRight: "5%",
+    height: 45,
+    marginHorizontal: "5%",
     marginVertical: 10,
-    paddingLeft: 15,
-    paddingRight: 15,
+    paddingHorizontal: 15,
     borderWidth: 0.2,
-    borderRadius: 2,
+    borderRadius: 6,
     borderColor: "#E5E4E2",
     backgroundColor: "#e9ebf2",
   },
@@ -228,14 +277,13 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: "center",
     borderRadius: 30,
-    marginLeft: 35,
-    marginRight: 35,
+    marginHorizontal: 35,
     marginTop: 0,
     marginBottom: 25,
   },
   buttonTextStyle: {
     color: "white",
-    paddingVertical: 10,
+    paddingVertical: 12,
     fontSize: 18,
     fontWeight: "bold",
   },
