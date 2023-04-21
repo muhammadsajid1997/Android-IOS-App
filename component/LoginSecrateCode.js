@@ -26,6 +26,70 @@ const LoginSecrateCode = ({ navigation }) => {
   const { navigate } = useNavigation();
   const dispatch = useDispatch();
 
+  const secratecodeApicall = async () => {
+    const Token = await AsyncStorage.getItem("token");
+    const mobileno = await AsyncStorage.getItem("number");
+    console.log("mobileno", mobileno);
+    axios
+      .post(
+        "https://heyalli.azurewebsites.net/api/Identity/login/secretPassword",
+        {
+          PhoneNumber: mobileno,
+          secretPassword: veriysecrate,
+        },
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${Token}`,
+          },
+        }
+      )
+      .then(async (data) => {
+        console.log("data", data.data);
+        // if (data) {
+        // }
+        // if (data.data) {
+        //   Alert.alert("Secret Key", data.data, [
+        //     {
+        //       text: "OK",
+        //       onPress: () => {
+        //         dispatch(secratestore(Secratepassword));
+        //         navigate("homepage");
+        //         setSecratepassword("");
+        //       },
+        //     },
+        //   ]);
+        // }
+
+        // console.log("TokenStore", data);
+        //   if (data) {
+        // await AsyncStorage.setItem("Token", data.data.accessToken);
+        // navigate("Home");
+        // dispatch(loginUser(data.data.accessToken));
+        // await AsyncStorage.setItem("name", data.data.accessToken);
+        // ProfileStore();
+        //   } else {
+        //     // console.log("data", data);
+        //   }
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+        // if (error) {
+        //   if (error.response.data == "Invalid or expired OTP") {
+        //     Alert.alert("Invalid or expired OTP");
+        //   } else if (
+        //     error.response.data.errors.OTP[0] == "Please enter a valid OTP."
+        //   ) {
+        //     Alert.alert("Please enter a valid OTP.");
+        //   }
+        //   // console.log(error);
+        // } else {
+        //   console.log("error", error);
+        // }
+      });
+  };
+
   const state = useSelector((state) => state.authReducers);
   console.log(state);
   return (
@@ -111,11 +175,8 @@ const LoginSecrateCode = ({ navigation }) => {
               onPress={() => {
                 if (veriysecrate == "") {
                   Alert.alert("Please Enter Secrate Key");
-                  //   navigate("homepage");
-                } else if (state.skey == veriysecrate) {
-                  navigate("homepage");
                 } else {
-                  Alert.alert("Inavalid Secrate Key");
+                  secratecodeApicall();
                 }
 
                 //

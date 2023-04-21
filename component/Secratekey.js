@@ -19,6 +19,7 @@ import Entypo from "react-native-vector-icons/Entypo";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useDispatch, useSelector } from "react-redux";
 import { secratestore } from "./Redux/authActions";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const Secratekey = () => {
   const [isSecureEntry, setIsSecureEntry] = useState(true);
   const [isSecureEntry1, setIsSecureEntry1] = useState(true);
@@ -35,6 +36,8 @@ const Secratekey = () => {
   const navigation = useNavigation();
 
   const SetSecratePasswords = async () => {
+    const Token = await AsyncStorage.getItem("token");
+    console.log("Token", Token);
     axios
       .post(
         "https://heyalli.azurewebsites.net/api/Identity/login/secretPassword/create",
@@ -45,12 +48,11 @@ const Secratekey = () => {
           headers: {
             Accept: "application/json",
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${state.token}`,
+            Authorization: `Bearer ${Token}`,
           },
         }
       )
       .then(async (data) => {
-        console.log("data", data.data);
         if (data.data) {
           Alert.alert("Secret Key", data.data, [
             {
@@ -76,7 +78,7 @@ const Secratekey = () => {
         //   }
       })
       .catch((error) => {
-        // console.log(error.response.data);
+        console.log(error.response.data);
         // if (error) {
         //   if (error.response.data == "Invalid or expired OTP") {
         //     Alert.alert("Invalid or expired OTP");

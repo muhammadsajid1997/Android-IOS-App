@@ -7,35 +7,45 @@ import LoginSecrateCode from "../LoginSecrateCode";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { ActivityIndicator } from "react-native";
-import { getsecratecode } from "../Redux/authActions";
+import { getsecratecode, restoreSecrate } from "../Redux/authActions";
 
 const Stack = createNativeStackNavigator();
 
-const HomeStack = () => {
+const HomeStack = (isSecrateCode, loading) => {
+  // console.log("isSecrateCode", isSecrateCode.isSecrateCode);
   const dispatch = useDispatch();
-  const [isLoading, setisLoading] = useState(true);
-  const state = useSelector((state) => state.authReducers);
-  console.log(state);
+  // // const [isLoading, setisLoading] = useState(true);
+  // // const state = useSelector((state) => state.authReducers);
 
-  const [authLoaded, setAuthLoaded] = useState(false);
-  useEffect(() => {
-    authLoaded && setAuthLoaded(false);
-    if (state.skey == "") {
-      dispatch(getsecratecode());
-      setisLoading(false);
-    } else {
-      setisLoading(false);
-    }
-  }, [state.skey]);
+  // const { isSecrateCode, loading } = useSelector((state) => state.authReducers);
+  // console.log(isSecrateCode);
 
-  if (isLoading) {
-    return <ActivityIndicator />;
-  }
+  // const [authLoaded, setAuthLoaded] = useState(false);
+  // useEffect(() => {
+  //   dispatch(restoreSecrate());
+  // }, []);
+
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name={state.skey == "" ? "home" : "LoginSecrateCode"}
-        component={state.skey == "" ? Whisper : LoginSecrateCode}
+        name={
+          loading.loading ? (
+            <ActivityIndicator />
+          ) : isSecrateCode.isSecrateCode == false ? (
+            "home"
+          ) : (
+            "LoginSecrateCode"
+          )
+        }
+        component={
+          loading.loading ? (
+            <ActivityIndicator />
+          ) : isSecrateCode.isSecrateCode == false ? (
+            Whisper
+          ) : (
+            LoginSecrateCode
+          )
+        }
         options={{ headerShown: false }}
       />
       <Stack.Screen

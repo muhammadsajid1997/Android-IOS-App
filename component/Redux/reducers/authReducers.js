@@ -1,43 +1,42 @@
+import {
+  LOGIN_STATE_RESTORE,
+  LOGIN_STATE_RESTORE_REQUEST,
+  LOGOUT_STATE,
+  SECRATESTORE,
+  SECRATE_STATE_RESTORE,
+  SECRATE_STATE_RESTORE_REQUEST,
+  SET_LOGIN_DATA,
+} from "../authActions";
+
 const intialState = {
   token: "",
   resStatus: false,
-  skey: "",
+  isSecrateCode: false,
+  isLogin: false,
+  loading: false,
 };
 const authReducers = (state = intialState, action) => {
   const payload = action.payload;
-  console.log("sdkkkfdf", payload);
+
   switch (action.type) {
-    case "TOKENSTORE": {
+    case SET_LOGIN_DATA:
+      return { ...state, isLogin: true, isSecrateCode: false };
+    case LOGIN_STATE_RESTORE_REQUEST:
+      return { loading: true, isLogin: false, isSecrateCode: false };
+    case LOGIN_STATE_RESTORE:
+      return { isLogin: action.payload, loading: false, isSecrateCode: false };
+    case LOGOUT_STATE:
+      return { isLogin: false, loading: false, isSecrateCode: false };
+    case SECRATESTORE:
+      return { ...state, isLogin: true, isSecrateCode: true };
+    case SECRATE_STATE_RESTORE_REQUEST:
+      return { loading: true, isLogin: true, isSecrateCode: false };
+    case SECRATE_STATE_RESTORE:
       return {
-        ...state,
-        token: payload.data,
+        isLogin: payload.isLogin,
+        isSecrateCode: payload.isSecrate,
+        loading: false,
       };
-    }
-    case "GETUSER": {
-      return {
-        ...state,
-        token: payload.data,
-      };
-    }
-    case "LOGOUT": {
-      return {
-        ...state,
-        token: payload.data,
-        skey: payload.data,
-      };
-    }
-    case "SECRATESTORE": {
-      return {
-        ...state,
-        skey: payload.data,
-      };
-    }
-    case "GETSECRATECODE": {
-      return {
-        ...state,
-        skey: payload.data,
-      };
-    }
     default:
       return state;
   }

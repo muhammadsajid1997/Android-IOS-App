@@ -100,14 +100,13 @@ const SignUpScreen = ({ navigation }) => {
               name: firstName,
             });
           }
-          // Alert.alert(response.data);
         })
         .catch((error) => {
           console.log("axios error:", error);
           if (
             error.response.data == "User with this phone number already exists"
           ) {
-            Alert.alert("User with this phone number already");
+            Alert.alert("User with this phone number already exists");
           } else if (error.message == "Network Error") {
             Alert.alert("Network Error");
             // return null;

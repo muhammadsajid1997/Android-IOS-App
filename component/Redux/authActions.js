@@ -1,43 +1,117 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+export const SET_REGISTER_DATA = "SET_REGISTER_DATA";
+export const SET_LOGIN_DATA = "SET_LOGIN_DATA";
+export const LOGIN_STATE_RESTORE_REQUEST = "LOGIN_STATE_RESTORE_REQUEST";
+export const LOGIN_STATE_RESTORE = "LOGIN_STATE_RESTORE";
+export const LOGOUT_STATE = "LOGOUT_STATE";
+export const SECRATESTORE = "SECRATESTORE";
+export const SECRATE_STATE_RESTORE_REQUEST = "SECRATE_STATE_RESTORE_REQUEST";
+export const SECRATE_STATE_RESTORE = "SECRATE_STATE_RESTORE";
 
-export const loginUser = (token) => async (dispatch) => {
+// export const loginUser = (token) => async (dispatch) => {
+//   try {
+//     await AsyncStorage.setItem("token", token);
+//     dispatch({ type: "TOKENSTORE", payload: { data: token } });
+//   } catch (error) {
+//     console.log("tokenerror");
+//   }
+// };
+
+export const setLogin = (data, number) => async (dispatch) => {
   try {
-    dispatch({ type: "TOKENSTORE", payload: { data: token } });
-    await AsyncStorage.setItem("token", token);
+    await AsyncStorage.setItem("isLogin", JSON.stringify(true));
+    await AsyncStorage.setItem("token", data);
+    await AsyncStorage.setItem("number", number);
+    dispatch({ type: SET_LOGIN_DATA });
   } catch (error) {
-    console.log("tokenerror");
+    console.log(error);
   }
 };
 
-export const getuser = () => async (dispatch) => {
-  console.log("caalled");
+export const setLogout = (data) => async (dispatch) => {
   try {
-    const token = await AsyncStorage.getItem("token");
-    if (token) {
-      dispatch({ type: "GETUSER", payload: { data: token } });
-    }
+    await AsyncStorage.removeItem("token");
+    await AsyncStorage.removeItem("isLogin", () => {
+      dispatch({ type: LOGOUT_STATE });
+      dispatch(restoreStatus());
+    });
   } catch (error) {
-    dispatch({ type: "GETUSER", payload: { data: "" || null } });
-    console.log("error");
+    console.log(error);
   }
 };
 
-export const logout = () => async (dispatch) => {
+export const restoreSecrate = () => async (dispatch) => {
+  let loginStatus;
+  let secratecode;
   try {
-    const token = await AsyncStorage.removeItem("token");
-    const data = await AsyncStorage.removeItem("secrate");
-    dispatch({ type: "LOGOUT", payload: { data: "" || "" } });
+    dispatch({ type: SECRATE_STATE_RESTORE_REQUEST });
+    loginStatus = await AsyncStorage.getItem("isLogin").then((val) => {
+      if (val === "true") return true;
+      else return false;
+    });
+    secratecode = await AsyncStorage.getItem("isSecrateCode")
+      .then((val) => {
+        if (val === "true") return true;
+        else return false;
+      })
+      .catch((err) => console.log(err));
+    dispatch({
+      type: SECRATE_STATE_RESTORE,
+      payload: { isLogin: loginStatus, isSecrate: secratecode },
+    });
   } catch (error) {
-    dispatch({ type: "LOGOUT", payload: { data: "" || null } });
-    console.log("error");
+    console.log("status restoration failed: ", error);
   }
 };
+
+export const restoreStatus = () => async (dispatch) => {
+  let loginStatus;
+  try {
+    dispatch({ type: LOGIN_STATE_RESTORE_REQUEST });
+    loginStatus = await AsyncStorage.getItem("isLogin")
+
+      .then((val) => {
+        if (val === "true") return true;
+        else return false;
+      })
+      .catch((err) => console.log(err));
+    dispatch({ type: LOGIN_STATE_RESTORE, payload: loginStatus });
+  } catch (error) {
+    console.log("status restoration failed: ", error);
+  }
+};
+
+// export const getuser = () => async (dispatch) => {
+//   console.log("caalled");
+//   try {
+//     const token = await AsyncStorage.getItem("token");
+//     if (token) {
+//       dispatch({ type: "GETUSER", payload: { data: token } });
+//     }
+//   } catch (error) {
+//     dispatch({ type: "GETUSER", payload: { data: "" || null } });
+//     console.log("error");
+//   }
+// };
+
+// export const logout = () => async (dispatch) => {
+//   try {
+//     const token = await AsyncStorage.removeItem("token");
+//     const data = await AsyncStorage.removeItem("secrate");
+//     dispatch({ type: "LOGOUT", payload: { data: "" || "" } });
+//   } catch (error) {
+//     dispatch({ type: "LOGOUT", payload: { data: "" || null } });
+//     console.log("error");
+//   }
+// };
 
 export const secratestore = (code) => async (dispatch) => {
   try {
-    // console.log("TokenDtata", token);
-    dispatch({ type: "SECRATESTORE", payload: { data: code } });
+    await AsyncStorage.setItem("isSecrateCode", JSON.stringify(true));
     await AsyncStorage.setItem("secrate", code);
+    // console.log("TokenDtata", token);
+    dispatch({ type: SECRATESTORE });
+    // await AsyncStorage.setItem("secrate", code);
   } catch (error) {
     console.log("tokenerror");
   }

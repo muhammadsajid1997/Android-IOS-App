@@ -46,7 +46,7 @@ import Entypo from "react-native-vector-icons/Entypo";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { logout } from "./Redux/authActions";
+import { logout, setLogout } from "./Redux/authActions";
 import { useDispatch, useSelector } from "react-redux";
 import VoiceComponent from "./Record/Voice";
 import Tts from "react-native-tts";
@@ -540,7 +540,7 @@ export default function whisper({ navigation }) {
   };
 
   const logoutCall = async () => {
-    dispatch(logout());
+    dispatch(setLogout());
   };
 
   return (

@@ -17,7 +17,7 @@ import logoBack from "./Images/logoback.png";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
-import { loginUser } from "./Redux/authActions";
+import { loginUser, setLogin } from "./Redux/authActions";
 const OtpScreen = ({ navigation }) => {
   const [verifyOtp, setVerifyOtp] = useState("");
   const passwordInputRef = createRef();
@@ -54,10 +54,12 @@ const OtpScreen = ({ navigation }) => {
         .then(async (data) => {
           // console.log("TokenStore", data);
           if (data) {
+            // console.log("data", data.data.accessToken);
+
             // await AsyncStorage.setItem("Token", data.data.accessToken);
             // navigate("Home");
-            dispatch(loginUser(data.data.accessToken));
-            // await AsyncStorage.setItem("name", data.data.accessToken);
+
+            dispatch(setLogin(data.data.accessToken, route.params.phoneNumber));
             // ProfileStore();
           } else {
             // console.log("data", data);

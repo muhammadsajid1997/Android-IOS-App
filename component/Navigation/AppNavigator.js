@@ -11,26 +11,25 @@ import LandingScreen from "../LandingScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import { ActivityIndicator } from "react-native";
-import { getuser } from "../Redux/authActions";
+import { getuser, restoreSecrate, restoreStatus } from "../Redux/authActions";
 
 export const AppNavContainer = () => {
   const dispatch = useDispatch();
-  const [isLoading, setisLoading] = useState(true);
 
-  const state = useSelector((state) => state.authReducers);
+  const { isLogin, loading, isSecrateCode } = useSelector(
+    (state) => state.authReducers
+  );
 
-  const [authLoaded, setAuthLoaded] = useState(false);
+  console.log("isSecrateCode", isSecrateCode);
+
+  // const [authLoaded, setAuthLoaded] = useState(false);
+  useEffect(() => {
+    dispatch(restoreStatus());
+  }, [restoreStatus]);
 
   useEffect(() => {
-    authLoaded && setAuthLoaded(false);
-    setisLoading(true);
-    if (state.token == "") {
-      dispatch(getuser());
-      setisLoading(false);
-    } else {
-      setisLoading(false);
-    }
-  }, [state.token]);
+    dispatch(restoreSecrate());
+  }, [restoreSecrate]);
 
   // if (isLoading) {
   //   return <ActivityIndicator />;
@@ -69,12 +68,12 @@ export const AppNavContainer = () => {
 
   return (
     <NavigationContainer>
-      {isLoading ? (
+      {loading ? (
         <ActivityIndicator />
-      ) : state.token == "" ? (
-        <AuthStack />
+      ) : isLogin == true ? (
+        <HomeStack isSecrateCode={isSecrateCode} loading={loading} />
       ) : (
-        <HomeStack />
+        <AuthStack />
       )}
 
       {/* {state.token == "" ? <AuthStack /> : <HomeStack />} */}
