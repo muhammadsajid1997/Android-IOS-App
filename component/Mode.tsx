@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet,SafeAreaView } from "react-native";
-import DropDownPicker from "react-native-dropdown-picker";
+// import DropDownPicker from "react-native-dropdown-picker";
 // import RNPickerSelect from "react-native-picker-select";
 
 const Mode = ({
