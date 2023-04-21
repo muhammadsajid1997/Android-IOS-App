@@ -4,11 +4,13 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 // import { createNativeStackNavigator } from '@react-navigation/native-stack';
 // import { HomeScreen } from './component/HomeScreen';
 import { AppNavContainer } from "./component/Navigation/AppNavigator";
-import { PermissionsAndroid, Platform } from "react-native";
+import { Alert, PermissionsAndroid, Platform } from "react-native";
 import combineReducers from "./component/Redux";
 import thunk from "redux-thunk";
 import { Provider } from "react-redux";
 import { applyMiddleware, createStore } from "redux";
+import RNFetchBlob from "rn-fetch-blob";
+var RNFS = require("react-native-fs");
 const store = createStore(combineReducers, applyMiddleware(thunk));
 // function HomeScreen() {
 //   return (
@@ -34,6 +36,17 @@ function App(props: any) {
           PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
           PermissionsAndroid.PERMISSIONS.READ_MEDIA_AUDIO,
         ]);
+
+        if (grants) {
+          const dirs = RNFetchBlob.fs.dirs;
+          const filePath = RNFS.DownloadDirectoryPath + "/audio.mp3";
+          RNFetchBlob.fs
+            .unlink(filePath)
+            .then(() => {
+              // Alert.alert("fileDeleted");
+            })
+            .catch((err) => {});
+        }
 
         console.log("write external stroage", grants);
 

@@ -8,10 +8,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { ActivityIndicator } from "react-native";
 import { getsecratecode, restoreSecrate } from "../Redux/authActions";
+import ActivityLoader from "../ActivityLoader";
 
 const Stack = createNativeStackNavigator();
 
-const HomeStack = (isSecrateCode, loading) => {
+const HomeStack = (isSecrateCode) => {
+  const { isLogin, loading } = useSelector((state) => state.authReducers);
   // console.log("isSecrateCode", isSecrateCode.isSecrateCode);
   const dispatch = useDispatch();
   // // const [isLoading, setisLoading] = useState(true);
@@ -21,16 +23,13 @@ const HomeStack = (isSecrateCode, loading) => {
   // console.log(isSecrateCode);
 
   // const [authLoaded, setAuthLoaded] = useState(false);
-  // useEffect(() => {
-  //   dispatch(restoreSecrate());
-  // }, []);
 
   return (
     <Stack.Navigator>
       <Stack.Screen
         name={
-          loading.loading ? (
-            <ActivityIndicator />
+          loading ? (
+            <ActivityLoader />
           ) : isSecrateCode.isSecrateCode == false ? (
             "home"
           ) : (
@@ -38,8 +37,8 @@ const HomeStack = (isSecrateCode, loading) => {
           )
         }
         component={
-          loading.loading ? (
-            <ActivityIndicator />
+          loading ? (
+            <ActivityLoader />
           ) : isSecrateCode.isSecrateCode == false ? (
             Whisper
           ) : (

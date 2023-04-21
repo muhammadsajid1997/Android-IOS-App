@@ -285,14 +285,14 @@ export default function whisper({ navigation }) {
   //   };
 
   const sendAnswer = async (text) => {
-    // const UsersData = await AsyncStorage.getItem("Token");
+    const token = await AsyncStorage.getItem("token");
     setIsLoading(true);
     const url = `https://heyalli.azurewebsites.net/api/HeyAlli/brain?text=${text}`;
     axios
       .get(url, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${state.token}`,
+          Authorization: `Bearer ${token}`,
         },
       })
       .then(function (response) {
@@ -305,7 +305,8 @@ export default function whisper({ navigation }) {
       });
   };
 
-  const getAnswerVoice = (text) => {
+  const getAnswerVoice = async (text) => {
+    const token = await AsyncStorage.getItem("token");
     setIsLoading(true);
     const timer = text.length * 50 + 20000;
     const url = `https://heyalli.azurewebsites.net/api/convert/tts?text=${text}`;
@@ -313,7 +314,7 @@ export default function whisper({ navigation }) {
       .get(url, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${state.token}`,
+          Authorization: `Bearer ${token}`,
         },
       })
       .then(function (response) {
@@ -494,6 +495,7 @@ export default function whisper({ navigation }) {
   };
 
   const uploadAudioAsync = async (uri) => {
+    const token = await AsyncStorage.getItem("token");
     setisLoggingIn(true);
     // const UsersData = await AsyncStorage.getItem("Token");
     console.log();
@@ -513,7 +515,7 @@ export default function whisper({ navigation }) {
     const { data } = await axios.post(apiUrl, formData1, {
       headers: {
         "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${state.token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
 

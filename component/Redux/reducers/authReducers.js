@@ -3,6 +3,7 @@ import {
   LOGIN_STATE_RESTORE_REQUEST,
   LOGOUT_STATE,
   SECRATESTORE,
+  SECRATESTORECHCK,
   SECRATE_STATE_RESTORE,
   SECRATE_STATE_RESTORE_REQUEST,
   SET_LOGIN_DATA,
@@ -37,6 +38,13 @@ const authReducers = (state = intialState, action) => {
         isSecrateCode: payload.isSecrate,
         loading: false,
       };
+    case SECRATESTORECHCK: {
+      return {
+        isLogin: true,
+        isSecrateCode: false,
+        loading: false,
+      };
+    }
     default:
       return state;
   }

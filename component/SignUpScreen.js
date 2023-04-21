@@ -74,50 +74,54 @@ const SignUpScreen = ({ navigation }) => {
   // };
 
   const SingupUser = () => {
-    if (firstName == "" && phoneNumber == "") {
-      Alert.alert("Please Enter Field");
-    } else {
-      axios
-        .post(
-          "https://heyalli.azurewebsites.net/api/Identity/register",
-          {
-            FullName: firstName,
-            PhoneNumber: phoneNumber,
+    // var regEx = "/^[A-Za-z]+$/";
+    // if (firstName == "" && phoneNumber == "") {
+    //   Alert.alert("Please Enter Field");
+    // } else if (firstName.match(regEx)) {
+    //   Alert.alert("Please enter a valid first name.");
+    // } else {
+    axios
+      .post(
+        "https://heyalli.azurewebsites.net/api/Identity/register",
+        {
+          FullName: firstName,
+          PhoneNumber: phoneNumber,
+        },
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "multipart/form-data",
           },
-          {
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        )
-        .then((response) => {
-          // console.log("response get details:" + response.data);
+        }
+      )
+      .then((response) => {
+        // console.log("response get details:" + response.data);
 
-          if (response.data) {
-            navigation.navigate("otp", {
-              phoneNumber: phoneNumber,
-              name: firstName,
-            });
-          }
-        })
-        .catch((error) => {
-          console.log("axios error:", error);
-          if (
-            error.response.data == "User with this phone number already exists"
-          ) {
-            Alert.alert("User with this phone number already exists");
-          } else if (error.message == "Network Error") {
-            Alert.alert("Network Error");
-            // return null;
-          }
-          //     Alert.alert(
-          //       error.response.data
-          //         ? error.response.data
-          //         : error.response.data.title
-          //     );
-        });
-    }
+        if (response.data) {
+          navigation.navigate("otp", {
+            phoneNumber: phoneNumber,
+            name: firstName,
+          });
+        }
+      })
+      .catch((error) => {
+        // console.log("axios error:", error.response.data);
+        if (
+          error.response.data == "User with this phone number already exists"
+        ) {
+          Alert.alert("User with this phone number already exists");
+        } else if (error.message == "Network Error") {
+          Alert.alert("Network Error");
+          // return null;
+        } else if (error.response.data.errors) {
+          Alert.alert(error.response.data.errors.FullName[0]);
+        }
+        //     Alert.alert(
+        //       error.response.data
+        //         ? error.response.data
+        //         : error.response.data.title
+        //     );
+      });
   };
 
   return (
@@ -181,7 +185,7 @@ const SignUpScreen = ({ navigation }) => {
                 onChangeText={(phoneNumber) => setPhoneNumber(phoneNumber)}
                 placeholder="Enter phone number" //12345
                 placeholderTextColor="#9ea3b7"
-                keyboardType="default"
+                keyboardType="ascii-capable"
                 ref={passwordInputRef}
                 onSubmitEditing={Keyboard.dismiss}
                 blurOnSubmit={false}
@@ -202,8 +206,16 @@ const SignUpScreen = ({ navigation }) => {
               }}
               activeOpacity={0.5}
               onPress={() => {
+                const nameRegex = new RegExp(/^[a-z ,.'-]+(\s)([a-z ,.'-])+$/i);
+                if (firstName == "") {
+                  Alert.alert("Please enter firstname");
+                } else if (phoneNumber == "") {
+                  Alert.alert("Please enter phoneNumber ");
+                } else {
+                  SingupUser();
+                  // Alert.alert("Please Enter Valid Old Secret Key");
+                }
                 // navigation.navigate("whisper")
-                SingupUser();
               }}
             >
               {/* <Image style={{ borderRadius: 10, marginVertical: 10 }} source={signInButton}>

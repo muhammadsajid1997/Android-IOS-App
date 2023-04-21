@@ -7,7 +7,7 @@ export const LOGOUT_STATE = "LOGOUT_STATE";
 export const SECRATESTORE = "SECRATESTORE";
 export const SECRATE_STATE_RESTORE_REQUEST = "SECRATE_STATE_RESTORE_REQUEST";
 export const SECRATE_STATE_RESTORE = "SECRATE_STATE_RESTORE";
-
+export const SECRATESTORECHCK = "SECRATESTORECHCK";
 // export const loginUser = (token) => async (dispatch) => {
 //   try {
 //     await AsyncStorage.setItem("token", token);
@@ -31,6 +31,8 @@ export const setLogin = (data, number) => async (dispatch) => {
 export const setLogout = (data) => async (dispatch) => {
   try {
     await AsyncStorage.removeItem("token");
+    await AsyncStorage.clear();
+
     await AsyncStorage.removeItem("isLogin", () => {
       dispatch({ type: LOGOUT_STATE });
       dispatch(restoreStatus());
@@ -66,16 +68,24 @@ export const restoreSecrate = () => async (dispatch) => {
 
 export const restoreStatus = () => async (dispatch) => {
   let loginStatus;
+  let secratecode;
   try {
     dispatch({ type: LOGIN_STATE_RESTORE_REQUEST });
-    loginStatus = await AsyncStorage.getItem("isLogin")
-
+    dispatch({ type: SECRATE_STATE_RESTORE_REQUEST });
+    loginStatus = await AsyncStorage.getItem("isLogin").then((val) => {
+      if (val === "true") return true;
+      else return false;
+    });
+    secratecode = await AsyncStorage.getItem("isSecrateCode")
       .then((val) => {
         if (val === "true") return true;
         else return false;
       })
       .catch((err) => console.log(err));
     dispatch({ type: LOGIN_STATE_RESTORE, payload: loginStatus });
+    if (secratecode) {
+      dispatch({ type: SECRATE_STATE_RESTORE, payload: secratecode });
+    }
   } catch (error) {
     console.log("status restoration failed: ", error);
   }
@@ -111,6 +121,21 @@ export const secratestore = (code) => async (dispatch) => {
     await AsyncStorage.setItem("secrate", code);
     // console.log("TokenDtata", token);
     dispatch({ type: SECRATESTORE });
+    // await AsyncStorage.setItem("secrate", code);
+  } catch (error) {
+    console.log("tokenerror");
+  }
+};
+
+export const secratestore1 = (code) => async (dispatch) => {
+  try {
+    await AsyncStorage.setItem("isSecrateCode", JSON.stringify(true));
+    await AsyncStorage.setItem("secrate", code);
+    // console.log("TokenDtata", token);
+    dispatch({
+      type: SECRATESTORECHCK,
+      payload: { isLogin: true, isSecrate: false },
+    });
     // await AsyncStorage.setItem("secrate", code);
   } catch (error) {
     console.log("tokenerror");

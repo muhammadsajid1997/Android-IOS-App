@@ -12,6 +12,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import { ActivityIndicator } from "react-native";
 import { getuser, restoreSecrate, restoreStatus } from "../Redux/authActions";
+import ActivityLoader from "../ActivityLoader";
 
 export const AppNavContainer = () => {
   const dispatch = useDispatch();
@@ -21,6 +22,8 @@ export const AppNavContainer = () => {
   );
 
   console.log("isSecrateCode", isSecrateCode);
+
+  console.log("loadingloading", loading);
 
   // const [authLoaded, setAuthLoaded] = useState(false);
   useEffect(() => {
@@ -68,10 +71,10 @@ export const AppNavContainer = () => {
 
   return (
     <NavigationContainer>
-      {loading ? (
-        <ActivityIndicator />
+      {loading == true ? (
+        <ActivityLoader />
       ) : isLogin == true ? (
-        <HomeStack isSecrateCode={isSecrateCode} loading={loading} />
+        <HomeStack isSecrateCode={isSecrateCode} />
       ) : (
         <AuthStack />
       )}

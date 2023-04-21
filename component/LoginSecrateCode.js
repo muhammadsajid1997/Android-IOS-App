@@ -17,7 +17,7 @@ import logoBack from "./Images/logoback.png";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "./Redux/authActions";
+import { loginUser, secratestore, secratestore1 } from "./Redux/authActions";
 const LoginSecrateCode = ({ navigation }) => {
   const [veriysecrate, setveriysecrate] = useState("");
   const passwordInputRef = createRef();
@@ -46,7 +46,11 @@ const LoginSecrateCode = ({ navigation }) => {
         }
       )
       .then(async (data) => {
-        console.log("data", data.data);
+        console.log("wweeweewe", data);
+        if (data) {
+          dispatch(secratestore1(veriysecrate));
+        }
+        // console.log("data", data.data);
         // if (data) {
         // }
         // if (data.data) {
@@ -77,7 +81,7 @@ const LoginSecrateCode = ({ navigation }) => {
         console.log(error.response.data);
         // if (error) {
         //   if (error.response.data == "Invalid or expired OTP") {
-        //     Alert.alert("Invalid or expired OTP");
+        Alert.alert(error.response.data);
         //   } else if (
         //     error.response.data.errors.OTP[0] == "Please enter a valid OTP."
         //   ) {
@@ -132,7 +136,7 @@ const LoginSecrateCode = ({ navigation }) => {
                   textAlign: "center",
                 }}
               >
-                Please enter your Secrate Code
+                Please enter your secret code
                 <Text
                   style={{
                     color: "#000000aa",
@@ -147,7 +151,7 @@ const LoginSecrateCode = ({ navigation }) => {
               <TextInput
                 style={styles.inputStyle}
                 onChangeText={(verifyOtp) => setveriysecrate(verifyOtp)}
-                placeholder="Enter your secrate code" //mailto:dummy@abc.com
+                placeholder="Enter your secret code" //mailto:dummy@abc.com
                 placeholderTextColor="#9ea3b7"
                 autoCapitalize="none"
                 keyboardType="numeric"
@@ -174,10 +178,18 @@ const LoginSecrateCode = ({ navigation }) => {
               activeOpacity={0.5}
               onPress={() => {
                 if (veriysecrate == "") {
-                  Alert.alert("Please Enter Secrate Key");
+                  Alert.alert("Please Enter Secret Key");
+                } else if (veriysecrate.length < 6) {
+                  Alert.alert("Please Enter Min 6 Digit Secret Key");
                 } else {
                   secratecodeApicall();
                 }
+
+                // if (veriysecrate == "") {
+                //   Alert.alert("Please Enter Secrate Key");
+                // } else {
+                //   secratecodeApicall();
+                // }
 
                 //
                 // props.navigation.navigate("home")
@@ -185,7 +197,7 @@ const LoginSecrateCode = ({ navigation }) => {
                 // userOtp();
               }}
             >
-              <Text style={styles.buttonTextStyle}>Verify Secrate Code</Text>
+              <Text style={styles.buttonTextStyle}>Verify Secret Code</Text>
             </TouchableOpacity>
 
             {/* <Text

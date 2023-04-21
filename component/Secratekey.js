@@ -59,7 +59,7 @@ const Secratekey = () => {
               text: "OK",
               onPress: () => {
                 dispatch(secratestore(Secratepassword));
-                navigate("homepage");
+                navigation.goBack();
                 setSecratepassword("");
               },
             },
@@ -81,7 +81,7 @@ const Secratekey = () => {
         console.log(error.response.data);
         // if (error) {
         //   if (error.response.data == "Invalid or expired OTP") {
-        //     Alert.alert("Invalid or expired OTP");
+        Alert.alert(error.response.data);
         //   } else if (
         //     error.response.data.errors.OTP[0] == "Please enter a valid OTP."
         //   ) {
@@ -92,6 +92,69 @@ const Secratekey = () => {
         //   console.log("error", error);
         // }
       });
+  };
+
+  const SetSecratePasswordsUpdate = async (
+    oldSecratepassword,
+    newSecratepassword
+  ) => {
+    const Token = await AsyncStorage.getItem("token");
+    console.log("Token", Token);
+    axios
+      .post(
+        "https://heyalli.azurewebsites.net/api/Identity/login/secretPassword/update",
+        {
+          oldSecretPassword: oldSecratepassword,
+          newSecretPassword: newSecratepassword,
+        },
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${Token}`,
+          },
+        }
+      )
+      .then(async (data) => {
+        if (data) {
+          console.log("agabhbdbsdbsdbsdbsdbds", data);
+          Alert.alert("Secret Key updated ", data.data, [
+            {
+              text: "OK",
+              onPress: () => {
+                dispatch(secratestore(newSecratepassword));
+                navigation.goBack();
+                // setSecratepassword("");
+              },
+            },
+          ]);
+        }
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+        // if (error) {
+        //   if (error.response.data == "Invalid or expired OTP") {
+        Alert.alert(error.response.data);
+        //   } else if (
+        //     error.response.data.errors.OTP[0] == "Please enter a valid OTP."
+        //   ) {
+        //     Alert.alert("Please enter a valid OTP.");
+        //   }
+        //   // console.log(error);
+        // } else {
+        //   console.log("error", error);
+        // }
+      });
+  };
+
+  const check_Key = () => {
+    if (Secratepassword == "" || Secratepassword == null) {
+      Alert.alert("Please Enter Secret Key");
+    } else if (Secratepassword.length < 6) {
+      Alert.alert("Please Min 6 Character Require");
+    } else {
+      SetSecratePasswords();
+    }
   };
 
   return (
@@ -105,7 +168,7 @@ const Secratekey = () => {
               if (Changesecrate == true) {
                 SetChangesecrate(false);
               } else {
-                navigate("homepage");
+                navigation.goBack();
               }
             }}
           >
@@ -164,6 +227,8 @@ const Secratekey = () => {
                   borderRadius: 10,
                   textAlign: "left",
                 }}
+                keyboardType="numeric"
+                maxLength={6}
                 autoCorrect={false}
                 secureTextEntry={isSecureEntry}
                 placeholder="Secret Password"
@@ -222,7 +287,7 @@ const Secratekey = () => {
             }}
             activeOpacity={0.5}
             onPress={() => {
-              SetSecratePasswords();
+              check_Key();
             }}
           >
             <Text
@@ -327,6 +392,8 @@ const Secratekey = () => {
                   borderRadius: 10,
                   textAlign: "left",
                 }}
+                keyboardType="numeric"
+                maxLength={6}
                 autoCorrect={false}
                 secureTextEntry={isSecureEntry1}
                 placeholder="Old Secret Password"
@@ -382,6 +449,8 @@ const Secratekey = () => {
                   borderRadius: 10,
                   textAlign: "left",
                 }}
+                keyboardType="numeric"
+                maxLength={6}
                 autoCorrect={false}
                 secureTextEntry={isSecureEntry2}
                 placeholder="New Secret Password"
@@ -446,10 +515,11 @@ const Secratekey = () => {
                 Alert.alert("Please Enter Old Secret Key");
               } else if (newSecratepassword == "") {
                 Alert.alert("Please Enter New Secret Key");
-              } else if (oldSecratepassword != state.skey) {
-                Alert.alert("Please Enter Valid Old Secret Key");
               } else {
-                dispatch(secratestore(newSecratepassword));
+                SetSecratePasswordsUpdate(
+                  oldSecratepassword,
+                  newSecratepassword
+                );
 
                 // Alert.alert("Please Enter Valid Old Secret Key");
               }

@@ -46,41 +46,41 @@ const LoginScreen = ({ navigation }) => {
   const loginUser = () => {
     // console.log(userphoneNumber);
 
-    if (userphoneNumber == "") {
-      Alert.alert("Please Enter PhoneNumber");
-    } else {
-      axios
-        .post(
-          "https://heyalli.azurewebsites.net/api/Identity/login",
-          {
-            PhoneNumber: userphoneNumber,
+    // if (userphoneNumber == "") {
+    //   Alert.alert("Please Enter PhoneNumber");
+    // } else {
+    axios
+      .post(
+        "https://heyalli.azurewebsites.net/api/Identity/login",
+        {
+          PhoneNumber: userphoneNumber,
+        },
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "multipart/form-data",
           },
-          {
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        )
-        .then((response) => {
-          console.log(response);
-          if (response.data) {
-            navigation.navigate("otp", {
-              phoneNumber: userphoneNumber,
-            });
-          } else {
-            Alert.alert("Invalid PhoneNumber");
-            console.log("erroe");
-          }
-          // navigation.navigate("Home", { screen: "home" });
-        })
-        .catch((error) => {
-          Alert.alert(error.response.data);
-          console.log("axios error:", error.response.data);
-        });
-    }
-    // console.log("called");
+        }
+      )
+      .then((response) => {
+        console.log(response);
+        if (response.data) {
+          navigation.navigate("otp", {
+            phoneNumber: userphoneNumber,
+          });
+        } else {
+          Alert.alert("Invalid PhoneNumber");
+          console.log("erroe");
+        }
+        // navigation.navigate("Home", { screen: "home" });
+      })
+      .catch((error) => {
+        Alert.alert(error.response.data);
+        console.log("axios error:", error.response.data);
+      });
   };
+  // console.log("called");
+  // };
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
@@ -138,7 +138,16 @@ const LoginScreen = ({ navigation }) => {
               activeOpacity={0.5}
               onPress={() => {
                 // navigation.navigate("otp")
-                loginUser();
+                if (userphoneNumber == "") {
+                  Alert.alert("Please enter Phonenumber");
+                  // loginUser();
+                } else if (isNaN(userphoneNumber)) {
+                  Alert.alert("Please enter a valid Phonenumber");
+                  // Alert.alert("Please enter a valid Phonenumber");
+                } else {
+                  loginUser();
+                  // Alert.alert("apicall");
+                }
               }}
             >
               {/* <Image style={{ borderRadius: 10, marginVertical: 10 }} source={signInButton}>
