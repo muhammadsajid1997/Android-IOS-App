@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator } from "react-native";
 import { getsecratecode, restoreSecrate } from "../Redux/authActions";
 import ActivityLoader from "../ActivityLoader";
+import BussinessUpgrade from "../BussinessUpgrade";
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +28,13 @@ const HomeStack = (isSecrateCode) => {
   return (
     <Stack.Navigator>
       <Stack.Screen
+        name="home"
+        component={Whisper}
+        options={{
+          headerShown: false,
+        }}
+      />
+      {/* <Stack.Screen
         name={
           loading ? (
             <ActivityLoader />
@@ -46,7 +54,7 @@ const HomeStack = (isSecrateCode) => {
           )
         }
         options={{ headerShown: false }}
-      />
+      /> */}
       <Stack.Screen
         name="homepage"
         component={Whisper}
@@ -65,6 +73,13 @@ const HomeStack = (isSecrateCode) => {
       <Stack.Screen
         name="Secratekey"
         component={Secratekey}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="BussinessUpgrade"
+        component={BussinessUpgrade}
         options={{
           headerShown: false,
         }}

@@ -185,7 +185,7 @@ const SignUpScreen = ({ navigation }) => {
                 onChangeText={(phoneNumber) => setPhoneNumber(phoneNumber)}
                 placeholder="Enter phone number" //12345
                 placeholderTextColor="#9ea3b7"
-                keyboardType="ascii-capable"
+                keyboardType="phone-pad"
                 ref={passwordInputRef}
                 onSubmitEditing={Keyboard.dismiss}
                 blurOnSubmit={false}

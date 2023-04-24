@@ -1,4 +1,4 @@
-import React, { useState, createRef } from "react";
+import React, { useState, createRef, useEffect } from "react";
 import {
   StyleSheet,
   TextInput,
@@ -18,6 +18,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import { loginUser, setLogin } from "./Redux/authActions";
+import moment from "moment";
 const OtpScreen = ({ navigation }) => {
   const [verifyOtp, setVerifyOtp] = useState("");
   const passwordInputRef = createRef();
@@ -26,12 +27,61 @@ const OtpScreen = ({ navigation }) => {
   const navigate = useNavigation();
   const dispatch = useDispatch();
 
+  let timer = () => {};
+  const [timeLeft, setTimeLeft] = useState(30);
+
   // console.log("navigation", route.params.phoneNumber);
 
   // const userOtp = () => {
   //   // console.log(verifyOtp);
   //   // axios.
   // };
+
+  useEffect(() => {
+    startTimer();
+    return () => clearInterval(timer);
+  }, [timer]);
+  const startTimer = () => {
+    timer = setInterval(() => {
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+
+        return false;
+      }
+      setTimeLeft(timeLeft - 1);
+    }, 1000);
+  };
+
+  const start = () => {
+    ResendOTP();
+    setTimeLeft(30);
+    clearInterval(timer);
+    startTimer();
+  };
+
+  const ResendOTP = () => {
+    axios
+      .post(
+        "https://heyalli.azurewebsites.net/api/Identity/login",
+        {
+          PhoneNumber: route.params.phoneNumber,
+        },
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
+      .then((response) => {
+        // console.log(response);
+        // navigation.navigate("Home", { screen: "home" });
+      })
+      .catch((error) => {
+        Alert.alert(error.response.data);
+        console.log("axios error:", error.response.data);
+      });
+  };
 
   const userOtp = async () => {
     if (verifyOtp == "") {
@@ -199,6 +249,51 @@ const OtpScreen = ({ navigation }) => {
               />
             </View>
 
+            {timeLeft == 0 ? (
+              <View
+                style={{
+                  marginTop: 5,
+                  alignItems: "flex-end",
+                  marginRight: 20,
+                  justifyContent: "center",
+                }}
+              >
+                <TouchableOpacity
+                  activeOpacity={0.9}
+                  hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }}
+                  onPress={() => start()}
+                >
+                  <Text
+                    style={[
+                      {
+                        color: "#14a5f4",
+                        fontSize: 16,
+                        marginBottom: 0,
+                        borderBottomWidth: 1,
+                        borderColor: "#14a5f4",
+                      },
+                    ]}
+                  >
+                    {" "}
+                    Resend OTP
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View
+                style={{
+                  marginTop: 5,
+                  alignItems: "flex-end",
+                  marginRight: 20,
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={{ fontSize: 16, color: "#14a5f4" }}>
+                  Resend OTP in {moment.utc(timeLeft * 1000).format("mm:ss")}
+                </Text>
+              </View>
+            )}
+
             <TouchableOpacity
               style={{
                 justifyContent: "center",
@@ -207,7 +302,7 @@ const OtpScreen = ({ navigation }) => {
                 backgroundColor: "#14a5f4",
                 marginHorizontal: 18,
                 borderRadius: 12,
-                marginTop: 10,
+                marginTop: 18,
               }}
               activeOpacity={0.5}
               onPress={() => {
@@ -218,7 +313,6 @@ const OtpScreen = ({ navigation }) => {
             >
               <Text style={styles.buttonTextStyle}>Verify otp</Text>
             </TouchableOpacity>
-
             {/* <Text
               style={styles.registerTextStyle}
               onPress={() => navigation.navigate('signUp')}>

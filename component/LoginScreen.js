@@ -114,7 +114,7 @@ const LoginScreen = ({ navigation }) => {
                 placeholder="Enter phone number" //dummy@abc.com
                 placeholderTextColor="#9ea3b7"
                 autoCapitalize="none"
-                keyboardType="email-address"
+                keyboardType="phone-pad"
                 returnKeyType="next"
                 onSubmitEditing={() =>
                   passwordInputRef.current && passwordInputRef.current.focus()

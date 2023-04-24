@@ -24,7 +24,7 @@ import axios from "axios";
 // import Logo from './Images/homeLogo.jpg'
 // import { FontAwesome } from "@expo/vector-icons";
 // import TextEffect from "./Shared/typeEffect"
-
+import { SelectCountry } from "react-native-element-dropdown";
 import {
   PorcupineManager,
   BuiltInKeywords,
@@ -63,6 +63,17 @@ const options = {
   wavFile: "test.wav", // default 'audio.wav'
 };
 
+const local_data = [
+  {
+    value: "1",
+    lable: "male",
+  },
+  {
+    value: "2",
+    lable: "female",
+  },
+];
+
 export default function whisper({ navigation }) {
   let [started, setStarted] = useState(false);
   const [isLoggingIn, setisLoggingIn] = useState(false);
@@ -84,7 +95,8 @@ export default function whisper({ navigation }) {
   const [errorMessage, setErrorMessage] = useState("");
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
-
+  const [form, setForm] = useState({});
+  const [errors, setErrors] = useState({});
   let _accessKey = "qEufDJXOv4cnT4g4I3+ksyBgewy2MF0/320eWQAZ8QuQKkwILg4T1Q=="; // AccessKey obtained from Picovoice Console (https://console.picovoice.ai/)
   let _keyword = "hey alli";
 
@@ -108,6 +120,7 @@ export default function whisper({ navigation }) {
   };
 
   useEffect(() => {
+    getProfile();
     const subscription = AppState.addEventListener("change", (nextAppState) => {
       if (
         appState.current.match(/inactive|background/) &&
@@ -264,6 +277,16 @@ export default function whisper({ navigation }) {
     // setVoiceResult('')
   }, [showInput]);
 
+  const onChange = ({ name, value }) => {
+    setForm({ ...form, [name]: value });
+
+    if (value !== "") {
+      setErrors((prev) => {
+        return { ...prev, [name]: null };
+      });
+    }
+  };
+
   const startSpeechToText = async () => {
     await Voice.start("en-NZ");
     setStarted(true);
@@ -286,6 +309,7 @@ export default function whisper({ navigation }) {
 
   const sendAnswer = async (text) => {
     const token = await AsyncStorage.getItem("token");
+    console.log("sendAnswer", token);
     setIsLoading(true);
     const url = `https://heyalli.azurewebsites.net/api/HeyAlli/brain?text=${text}`;
     axios
@@ -487,7 +511,7 @@ export default function whisper({ navigation }) {
   };
 
   const onStopRecord = async () => {
-    console.log("hshahgsasgash");
+    // console.log("hshahgsasgash");
     setStarted(false);
     AudioRecord.stop();
     const audioFile = await AudioRecord.stop();
@@ -495,52 +519,160 @@ export default function whisper({ navigation }) {
   };
 
   const uploadAudioAsync = async (uri) => {
-    const token = await AsyncStorage.getItem("token");
-    setisLoggingIn(true);
-    // const UsersData = await AsyncStorage.getItem("Token");
-    console.log();
-    const formData1 = new FormData();
+    try {
+      const token = await AsyncStorage.getItem("token");
+      setisLoggingIn(true);
+      // const UsersData = await AsyncStorage.getItem("Token");
+      console.log();
+      const formData1 = new FormData();
 
-    const apiUrl = "https://heyalli.azurewebsites.net/api/HeyAlli";
+      const apiUrl = "https://heyalli.azurewebsites.net/api/HeyAlli";
 
-    const Data = {
-      uri: "file:////" + uri,
-      name: "test.wav",
-      type: "audio/wav",
-    };
-    // console.log("Data", JSON.stringify(Data))
+      const Data = {
+        uri: "file:////" + uri,
+        name: "test.wav",
+        type: "audio/wav",
+      };
+      // console.log("Data", JSON.stringify(Data))
 
-    formData1.append("speech", Data);
+      formData1.append("speech", Data);
 
-    const { data } = await axios.post(apiUrl, formData1, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+      const { data } = await axios.post(apiUrl, formData1, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    if (data) {
-      console.log("dataaaaa", data);
+      if (data) {
+        console.log("dataaaaa", data);
+        setisLoggingIn(false);
+        const dirs = RNFetchBlob.fs.dirs;
+        const filePath = RNFS.DownloadDirectoryPath + "/audio.mp3";
+        const fileData = data.split(",")[1];
+
+        RNFetchBlob.fs
+          .writeFile(filePath, data, "base64")
+          .then(() => {
+            console.log("File converted successfully");
+            setisLoggingIn(false);
+            PlayAudio(filePath);
+          })
+          .catch((error) => {
+            setisLoggingIn(false);
+            console.log(`Error converting file: ${error}`);
+          });
+        // this.setState({isLoggingIn:false})
+      }
+    } catch (error) {
       setisLoggingIn(false);
-      const dirs = RNFetchBlob.fs.dirs;
-      const filePath = RNFS.DownloadDirectoryPath + "/audio.mp3";
-      const fileData = data.split(",")[1];
+      Alert.alert("Internal server Error");
 
-      RNFetchBlob.fs
-        .writeFile(filePath, data, "base64")
-        .then(() => {
-          console.log("File converted successfully");
-          setisLoggingIn(false);
-          PlayAudio(filePath);
-        })
-        .catch((error) => {
-          setisLoggingIn(false);
-          console.log(`Error converting file: ${error}`);
-        });
-      // this.setState({isLoggingIn:false})
+      // Alert('Cannot play the file');
+      console.log("API Error", error);
     }
   };
 
+  const Submitdata = async (data) => {
+    const token = await AsyncStorage.getItem("token");
+    const response = await axios.put(
+      "https://heyalli.azurewebsites.net/api/Profile",
+
+      // '{\n  "firstName": "Parth",\n  "lastName": "soni",\n  "phone": "+919512058950",\n  "email": "Parth@gmail.com",\n  "age": 20,\n  "gender": "male",\n  "weight": "50",\n  "height": "20",\n  "address": "there",\n  "city": "New York",\n  "state": "New York",\n  "zipCode": "10001",\n  "questionsAsked": 0\n}\n',
+      data,
+      {
+        headers: {
+          accept: "*/*",
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.data) {
+      getProfile();
+      Alert.alert(response.data);
+    }
+    // console.log("response", response);
+  };
+
+  const getProfile = async () => {
+    const token = await AsyncStorage.getItem("token");
+
+    const response = await axios.get(
+      "https://heyalli.azurewebsites.net/api/Profile",
+      {
+        headers: {
+          accept: "*/*",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.data) {
+      console.log("response.dara", response.data);
+      setForm({
+        firstName: response.data.firstName,
+        lastName: response.data.lastName,
+        email: response.data.email,
+        phone: response.data.phone,
+        age: response.data.age.toString(),
+        gender: response.data.gender,
+        address: response.data.address,
+        city: response.data.city,
+        state: response.data.state,
+        zipCode: response.data.zipCode,
+        weight: response.data.weight,
+        height: response.data.height,
+      });
+    }
+  };
+
+  const onSubmit = () => {
+    // console.log(form);
+
+    if (!/^[a-zA-Z]+(\s{1}[a-zA-Z]+)*$/.test(form.firstName)) {
+      Alert.alert("Please enter valid firstname");
+    } else if (!/^[a-zA-Z]+(\s{1}[a-zA-Z]+)*$/.test(form.lastName)) {
+      Alert.alert("Please enter valid lastName");
+    } else if (form.email == null) {
+      Alert.alert("Please enter email");
+    } else if (
+      !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(form.email)
+    ) {
+      Alert.alert("Please enter valid enter email");
+    } else if (!/^[a-zA-Z]+(\s{1}[a-zA-Z]+)*$/.test(form.city)) {
+      Alert.alert("Please  enter valid city");
+    } else if (!/^[a-zA-Z]+(\s{1}[a-zA-Z]+)*$/.test(form.state)) {
+      Alert.alert("Please  enter valid state");
+    } else {
+      Submitdata(form);
+    }
+    // if (!/^[a-zA-Z]+(\s{1}[a-zA-Z]+)*$/.test(form.firstName)) {
+    //   Alert.alert("ivalid Name");
+    // } else {
+    //   Alert.alert("Acceptable valid Name");
+    // }
+    // var regName = `/^[a-zA-Z]+ [a-zA-Z]+$/`;
+    // var name = form.firstName;
+    // if (!regName.test(name)) {
+    //   Alert.alert("Please enter your full name (first & last name).");
+    //   // document.getElementById("name").focus();
+    //   return false;
+    // } else {
+    //   Alert.alert("Valid name given.");
+    //   return true;
+    // }
+    // if (form.firstName.match(alphaExp)) {
+    //   Alert.alert("Please enter string");
+    // }
+    // Submitdata(form);
+    // if (!form.firstName) {
+    //   setErrors((prev) => {
+    //     return { ...prev, firstName: "Please enter a first name" };
+    //   });
+    // console.log("form", form);
+    // }
+  };
   const logoutCall = async () => {
     dispatch(setLogout());
   };
@@ -705,15 +837,31 @@ export default function whisper({ navigation }) {
                         <TextInput
                           style={styles.input}
                           placeholder="First name"
+                          onChangeText={(value) => {
+                            var value = value == "" ? null : value;
+                            onChange({ name: "firstName", value });
+                          }}
+                          blurOnSubmit={true}
+                          value={form.firstName || null}
                           // value={text}
                           // onChangeText={setText}
                           // onSubmitEditing={handleSend}
-                          blurOnSubmit={false}
+
                           returnKeyType="next"
                         />
+                        {/* {errors.firstName && (
+                          <Text style={{ paddingHorizontal: 21 }}>
+                            {errors.firstName}
+                          </Text>
+                        )} */}
                         <TextInput
                           style={[styles.input, { marginLeft: 10 }]}
                           placeholder="Last name"
+                          onChangeText={(value) => {
+                            var value = value == "" ? null : value;
+                            onChange({ name: "lastName", value });
+                          }}
+                          value={form.lastName || null}
                           // value={text}
                           // onChangeText={setText}
                           // onSubmitEditing={handleSend}
@@ -727,6 +875,11 @@ export default function whisper({ navigation }) {
                         <TextInput
                           style={styles.input}
                           placeholder="Email"
+                          onChangeText={(value) => {
+                            var value = value == "" ? null : value;
+                            onChange({ name: "email", value });
+                          }}
+                          value={form.email || null}
                           // value={text}
                           // onChangeText={setText}
                           // onSubmitEditing={handleSend}
@@ -740,6 +893,12 @@ export default function whisper({ navigation }) {
                         <TextInput
                           style={styles.input}
                           placeholder="Mobile No"
+                          onChangeText={(value) => {
+                            var value = value == "" ? null : value;
+                            onChange({ name: "phone", value });
+                          }}
+                          value={form.phone || null}
+                          keyboardType="phone-pad"
                           // value={text}
                           // onChangeText={setText}
                           // onSubmitEditing={handleSend}
@@ -753,21 +912,50 @@ export default function whisper({ navigation }) {
                         <TextInput
                           style={styles.input}
                           placeholder="Age"
+                          onChangeText={(value) => {
+                            var value = value == "" ? null : parseInt(value);
+                            onChange({ name: "age", value });
+                          }}
+                          value={form.age || null}
+                          keyboardType="number-pad"
                           // value={text}
                           // onChangeText={setText}
                           // onSubmitEditing={handleSend}
                           blurOnSubmit={false}
                           returnKeyType="next"
                         />
-                        <TextInput
+
+                        <SelectCountry
+                          style={[styles.input, { marginLeft: 10 }]}
+                          selectedTextStyle={{ fontSize: 14, marginLeft: 8 }}
+                          placeholderStyle={{ fontSize: 14 }}
+                          maxHeight={200}
+                          value={form.gender}
+                          data={local_data}
+                          valueField="value"
+                          labelField="lable"
+                          imageField="null"
+                          placeholder="Select gender"
+                          onChange={(e) => {
+                            // setCountry(e.value);
+                            var value = e.value == "" ? null : e.value;
+                            onChange({ name: "gender", value });
+                          }}
+                        />
+                        {/* <TextInput
                           style={[styles.input, { marginLeft: 10 }]}
                           placeholder="Gender"
+                          onChangeText={(value) => {
+                            var value = value == "" ? null : value;
+                            onChange({ name: "gender", value });
+                          }}
+                          value={form.gender || null}
                           // value={text}
                           // onChangeText={setText}
                           // onSubmitEditing={handleSend}
                           blurOnSubmit={false}
                           returnKeyType="next"
-                        />
+                        /> */}
                       </View>
                     </View>
                     <View style={styles.container}>
@@ -786,7 +974,13 @@ export default function whisper({ navigation }) {
                             borderRadius: 10,
                             textAlign: "left",
                           }}
+                          multiline={true}
                           placeholder="Address"
+                          onChangeText={(value) => {
+                            var value = value == "" ? null : value;
+                            onChange({ name: "address", value });
+                          }}
+                          value={form.address || null}
                           // value={text}
                           // onChangeText={setText}
                           // onSubmitEditing={handleSend}
@@ -801,6 +995,11 @@ export default function whisper({ navigation }) {
                         <TextInput
                           style={styles.input}
                           placeholder="City"
+                          onChangeText={(value) => {
+                            var value = value == "" ? null : value;
+                            onChange({ name: "city", value });
+                          }}
+                          value={form.city || null}
                           // value={text}
                           // onChangeText={setText}
                           // onSubmitEditing={handleSend}
@@ -810,6 +1009,11 @@ export default function whisper({ navigation }) {
                         <TextInput
                           style={[styles.input, { marginLeft: 10 }]}
                           placeholder="State"
+                          onChangeText={(value) => {
+                            var value = value == "" ? null : value;
+                            onChange({ name: "state", value });
+                          }}
+                          value={form.state || null}
                           // value={text}
                           // onChangeText={setText}
                           // onSubmitEditing={handleSend}
@@ -835,6 +1039,12 @@ export default function whisper({ navigation }) {
                             textAlign: "left",
                           }}
                           placeholder="Zip"
+                          onChangeText={(value) => {
+                            var value = value == "" ? null : value;
+                            onChange({ name: "zipCode", value });
+                          }}
+                          value={form.zipCode || null}
+                          keyboardType="number-pad"
                           // value={text}
                           // onChangeText={setText}
                           // onSubmitEditing={handleSend}
@@ -848,6 +1058,12 @@ export default function whisper({ navigation }) {
                         <TextInput
                           style={styles.input}
                           placeholder="Weight"
+                          onChangeText={(value) => {
+                            var value = value == "" ? null : value;
+                            onChange({ name: "weight", value });
+                          }}
+                          value={form.weight || null}
+                          keyboardType="number-pad"
                           // value={text}
                           // onChangeText={setText}
                           // onSubmitEditing={handleSend}
@@ -857,6 +1073,12 @@ export default function whisper({ navigation }) {
                         <TextInput
                           style={[styles.input, { marginLeft: 10 }]}
                           placeholder="Height"
+                          onChangeText={(value) => {
+                            var value = value == "" ? null : value;
+                            onChange({ name: "height", value });
+                          }}
+                          value={form.height || null}
+                          keyboardType="number-pad"
                           // value={text}
                           // onChangeText={setText}
                           // onSubmitEditing={handleSend}
@@ -952,13 +1174,30 @@ export default function whisper({ navigation }) {
 
                       </View> */}
 
-                    {/* <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 10 }}> */}
-
-                    {/* <TouchableOpacity style={{ width: '85%', borderWidth: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 50 }} onPress={() => { setModalVisible(false), setSection("Profile") }}>
-                        <Text>Submit</Text>
-                      </TouchableOpacity> */}
-
-                    {/* </View> */}
+                    <View
+                      style={{
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginTop: 10,
+                      }}
+                    >
+                      <TouchableOpacity
+                        style={{
+                          width: "50%",
+                          // borderWidth: 1,
+                          paddingVertical: 10,
+                          alignItems: "center",
+                          borderRadius: 50,
+                          backgroundColor: "#0f87cf",
+                        }}
+                        onPress={() => {
+                          onSubmit();
+                          // setModalVisible(false), setSection("Profile");
+                        }}
+                      >
+                        <Text style={{ color: "#ffff" }}>Update</Text>
+                      </TouchableOpacity>
+                    </View>
 
                     <View style={styles.container}>
                       <View
@@ -1072,6 +1311,44 @@ export default function whisper({ navigation }) {
 
                           {/* <TouchableOpacity style={{ marginLeft: 10 }}> */}
                           <Text style={{ marginLeft: 10 }}>Secret Code</Text>
+                          {/* </TouchableOpacity> */}
+                          <View
+                            style={{
+                              justifyContent: "flex-end",
+                              alignItems: "flex-end",
+                              flex: 0.9,
+                            }}
+                          >
+                            <AntDesign name="right" size={22} color="#0f87cf" />
+                          </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={{
+                            flexDirection: "row",
+                            height: 50,
+                            borderBottomWidth: 1,
+                            borderBottomColor: "#d9d9d9",
+                            alignItems: "center",
+                            flex: 3,
+                          }}
+                          onPress={() => {
+                            setModalVisible(false);
+                            navigate("BussinessUpgrade");
+                            // setModalVisible(false), navigate("Secratekey");
+                          }}
+                        >
+                          <View style={{}}>
+                            <FontAwesome
+                              name="building"
+                              size={22}
+                              color="#0f87cf"
+                            />
+                          </View>
+
+                          {/* <TouchableOpacity style={{ marginLeft: 10 }}> */}
+                          <Text style={{ marginLeft: 10 }}>
+                            Business Upgrade
+                          </Text>
                           {/* </TouchableOpacity> */}
                           <View
                             style={{
