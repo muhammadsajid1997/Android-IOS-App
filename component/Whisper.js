@@ -95,7 +95,7 @@ export default function whisper({ navigation }) {
   const [errorMessage, setErrorMessage] = useState("");
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
-  const [form, setForm] = useState({});
+  const [form, setForm] = useState({ email: null });
   const [errors, setErrors] = useState({});
   let _accessKey = "qEufDJXOv4cnT4g4I3+ksyBgewy2MF0/320eWQAZ8QuQKkwILg4T1Q=="; // AccessKey obtained from Picovoice Console (https://console.picovoice.ai/)
   let _keyword = "hey alli";
@@ -630,16 +630,8 @@ export default function whisper({ navigation }) {
   const onSubmit = () => {
     // console.log(form);
 
-    if (!/^[a-zA-Z]+(\s{1}[a-zA-Z]+)*$/.test(form.firstName)) {
-      Alert.alert("Please enter valid firstname");
-    } else if (!/^[a-zA-Z]+(\s{1}[a-zA-Z]+)*$/.test(form.lastName)) {
+    if (!/^[a-zA-Z]+(\s{1}[a-zA-Z]+)*$/.test(form.lastName)) {
       Alert.alert("Please enter valid lastName");
-    } else if (form.email == null) {
-      Alert.alert("Please enter email");
-    } else if (
-      !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(form.email)
-    ) {
-      Alert.alert("Please enter valid enter email");
     } else if (!/^[a-zA-Z]+(\s{1}[a-zA-Z]+)*$/.test(form.city)) {
       Alert.alert("Please  enter valid city");
     } else if (!/^[a-zA-Z]+(\s{1}[a-zA-Z]+)*$/.test(form.state)) {
@@ -841,8 +833,9 @@ export default function whisper({ navigation }) {
                             var value = value == "" ? null : value;
                             onChange({ name: "firstName", value });
                           }}
-                          blurOnSubmit={true}
+                          // blurOnSubmit={true}
                           value={form.firstName || null}
+                          editable={false}
                           // value={text}
                           // onChangeText={setText}
                           // onSubmitEditing={handleSend}
@@ -870,7 +863,7 @@ export default function whisper({ navigation }) {
                         />
                       </View>
                     </View>
-                    <View style={styles.container}>
+                    {/* <View style={styles.container}>
                       <View style={styles.inputContainer}>
                         <TextInput
                           style={styles.input}
@@ -887,7 +880,7 @@ export default function whisper({ navigation }) {
                           returnKeyType="next"
                         />
                       </View>
-                    </View>
+                    </View> */}
                     <View style={styles.container}>
                       <View style={styles.inputContainer}>
                         <TextInput
@@ -1635,6 +1628,7 @@ const styles = StyleSheet.create({
     padding: 10,
     // borderWidth: 1,
     borderColor: "#d9d9d9",
+    color: "black",
 
     // width: 20,
     height: 40,
