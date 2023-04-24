@@ -672,7 +672,7 @@ export default function whisper({ navigation }) {
   return (
     <View style={styles.root}>
       {/* <VoiceComponent /> */}
-      <SafeAreaView />
+      <SafeAreaView/>
       {!showInput ? (
         <>
           <View
@@ -748,6 +748,7 @@ export default function whisper({ navigation }) {
         >
           <View style={{ flex: 1 }}>
             <View style={{ marginTop: 10, width: "100%" }}>
+              <SafeAreaView/>
               <Text
                 style={{
                   ...styles.title,
@@ -795,6 +796,7 @@ export default function whisper({ navigation }) {
           }}
         >
           <View style={{ flex: 1 }}>
+            <SafeAreaView/>
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
               <View style={styles.centeredView}>
                 <View style={styles.modalView}>
@@ -1464,6 +1466,7 @@ export default function whisper({ navigation }) {
           </View>
         </Modal>
       </View>
+    
     </View>
   );
 }
