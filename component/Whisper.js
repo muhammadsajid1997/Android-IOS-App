@@ -18,22 +18,22 @@ import {
   BackHandler,
 } from "react-native";
 import { useEffect, useRef, useState } from "react";
-import Voice from "@react-native-voice/voice";
+import Voice, {
+  SpeechRecognizedEvent,
+  SpeechResultsEvent,
+  SpeechErrorEvent,
+} from "@react-native-voice/voice";
 import axios from "axios";
 // import { Audio } from "expo-av";
 // import Logo from './Images/homeLogo.jpg'
 // import { FontAwesome } from "@expo/vector-icons";
 // import TextEffect from "./Shared/typeEffect"
 import { SelectCountry } from "react-native-element-dropdown";
-import {
-  PorcupineManager,
-  BuiltInKeywords,
-  PorcupineErrors,
-} from "@picovoice/porcupine-react-native";
 
 import CustomInput from "../component/Shared/customInput";
 import ChatUI from "../component/Shared/chatUI";
 import RNFetchBlob from "rn-fetch-blob";
+import { Buffer } from "buffer";
 
 // import { AntDesign } from '@expo/vector-icons';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -49,9 +49,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { logout, setLogout } from "./Redux/authActions";
 import { useDispatch, useSelector } from "react-redux";
 import VoiceComponent from "./Record/Voice";
+import BackgroundTimer from "react-native-background-timer";
 import Tts from "react-native-tts";
 var RNFS = require("react-native-fs");
 var Sound = require("react-native-sound");
+
+// var { TextDecoder } = require("util");
+// import { TextDecoder } from "util";
+import base64js from "base64-js";
 Sound.setCategory("Playback");
 const dirs = RNFetchBlob.fs.dirs;
 
@@ -78,7 +83,6 @@ export default function whisper({ navigation }) {
   let [started, setStarted] = useState(false);
   const [isLoggingIn, setisLoggingIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  let [results, setResults] = useState("");
   let [voiceResult, setVoiceResult] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [modalSection, setSection] = useState("Home");
@@ -97,177 +101,179 @@ export default function whisper({ navigation }) {
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const [form, setForm] = useState({ email: null });
   const [errors, setErrors] = useState({});
-  let _accessKey = "qEufDJXOv4cnT4g4I3+ksyBgewy2MF0/320eWQAZ8QuQKkwILg4T1Q=="; // AccessKey obtained from Picovoice Console (https://console.picovoice.ai/)
-  let _keyword = "hey alli";
 
-  let _porcupineManager = PorcupineManager | undefined;
-
-  useEffect(() => {
-    abc();
-  }, [isListening]);
-
-  useEffect(() => {
-    abc();
-  }, [started]);
-
-  const _toggleListening = () => {
-    // console.log("isListening", isListening);
-    if (isListening) {
-      _stopProcessing();
-    } else {
-      _startProcessing();
-    }
-  };
+  const [recognized, setRecognized] = useState("");
+  const [volume, setVolume] = useState("");
+  const [error, setError] = useState("");
+  const [end, setEnd] = useState("");
+  const [results, setResults] = useState([]);
+  const [partialResults, setPartialResults] = useState([]);
+  const [color, setcolors] = useState("grey");
 
   useEffect(() => {
     getProfile();
-    const subscription = AppState.addEventListener("change", (nextAppState) => {
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === "active"
-      ) {
-        console.log("App has come to the foreground!");
-      } else if (
-        appState.current.match(/inactive|active/) &&
-        nextAppState === "background"
-      ) {
-        console.log("app in bbb");
-      }
+  }, []);
 
-      appState.current = nextAppState;
-      setAppStateVisible(appState.current);
-      console.log("AppState", appState.current);
-    });
+  useEffect(() => {
+    Voice.onSpeechStart = onSpeechStart;
+    Voice.onSpeechRecognized = onSpeechRecognized;
+    Voice.onSpeechEnd = onSpeechEnd;
+    Voice.onSpeechError = onSpeechError;
+    // Voice.onSpeechResults = onSpeechResults;
+    Voice.onSpeechPartialResults = onSpeechPartialResults;
+    // Voice.onSpeechVolumeChanged = onSpeechVolumeChanged;
 
     return () => {
-      subscription.remove();
+      Voice.destroy().then(Voice.removeAllListeners);
     };
   }, []);
 
-  const _startProcessing = async () => {
-    let recordAudioRequest;
-    if (Platform.OS === "android") {
-      console.log("android");
-      recordAudioRequest = _requestRecordAudioPermission();
-    } else {
-      console.log("android1");
-      recordAudioRequest = new Promise(function (resolve, _) {
-        resolve(true);
-      });
-    }
+  useEffect(() => {
+    _startRecognizing();
+  }, []);
 
-    recordAudioRequest.then(async (hasPermission) => {
-      if (!hasPermission) {
-        console.error(
-          "Required permissions (Microphone)we're not found. Please add to platform code."
-        );
-        return;
+  const onSpeechStart = (e: any) => {
+    console.log("onSpeechStart: ", e);
+    setStarted("√");
+  };
+
+  const onSpeechRecognized = (e: SpeechRecognizedEvent) => {
+    console.log("onSpeechRecognized: ", e);
+    setRecognized("√");
+  };
+
+  const onSpeechEnd = (e: any) => {
+    console.log("onSpeechEnd: ", e);
+    setEnd("√");
+  };
+
+  const onSpeechError = (e: SpeechErrorEvent) => {
+    console.log("onSpeechError: ", e);
+    setError(JSON.stringify(e.error));
+  };
+
+  // const onSpeechResults = (e: SpeechResultsEvent) => {
+  // var Data = e.value;
+  // console.log("Data", Data);
+  // Data.length == 0
+  //   ? []
+  //   : Data.map((index, i) => {
+  //       if (index.toLocaleLowerCase().includes("hey ali")) {
+  //         Tts.speak("Welcome");
+  //         onStartRecord();
+  //       } else {
+  //         _startRecognizing();
+  //       }
+  //       // console.log("index", index);
+  //       // console.log("i", i);
+  //       // console.log("onSpeechResults: ", Data);
+  //     });
+  // setResults(Data);
+  // };
+
+  const onSpeechPartialResults = (e: SpeechResultsEvent) => {
+    var Data = e.value;
+    // console.log("Data", Data);
+    Data.map((index, i) => {
+      if (index.toLocaleLowerCase().includes("hey ali")) {
+        // Tts.speak("Welcome");
+
+        _stopRecognizing();
+        onStartRecord();
       } else {
-        try {
-          await _porcupineManager?.delete();
-          await _porcupineManager?.start().then((didStop) => {
-            console.log("start recording");
-            if (didStop) {
-              setIsListening(true);
-            }
-          });
-        } catch (e) {
-          console.log("start error -- ", e);
-        }
+        // console.log("else part");
+        // _startRecognizing();
       }
+      // console.log("index", index);
+      // console.log("i", i);
+      // console.log("onSpeechResults: ", Data);
     });
+    // console.log("onSpeechPartialResults: ", e);
+    // setPartialResults(e.value);
   };
-  const _stopProcessing = async () => {
+
+  const onSpeechVolumeChanged = (e: any) => {
+    console.log("onSpeechVolumeChanged: ", e);
+    setVolume(e.value);
+  };
+
+  const _startRecognizing = async () => {
+    // console.log("called");
+    // AudioRecord.init(options);
+    // setStarted(true);
+    // AudioRecord.start();
+
+    // AudioRecord.on("data", (data) => {
+    //   // console.log("data", data.);
+    //   let bufferObj = Buffer.from(
+    //     data.replace(/[\n\r\s]/g, ""),
+    //     "base64"
+    //   ).toString("utf-8");
+    //   console.log("bufferObj", bufferObj);
+    //   const byteArray = base64js.toByteArray(bufferObj).toString("utf-8");
+
+    //   // console.log(new TextDecoder().decode(bufferObj));
+
+    //   // Convert byte array to string
+    //   // const decoder = new TextDecoder("utf-8");
+    //   // const speechText = decoder.decode(new Uint8Array(byteArray));
+    //   // console.log("speechText", byteArray);
+    //   // Encode the Buffer as a utf8 string
+    //   // let decodedString = bufferObj.toString("utf8");
+    //   // var chunk = Buffer.from(data, "base64");
+    //   // console.log("decodedString", bufferObj);
+    //   // base64-encoded audio data chunks
+    // });
     try {
-      await _porcupineManager?.delete();
-      await _porcupineManager?.stop().then((didStop) => {
-        console.log("stop recording");
-        if (didStop) {
-          setIsListening(false);
-        }
+      // const speechOptions = {
+      //   RECOGNIZE_MODE: "RECOGNIZE_MODE_DICTATION",
+      //   EXTRA_RESULTS: 1,
+      // };
+      await Voice.start("en-US", {
+        EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS: 30000,
       });
-    } catch (error) {
-      console.log("stop error", error);
+      console.log("Recording start");
+      setisLoggingIn(false);
+    } catch (e) {
+      console.error(e);
     }
   };
 
-  const _requestRecordAudioPermission = async () => {
+  const _stopRecognizing = async () => {
+    console.log("Recording stop");
     try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-        {
-          title: "Microphone Permission",
-          message:
-            "Porcupine needs access to your microphone to listen for wake words.",
-          buttonNeutral: "Ask Me Later",
-          buttonNegative: "Cancel",
-          buttonPositive: "OK",
-        }
-      );
-      return granted === PermissionsAndroid.RESULTS.GRANTED;
-    } catch (err) {
-      setIsError(true);
-      setErrorMessage(err.toString());
-
-      return false;
+      await Voice.stop();
+    } catch (e) {
+      console.error(e);
     }
   };
 
-  const abc = async () => {
-    console.log(_keyword, "--speack--");
+  const _cancelRecognizing = async () => {
     try {
-      _porcupineManager = await PorcupineManager.fromKeywordPaths(
-        _accessKey,
-        ["resource/hey-alli_en_android_v2_2_0.ppn"],
-        (keywordIndex) => {
-          if (keywordIndex >= 0) {
-            console.log("match hey alli");
-            Tts.speak("welcome");
-          }
-        },
-        (error) => {
-          _stopProcessing();
-          setIsError(true);
-          setErrorMessage(error.message);
-        },
-        "",
-        [0.5]
-      );
-    } catch (err) {
-      let errorMessage = "";
-      if (err instanceof PorcupineErrors.PorcupineInvalidArgumentError) {
-        errorMessage = `${err.message}\nPlease make sure accessKey ${this._accessKey} is a valid access key.`;
-      } else if (err instanceof PorcupineErrors.PorcupineActivationError) {
-        errorMessage = "AccessKey activation error";
-      } else if (err instanceof PorcupineErrors.PorcupineActivationLimitError) {
-        errorMessage = "AccessKey reached its device limit";
-      } else if (
-        err instanceof PorcupineErrors.PorcupineActivationRefusedError
-      ) {
-        errorMessage = "AccessKey refused";
-      } else if (
-        err instanceof PorcupineErrors.PorcupineActivationThrottledError
-      ) {
-        errorMessage = "AccessKey has been throttled";
-      } else {
-        errorMessage = err.toString();
-      }
-
-      setIsError(true);
-      setErrorMessage(errorMessage);
+      await Voice.cancel();
+    } catch (e) {
+      console.error(e);
     }
   };
-  // console.log(state.token);
-  //   const soundRef = useRef(null);
 
-  //   useEffect(() => {
-  //     Voice.onSpeechError = onSpeechError;
-  //     Voice.onSpeechResults = onSpeechResults;
+  const _destroyRecognizer = async () => {
+    try {
+      await Voice.destroy();
+    } catch (e) {
+      console.error(e);
+    }
+    _clearState();
+  };
 
-  //     return () => {
-  //       Voice.destroy().then(Voice.removeAllListeners);
-  //     }
-  //   }, []);
+  const _clearState = () => {
+    setRecognized("");
+    setVolume("");
+    setError("");
+    setEnd("");
+    setStarted("");
+    setResults([]);
+    setPartialResults([]);
+  };
 
   useEffect(() => {
     // AudioRecord.init(options);
@@ -286,26 +292,6 @@ export default function whisper({ navigation }) {
       });
     }
   };
-
-  const startSpeechToText = async () => {
-    await Voice.start("en-NZ");
-    setStarted(true);
-    setResults("");
-    setVoiceResult("");
-  };
-
-  const stopSpeechToText = async () => {
-    await Voice.stop();
-    setStarted(false);
-  };
-
-  //   const onSpeechResults = (result) => {
-  //     sendAnswer(result?.value)
-  //   };
-
-  //   const onSpeechError = (error) => {
-  //     console.log(error);
-  //   };
 
   const sendAnswer = async (text) => {
     const token = await AsyncStorage.getItem("token");
@@ -348,7 +334,7 @@ export default function whisper({ navigation }) {
         setResults(text);
         setReceivedText(text);
         const dirs = RNFetchBlob.fs.dirs;
-        const filePath = RNFS.DownloadDirectoryPath + "/audio.mp3";
+        const filePath = RNFS.CachesDirectoryPath + "/audio.mp3";
         const fileData = response?.data.split(",")[1];
 
         RNFetchBlob.fs
@@ -402,77 +388,24 @@ export default function whisper({ navigation }) {
       });
   };
 
-  //   useEffect(() => {
-  //     handlePlayButtonPress()
-  //   }, [voiceResult])
-
-  //   const handlePlayButtonPress = async () => {
-  //     try {
-  //       if (soundRef.current !== null) {
-  //         await soundRef.current.unloadAsync();
-  //       }
-  //       const { sound } = await Audio.Sound.createAsync(
-  //         { uri: 'data:audio/wav;base64,' + voiceResult },
-  //         { shouldPlay: true }
-  //       );
-  //       soundRef.current = sound;
-  //     } catch (err) {
-  //       // console.error('Failed to play audio', err);
-  //     }
-  //   };
-  //   const scrollViewRef = useRef();
-
-  //   useEffect(() => {
-  //     const interval = setInterval(() => {
-  //       scrollViewRef?.current?.scrollToEnd({ animated: true });
-  //     }, 3000);
-  //     return () => clearInterval(interval);
-  //   }, []);
-
   const handleInputField = () => {
     setShowInput(!showInput);
-    // setShowInput(!showInput);
   };
   const handleSend = (text) => {
-    // do something with the text (e.g. send a message to a server)
     setTypeText(text);
     sendAnswer(text);
   };
 
   const onStartRecord = async () => {
-    // if (Platform.OS === "android") {
-    //   try {
-    //     const grants = await PermissionsAndroid.requestMultiple([
-    //       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-    //       PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-    //       PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-    //     ]);
-
-    //     console.log("write external stroage", grants);
-
-    //     if (
-    //       grants["android.permission.WRITE_EXTERNAL_STORAGE"] ===
-    //         PermissionsAndroid.RESULTS.GRANTED &&
-    //       grants["android.permission.READ_EXTERNAL_STORAGE"] ===
-    //         PermissionsAndroid.RESULTS.GRANTED &&
-    //       grants["android.permission.RECORD_AUDIO"] ===
-    //         PermissionsAndroid.RESULTS.GRANTED
-    //     ) {
-    console.log("permissions granted");
+    setcolors("red");
     AudioRecord.init(options);
     setStarted(true);
     AudioRecord.start();
-    //   } else {
-    //     console.log("All required permissions not granted");
 
-    //     return;
-    //   }
-    // } catch (err) {
-    //   // console.warn(err);
-
+    BackgroundTimer.runBackgroundTimer(() => {
+      onStopRecord();
+    }, 5000);
     return;
-    // }
-    // }
   };
 
   const PlayAudio = (filePath) => {
@@ -497,6 +430,7 @@ export default function whisper({ navigation }) {
           if (success) {
             whoosh.stop();
             whoosh.release();
+            onStartRecord();
             console.log("successfully finished playing");
           } else {
             console.log("playback failed due to audio decoding errors");
@@ -511,17 +445,54 @@ export default function whisper({ navigation }) {
   };
 
   const onStopRecord = async () => {
+    // console.log("RecordStop");
+
     // console.log("hshahgsasgash");
     setStarted(false);
     AudioRecord.stop();
     const audioFile = await AudioRecord.stop();
-    uploadAudioAsync(audioFile);
+
+    // console.log("_startRecognizing();", audioFile);
+    BackgroundTimer.stopBackgroundTimer();
+    setcolors("grey");
+    checkspeechData(audioFile);
+  };
+
+  const checkspeechData = async (uri) => {
+    setisLoggingIn(true);
+    const token = await AsyncStorage.getItem("token");
+    const formData1 = new FormData();
+    const apiUrl = "https://heyalli.azurewebsites.net/api/convert/stt";
+    const Data = {
+      uri: "file:////" + uri,
+      name: "test.wav",
+      type: "audio/wav",
+    };
+    // console.log("Data", JSON.stringify(Data))
+
+    formData1.append("audio", Data);
+
+    const { data } = await axios.post(apiUrl, formData1, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log("SpeechData", data);
+    if (data == "") {
+      setisLoggingIn(false);
+      _startRecognizing();
+    } else {
+      setisLoggingIn(true);
+      uploadAudioAsync(uri);
+    }
   };
 
   const uploadAudioAsync = async (uri) => {
     try {
       const token = await AsyncStorage.getItem("token");
-      setisLoggingIn(true);
+      // setisLoggingIn(true);
       // const UsersData = await AsyncStorage.getItem("Token");
       console.log();
       const formData1 = new FormData();
@@ -533,7 +504,7 @@ export default function whisper({ navigation }) {
         name: "test.wav",
         type: "audio/wav",
       };
-      // console.log("Data", JSON.stringify(Data))
+      // console.log("Data", JSON.stringify(Data));
 
       formData1.append("speech", Data);
 
@@ -545,12 +516,8 @@ export default function whisper({ navigation }) {
       });
 
       if (data) {
-        console.log("dataaaaa", data);
         setisLoggingIn(false);
-        const dirs = RNFetchBlob.fs.dirs;
-        const filePath = RNFS.DownloadDirectoryPath + "/audio.mp3";
-        const fileData = data.split(",")[1];
-
+        const filePath = RNFS.CachesDirectoryPath + "/audio.mp3";
         RNFetchBlob.fs
           .writeFile(filePath, data, "base64")
           .then(() => {
@@ -609,7 +576,9 @@ export default function whisper({ navigation }) {
     );
 
     if (response.data) {
-      console.log("response.dara", response.data);
+      // _toggleListening();
+
+      // abc();
       setForm({
         firstName: response.data.firstName,
         lastName: response.data.lastName,
@@ -685,6 +654,11 @@ export default function whisper({ navigation }) {
           >
             <Text style={{ color: "white" }}> CC </Text>
           </View>
+          {results.length == 0
+            ? null
+            : results.map((index, i) => {
+                <Text>{index}sss</Text>;
+              })}
 
           <View style={{ flex: 1, marginHorizontal: 20, alignItems: "center" }}>
             <View>
@@ -703,28 +677,26 @@ export default function whisper({ navigation }) {
           <View>
             <View style={styles.container}>
               {!isLoggingIn ? (
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: !started ? "#fff" : "#000",
-                    width: 64,
-                    height: 64,
-                    borderRadius: 32,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    alignItems: "center",
-                  }}
-                  // onPress={_toggleListening}
-                  onPress={!started ? onStartRecord : onStopRecord}
-                >
-                  <FontAwesome
-                    name="microphone"
-                    size={32}
-                    color={!started ? "#000" : "#fff"}
-                  />
-                </TouchableOpacity>
+                <View>
+                  <TouchableOpacity
+                    style={{
+                      backgroundColor: color,
+                      width: 64,
+                      height: 64,
+                      borderRadius: 32,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      alignItems: "center",
+                    }}
+                    // onPress={_startRecognizing}
+                    // onPress={!started ? onStartRecord : onStopRecord}
+                  >
+                    <FontAwesome name="microphone" size={32} color={"#fff"} />
+                  </TouchableOpacity>
+                </View>
               ) : (
                 <TouchableOpacity
-                  style={[styles.circleButton, { backgroundColor: "#000" }]}
+                  style={[styles.circleButton, { backgroundColor: "grey" }]}
                   disabled
                 >
                   <ActivityIndicator size={32} color="#fff" />

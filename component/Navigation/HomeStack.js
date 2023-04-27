@@ -10,6 +10,7 @@ import { ActivityIndicator } from "react-native";
 import { getsecratecode, restoreSecrate } from "../Redux/authActions";
 import ActivityLoader from "../ActivityLoader";
 import BussinessUpgrade from "../BussinessUpgrade";
+import whisper from "../Whisper";
 
 const Stack = createNativeStackNavigator();
 
@@ -29,7 +30,7 @@ const HomeStack = (isSecrateCode) => {
     <Stack.Navigator>
       <Stack.Screen
         name="home"
-        component={Whisper}
+        component={whisper}
         options={{
           headerShown: false,
         }}

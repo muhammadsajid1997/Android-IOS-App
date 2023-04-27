@@ -19,6 +19,8 @@ import ai.picovoice.reactnative.porcupine.PorcupinePackage;
 import ai.picovoice.reactnative.voiceprocessor.VoiceProcessorPackage;
 // @react-native-async-storage/async-storage
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
+// @react-native-community/audio-toolkit
+import com.reactnativecommunity.rctaudiotoolkit.AudioPackage;
 // @react-native-picker/picker
 import com.reactnativecommunity.picker.RNCPickerPackage;
 // @react-native-voice/voice
@@ -90,6 +92,7 @@ public class PackageList {
       new PorcupinePackage(),
       new VoiceProcessorPackage(),
       new AsyncStoragePackage(),
+      new AudioPackage(),
       new RNCPickerPackage(),
       new VoicePackage(),
       new RNAudioRecordPackage(),
