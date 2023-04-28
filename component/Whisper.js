@@ -16,6 +16,7 @@ import {
   SafeAreaView,
   AppState,
   BackHandler,
+  Share,
 } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import Voice, {
@@ -93,7 +94,7 @@ export default function whisper({ navigation }) {
   const dispatch = useDispatch();
   const scrollViewRef = useRef();
   const state = useSelector((state) => state.authReducers);
-  console.log(state);
+
   const [isListening, setIsListening] = useState(false);
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -131,6 +132,31 @@ export default function whisper({ navigation }) {
   useEffect(() => {
     _startRecognizing();
   }, []);
+
+  // useEffect(() => {
+  //   const subscription = AppState.addEventListener("change", (nextAppState) => {
+  //     if (
+  //       appState.current.match(/inactive|background/) &&
+  //       nextAppState === "active"
+  //     ) {
+  //       console.log("App has come to the foreground!");
+  //     } else if (
+  //       appState.current.match(/inactive|active/) &&
+  //       nextAppState === "background"
+  //     ) {
+  //       // console.log("app in bbb");
+  //       onStartRecord();
+  //     }
+
+  //     appState.current = nextAppState;
+  //     setAppStateVisible(appState.current);
+  //     console.log("AppState", appState.current);
+  //   });
+
+  //   return () => {
+  //     subscription.remove();
+  //   };
+  // }, []);
 
   const onSpeechStart = (e: any) => {
     console.log("onSpeechStart: ", e);
@@ -192,43 +218,13 @@ export default function whisper({ navigation }) {
     // setPartialResults(e.value);
   };
 
-  const onSpeechVolumeChanged = (e: any) => {
-    console.log("onSpeechVolumeChanged: ", e);
-    setVolume(e.value);
-  };
+  // const onSpeechVolumeChanged = (e: any) => {
+  //   console.log("onSpeechVolumeChanged: ", e);
+  //   setVolume(e.value);
+  // };
 
   const _startRecognizing = async () => {
-    // console.log("called");
-    // AudioRecord.init(options);
-    // setStarted(true);
-    // AudioRecord.start();
-
-    // AudioRecord.on("data", (data) => {
-    //   // console.log("data", data.);
-    //   let bufferObj = Buffer.from(
-    //     data.replace(/[\n\r\s]/g, ""),
-    //     "base64"
-    //   ).toString("utf-8");
-    //   console.log("bufferObj", bufferObj);
-    //   const byteArray = base64js.toByteArray(bufferObj).toString("utf-8");
-
-    //   // console.log(new TextDecoder().decode(bufferObj));
-
-    //   // Convert byte array to string
-    //   // const decoder = new TextDecoder("utf-8");
-    //   // const speechText = decoder.decode(new Uint8Array(byteArray));
-    //   // console.log("speechText", byteArray);
-    //   // Encode the Buffer as a utf8 string
-    //   // let decodedString = bufferObj.toString("utf8");
-    //   // var chunk = Buffer.from(data, "base64");
-    //   // console.log("decodedString", bufferObj);
-    //   // base64-encoded audio data chunks
-    // });
     try {
-      // const speechOptions = {
-      //   RECOGNIZE_MODE: "RECOGNIZE_MODE_DICTATION",
-      //   EXTRA_RESULTS: 1,
-      // };
       await Voice.start("en-US", {
         EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS: 30000,
       });
@@ -479,7 +475,6 @@ export default function whisper({ navigation }) {
       },
     });
 
-    console.log("SpeechData", data);
     if (data == "") {
       setisLoggingIn(false);
       _startRecognizing();
@@ -638,27 +633,69 @@ export default function whisper({ navigation }) {
     dispatch(setLogout());
   };
 
+  const ShareApp = async () => {
+    const number = await AsyncStorage.getItem("number");
+    console.log(number);
+    const refcode = number;
+    const palylink =
+      "https://play.google.com/store/apps/details?id=com.heyalli";
+
+    try {
+      await Share.share(
+        {
+          message: `hello this is link to joint to hey alli app ${palylink}&ReferralCode=${refcode}`,
+        },
+        { dialogTitle: "Share BAM goodness" }
+      );
+    } catch (error) {
+      console.log(error, "--share link error--");
+    }
+  };
+
   return (
     <View style={styles.root}>
       {/* <VoiceComponent /> */}
-      <SafeAreaView/>
+      <SafeAreaView />
       {!showInput ? (
         <>
           <View
             style={{
-              alignSelf: "flex-end",
-              margin: 30,
-              backgroundColor: "black",
-              padding: 1,
+              justifyContent: "space-between",
+              paddingHorizontal: 20,
+              alignItems: "center",
+              paddingVertical: 10,
+              flexDirection: "row",
+              width: "100%",
             }}
           >
-            <Text style={{ color: "white" }}> CC </Text>
+            <TouchableOpacity
+              style={{ padding: 10 }}
+              onPress={() => {
+                ShareApp();
+              }}
+            >
+              <Entypo name={"share"} size={21} color={"#000000cc"} />
+            </TouchableOpacity>
+            <View
+              style={{
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexDirection: "row",
+              }}
+            >
+              <TouchableOpacity style={{ padding: 10 }}>
+                <FontAwesome name={"closed-captioning"} size={22} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{ padding: 10, marginLeft: 10 }}
+                onPress={() => {
+                  navigate("ReferralData");
+                }}
+              >
+                <FontAwesome name={"people-arrows"} size={19} />
+              </TouchableOpacity>
+            </View>
           </View>
-          {results.length == 0
-            ? null
-            : results.map((index, i) => {
-                <Text>{index}sss</Text>;
-              })}
 
           <View style={{ flex: 1, marginHorizontal: 20, alignItems: "center" }}>
             <View>
@@ -720,7 +757,7 @@ export default function whisper({ navigation }) {
         >
           <View style={{ flex: 1 }}>
             <View style={{ marginTop: 10, width: "100%" }}>
-              <SafeAreaView/>
+              <SafeAreaView />
               <Text
                 style={{
                   ...styles.title,
@@ -768,7 +805,7 @@ export default function whisper({ navigation }) {
           }}
         >
           <View style={{ flex: 1 }}>
-            <SafeAreaView/>
+            <SafeAreaView />
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
               <View style={styles.centeredView}>
                 <View style={styles.modalView}>
@@ -1438,7 +1475,6 @@ export default function whisper({ navigation }) {
           </View>
         </Modal>
       </View>
-    
     </View>
   );
 }

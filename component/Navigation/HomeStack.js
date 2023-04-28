@@ -11,6 +11,7 @@ import { getsecratecode, restoreSecrate } from "../Redux/authActions";
 import ActivityLoader from "../ActivityLoader";
 import BussinessUpgrade from "../BussinessUpgrade";
 import whisper from "../Whisper";
+import ReferralHistoryScreen from "../ReferralScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -63,7 +64,6 @@ const HomeStack = (isSecrateCode) => {
           headerShown: false,
         }}
       />
-
       <Stack.Screen
         name="myApps"
         component={myApps}
@@ -81,6 +81,13 @@ const HomeStack = (isSecrateCode) => {
       <Stack.Screen
         name="BussinessUpgrade"
         component={BussinessUpgrade}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="ReferralData"
+        component={ReferralHistoryScreen}
         options={{
           headerShown: false,
         }}
