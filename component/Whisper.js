@@ -99,7 +99,8 @@ export default function whisper({ navigation }) {
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const appState = useRef(AppState.currentState);
-  const [appStateVisible, setAppStateVisible] = useState(appState.current);
+  const [appStateVisible, setAppStateVisible] = useState("active");
+  var strappState = "active";
   const [form, setForm] = useState({ email: null });
   const [errors, setErrors] = useState({});
 
@@ -139,24 +140,30 @@ export default function whisper({ navigation }) {
   //       appState.current.match(/inactive|background/) &&
   //       nextAppState === "active"
   //     ) {
+  //       strappState = "active";
+  //       _startRecognizing();
   //       console.log("App has come to the foreground!");
   //     } else if (
   //       appState.current.match(/inactive|active/) &&
   //       nextAppState === "background"
   //     ) {
+  //       strappState = "background";
+  //       _stopRecognizing();
   //       // console.log("app in bbb");
-  //       onStartRecord();
+  //       // onStartRecord();
   //     }
+  //     console.log("AppState1", appState.current);
 
-  //     appState.current = nextAppState;
+  //     // appState.current = nextAppState;
+
   //     setAppStateVisible(appState.current);
-  //     console.log("AppState", appState.current);
+  //     console.log("AppState2", strappState);
   //   });
 
   //   return () => {
   //     subscription.remove();
   //   };
-  // }, []);
+  // }, [appStateVisible]);
 
   const onSpeechStart = (e: any) => {
     console.log("onSpeechStart: ", e);
@@ -199,7 +206,7 @@ export default function whisper({ navigation }) {
 
   const onSpeechPartialResults = (e: SpeechResultsEvent) => {
     var Data = e.value;
-    // console.log("Data", Data);
+    console.log("Data", Data);
     Data.map((index, i) => {
       if (index.toLocaleLowerCase().includes("hey ali")) {
         // Tts.speak("Welcome");
@@ -224,15 +231,18 @@ export default function whisper({ navigation }) {
   // };
 
   const _startRecognizing = async () => {
+    // console.log("appStateVisible", strappState);
+    // if (strappState == "active") {
     try {
       await Voice.start("en-US", {
-        EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS: 30000,
+        EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS: 300000,
       });
       console.log("Recording start");
       setisLoggingIn(false);
     } catch (e) {
       console.error(e);
     }
+    // }
   };
 
   const _stopRecognizing = async () => {
@@ -455,32 +465,40 @@ export default function whisper({ navigation }) {
   };
 
   const checkspeechData = async (uri) => {
-    setisLoggingIn(true);
-    const token = await AsyncStorage.getItem("token");
-    const formData1 = new FormData();
-    const apiUrl = "https://heyalli.azurewebsites.net/api/convert/stt";
-    const Data = {
-      uri: "file:////" + uri,
-      name: "test.wav",
-      type: "audio/wav",
-    };
-    // console.log("Data", JSON.stringify(Data))
-
-    formData1.append("audio", Data);
-
-    const { data } = await axios.post(apiUrl, formData1, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (data == "") {
-      setisLoggingIn(false);
-      _startRecognizing();
-    } else {
+    try {
       setisLoggingIn(true);
-      uploadAudioAsync(uri);
+      const token = await AsyncStorage.getItem("token");
+      const formData1 = new FormData();
+      const apiUrl = "https://heyalli.azurewebsites.net/api/convert/stt";
+      const Data = {
+        uri: "file:////" + uri,
+        name: "test.wav",
+        type: "audio/wav",
+      };
+      // console.log("Data", JSON.stringify(Data))
+
+      formData1.append("audio", Data);
+
+      const { data } = await axios.post(apiUrl, formData1, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (data == "") {
+        setisLoggingIn(false);
+        _startRecognizing();
+      } else {
+        setisLoggingIn(true);
+        uploadAudioAsync(uri);
+      }
+    } catch (error) {
+      setisLoggingIn(false);
+      Alert.alert("Internal server Error");
+
+      // Alert('Cannot play the file');
+      console.log("API Error", error);
     }
   };
 
@@ -660,6 +678,17 @@ export default function whisper({ navigation }) {
         <>
           <View
             style={{
+              alignSelf: "flex-end",
+              margin: 30,
+              backgroundColor: "black",
+              padding: 1,
+            }}
+          >
+            <Text style={{ color: "white" }}> CC </Text>
+          </View>
+
+          {/* <View
+            style={{
               justifyContent: "space-between",
               paddingHorizontal: 20,
               alignItems: "center",
@@ -667,16 +696,16 @@ export default function whisper({ navigation }) {
               flexDirection: "row",
               width: "100%",
             }}
-          >
-            <TouchableOpacity
+          > */}
+          {/* <TouchableOpacity
               style={{ padding: 10 }}
               onPress={() => {
                 ShareApp();
               }}
             >
               <Entypo name={"share"} size={21} color={"#000000cc"} />
-            </TouchableOpacity>
-            <View
+            </TouchableOpacity> */}
+          {/* <View
               style={{
                 justifyContent: "space-between",
                 alignItems: "center",
@@ -685,17 +714,17 @@ export default function whisper({ navigation }) {
             >
               <TouchableOpacity style={{ padding: 10 }}>
                 <FontAwesome name={"closed-captioning"} size={22} />
-              </TouchableOpacity>
-              <TouchableOpacity
+              </TouchableOpacity> */}
+          {/* <TouchableOpacity
                 style={{ padding: 10, marginLeft: 10 }}
                 onPress={() => {
                   navigate("ReferralData");
                 }}
               >
                 <FontAwesome name={"people-arrows"} size={19} />
-              </TouchableOpacity>
-            </View>
-          </View>
+              </TouchableOpacity> */}
+          {/* </View> */}
+          {/* </View> */}
 
           <View style={{ flex: 1, marginHorizontal: 20, alignItems: "center" }}>
             <View>
