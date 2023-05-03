@@ -141,8 +141,8 @@ const ShareScreen = () => {
           </TouchableOpacity>
         </View>
         <View style={{ width: "80%", alignItems: "center" }}>
-          <Text style={{ fontSize: 22, fontWeight: "bold" }}>
-            Invite Referral Code
+          <Text style={{ fontSize: 22, fontWeight: "400" }}>
+            Invite A Friend
           </Text>
         </View>
       </View>
@@ -256,48 +256,82 @@ const ShareScreen = () => {
           setIsLoading(false);
         }}
       >
-        <FlatList
-          data={contacts}
-          renderItem={(contact) => {
-            return (
-              <View style={{ alignItems: "center" }}>
-                <TouchableOpacity
-                  style={{ width: "80%" }}
-                  onPress={() => {
-                    setUserphoneNumber(contact.item.phoneNumbers[0].number);
-                    setModalVisible(false);
-                  }}
-                >
-                  <View
+        <View style={{ flex: 1 }}>
+          <View
+            style={{
+              marginLeft: 10,
+              // borderWidth: 1,
+              marginTop: 20,
+              flexDirection: "row",
+              alignItems: "center",
+              marginBottom: 30,
+            }}
+          >
+            <TouchableOpacity style={{}} onPress={() => setModalVisible(false)}>
+              <Ionicons name={"arrow-back"} size={25} />
+            </TouchableOpacity>
+
+            <View style={{ width: "80%", alignItems: "center" }}>
+              <Text style={{ fontSize: 20, fontWeight: "400" }}>
+                Select Contact
+              </Text>
+            </View>
+          </View>
+          <FlatList
+            data={contacts}
+            renderItem={(contact) => {
+              return (
+                <View style={{ alignItems: "center" }}>
+                  <TouchableOpacity
                     style={{
-                      //   flex: 1,
-                      //   padding: 10,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      paddingVertical: 10,
-                      borderWidth: 1,
-                      borderRadius: 10,
-                      marginTop: 10,
+                      width: "85%",
+                      borderColor: "grey",
+                      // marginLeft: 20,
+
+                      borderBottomWidth: 0.5,
+                    }}
+                    onPress={() => {
+                      setUserphoneNumber(contact.item.phoneNumbers[0].number);
+                      setModalVisible(false);
                     }}
                   >
-                    <Text style={{ fontSize: 18 }}>
-                      {contact.item.phoneNumbers.length == 0
-                        ? ""
-                        : contact.item.phoneNumbers[0].number}
-                    </Text>
-
-                    <Text style={{ fontSize: 16 }}>
-                      {contact.item.displayName == undefined
-                        ? null
-                        : contact.item.displayName}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
-            );
-          }}
-          keyExtractor={(item) => item.recordID}
-        />
+                    <View
+                      style={{
+                        flex: 1,
+                        //   padding: 10,
+                        // alignItems: "center",
+                        // justifyContent: "center",
+                        paddingVertical: 5,
+                        // borderWidth: 1,
+                        borderRadius: 10,
+                        marginTop: 5,
+                        marginBottom: 5,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "#14a5f4",
+                          fontSize: 18,
+                          fontWeight: "400",
+                        }}
+                      >
+                        {contact.item.displayName == undefined
+                          ? null
+                          : contact.item.displayName}
+                      </Text>
+                      <Text style={{ fontSize: 17 }}>
+                        {contact.item.phoneNumbers.length == 0
+                          ? ""
+                          : contact.item.phoneNumbers[0].number}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              );
+            }}
+            keyExtractor={(item) => item.recordID}
+          />
+        </View>
       </Modal>
 
       {/* <TouchableOpacity

@@ -45,7 +45,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome5";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { logout, setLogout } from "./Redux/authActions";
 import { useDispatch, useSelector } from "react-redux";
@@ -112,6 +112,7 @@ export default function whisper({ navigation }) {
   const [partialResults, setPartialResults] = useState([]);
   const [color, setcolors] = useState("grey");
   const navigatation = useNavigation();
+  const route = useRoute();
   useEffect(() => {
     getProfile();
   }, []);
@@ -139,12 +140,12 @@ export default function whisper({ navigation }) {
   }, []);
 
   // useEffect(async () => {
-  //   // const data = await AsyncStorage.getItem("isFirstTime");
-  //   // if (data == null) {
-  //   _startRecognizing();
-  //   // const jsonValue = JSON.stringify(true);
-  //   // await AsyncStorage.setItem("isFirstTime", jsonValue);
-  //   // }
+  //   const data = await AsyncStorage.getItem("isFirstTime");
+  //   if (data == null) {
+  //     _startRecognizing();
+  //     const jsonValue = JSON.stringify(true);
+  //     await AsyncStorage.setItem("isFirstTime", jsonValue);
+  //   }
   // }, []);
 
   // useEffect(async () => {
@@ -179,16 +180,14 @@ export default function whisper({ navigation }) {
   //       appState.current.match(/inactive|background/) &&
   //       nextAppState === "active"
   //     ) {
-  //       strappState = "active";
   //       _startRecognizing();
   //       console.log("App has come to the foreground!");
   //     } else if (
   //       appState.current.match(/inactive|active/) &&
   //       nextAppState === "background"
   //     ) {
-  //       strappState = "background";
   //       _stopRecognizing();
-  //       // console.log("app in bbb");
+  //       console.log("app in bbb");
   //       // onStartRecord();
   //     }
   //     console.log("AppState1", appState.current);
@@ -196,7 +195,7 @@ export default function whisper({ navigation }) {
   //     // appState.current = nextAppState;
 
   //     setAppStateVisible(appState.current);
-  //     console.log("AppState2", strappState);
+  //     console.log("AppState2", route);
   //   });
 
   //   return () => {
