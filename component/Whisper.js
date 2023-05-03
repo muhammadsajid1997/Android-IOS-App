@@ -18,7 +18,7 @@ import {
   BackHandler,
   Share,
 } from "react-native";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Voice, {
   SpeechRecognizedEvent,
   SpeechResultsEvent,
@@ -100,7 +100,7 @@ export default function whisper({ navigation }) {
   const [errorMessage, setErrorMessage] = useState("");
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState("active");
-  var strappState = "active";
+  const [manageState, SetmanageState] = useState(false);
   const [form, setForm] = useState({ email: null });
   const [errors, setErrors] = useState({});
 
@@ -111,7 +111,7 @@ export default function whisper({ navigation }) {
   const [results, setResults] = useState([]);
   const [partialResults, setPartialResults] = useState([]);
   const [color, setcolors] = useState("grey");
-
+  const navigatation = useNavigation();
   useEffect(() => {
     getProfile();
   }, []);
@@ -130,9 +130,48 @@ export default function whisper({ navigation }) {
     };
   }, []);
 
-  useEffect(() => {
-    _startRecognizing();
+  React.useEffect(() => {
+    const unsubscribe = navigatation.addListener("focus", () => {
+      _startRecognizing();
+    });
+
+    return unsubscribe;
   }, []);
+
+  // useEffect(async () => {
+  //   // const data = await AsyncStorage.getItem("isFirstTime");
+  //   // if (data == null) {
+  //   _startRecognizing();
+  //   // const jsonValue = JSON.stringify(true);
+  //   // await AsyncStorage.setItem("isFirstTime", jsonValue);
+  //   // }
+  // }, []);
+
+  // useEffect(async () => {
+  //   const subscription = AppState.addEventListener("change", (nextAppState) => {
+  //     if (
+  //       appState.current.match(/inactive|background/) &&
+  //       nextAppState === "active"
+  //     ) {
+  //       _startRecognizing();
+  //       console.log("App has come to the foreground!");
+  //     } else if (
+  //       appState.current.match(/inactive|active/) &&
+  //       nextAppState === "background"
+  //     ) {
+  //       _stopRecognizing();
+  //     }
+
+  //     appState.current = nextAppState;
+  //     setAppStateVisible(appState.current);
+  //     // console.log("methodcalled");
+  //     // console.log("AppState", appState.current);
+  //   });
+
+  //   return () => {
+  //     subscription.remove();
+  //   };
+  // }, []);
 
   // useEffect(() => {
   //   const subscription = AppState.addEventListener("change", (nextAppState) => {
@@ -262,14 +301,14 @@ export default function whisper({ navigation }) {
     }
   };
 
-  const _destroyRecognizer = async () => {
-    try {
-      await Voice.destroy();
-    } catch (e) {
-      console.error(e);
-    }
-    _clearState();
-  };
+  // const _destroyRecognizer = async () => {
+  //   try {
+  //     await Voice.destroy();
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  //   _clearState();
+  // };
 
   const _clearState = () => {
     setRecognized("");
@@ -652,22 +691,24 @@ export default function whisper({ navigation }) {
   };
 
   const ShareApp = async () => {
-    const number = await AsyncStorage.getItem("number");
-    console.log(number);
-    const refcode = number;
-    const palylink =
-      "https://play.google.com/store/apps/details?id=com.heyalli";
+    _stopRecognizing();
+    navigate("ShareScreen");
+    // const number = await AsyncStorage.getItem("number");
+    // console.log(number);
+    // const refcode = number;
+    // const palylink =
+    //   "https://play.google.com/store/apps/details?id=com.heyalli";
 
-    try {
-      await Share.share(
-        {
-          message: `hello this is link to joint to hey alli app ${palylink}&ReferralCode=${refcode}`,
-        },
-        { dialogTitle: "Share BAM goodness" }
-      );
-    } catch (error) {
-      console.log(error, "--share link error--");
-    }
+    // try {
+    //   await Share.share(
+    //     {
+    //       message: `hello this is link to joint to hey alli app ${palylink}&ReferralCode=${refcode}`,
+    //     },
+    //     { dialogTitle: "Share BAM goodness" }
+    //   );
+    // } catch (error) {
+    //   console.log(error, "--share link error--");
+    // }
   };
 
   return (
@@ -676,7 +717,7 @@ export default function whisper({ navigation }) {
       <SafeAreaView />
       {!showInput ? (
         <>
-          <View
+          {/* <View
             style={{
               alignSelf: "flex-end",
               margin: 30,
@@ -685,9 +726,9 @@ export default function whisper({ navigation }) {
             }}
           >
             <Text style={{ color: "white" }}> CC </Text>
-          </View>
+          </View> */}
 
-          {/* <View
+          <View
             style={{
               justifyContent: "space-between",
               paddingHorizontal: 20,
@@ -696,16 +737,16 @@ export default function whisper({ navigation }) {
               flexDirection: "row",
               width: "100%",
             }}
-          > */}
-          {/* <TouchableOpacity
+          >
+            <TouchableOpacity
               style={{ padding: 10 }}
               onPress={() => {
                 ShareApp();
               }}
             >
               <Entypo name={"share"} size={21} color={"#000000cc"} />
-            </TouchableOpacity> */}
-          {/* <View
+            </TouchableOpacity>
+            <View
               style={{
                 justifyContent: "space-between",
                 alignItems: "center",
@@ -714,17 +755,17 @@ export default function whisper({ navigation }) {
             >
               <TouchableOpacity style={{ padding: 10 }}>
                 <FontAwesome name={"closed-captioning"} size={22} />
-              </TouchableOpacity> */}
-          {/* <TouchableOpacity
+              </TouchableOpacity>
+              <TouchableOpacity
                 style={{ padding: 10, marginLeft: 10 }}
                 onPress={() => {
                   navigate("ReferralData");
                 }}
               >
                 <FontAwesome name={"people-arrows"} size={19} />
-              </TouchableOpacity> */}
-          {/* </View> */}
-          {/* </View> */}
+              </TouchableOpacity>
+            </View>
+          </View>
 
           <View style={{ flex: 1, marginHorizontal: 20, alignItems: "center" }}>
             <View>

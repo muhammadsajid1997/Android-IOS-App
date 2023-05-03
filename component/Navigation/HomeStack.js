@@ -12,6 +12,7 @@ import ActivityLoader from "../ActivityLoader";
 import BussinessUpgrade from "../BussinessUpgrade";
 import whisper from "../Whisper";
 import ReferralHistoryScreen from "../ReferralScreen";
+import ShareScreen from "../ShareScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -88,6 +89,13 @@ const HomeStack = (isSecrateCode) => {
       <Stack.Screen
         name="ReferralData"
         component={ReferralHistoryScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="ShareScreen"
+        component={ShareScreen}
         options={{
           headerShown: false,
         }}

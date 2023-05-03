@@ -29,6 +29,8 @@ import com.wenkesj.voice.VoicePackage;
 import com.goodatlas.audiorecord.RNAudioRecordPackage;
 // react-native-background-timer
 import com.ocetnik.timer.BackgroundTimerPackage;
+// react-native-contacts
+import com.rt2zz.reactnativecontacts.ReactNativeContacts;
 // react-native-fs
 import com.rnfs.RNFSPackage;
 // react-native-linear-gradient
@@ -97,6 +99,7 @@ public class PackageList {
       new VoicePackage(),
       new RNAudioRecordPackage(),
       new BackgroundTimerPackage(),
+      new ReactNativeContacts(),
       new RNFSPackage(),
       new LinearGradientPackage(),
       new SafeAreaContextPackage(),
