@@ -743,7 +743,13 @@ export default function whisper({ navigation }) {
                 ShareApp();
               }}
             >
-              <Entypo name={"share"} size={21} color={"#000000cc"} />
+              <Image
+                source={require("../assets/share.png")}
+                style={{
+                  height: 30,
+                  width: 30,
+                }}
+              />
             </TouchableOpacity>
             <View
               style={{
@@ -753,7 +759,7 @@ export default function whisper({ navigation }) {
               }}
             >
               <TouchableOpacity style={{ padding: 10 }}>
-                <FontAwesome name={"closed-captioning"} size={22} />
+                <FontAwesome name={"closed-captioning"} size={23} />
               </TouchableOpacity>
               <TouchableOpacity
                 style={{ padding: 10, marginLeft: 10 }}
@@ -761,7 +767,7 @@ export default function whisper({ navigation }) {
                   navigate("ReferralData");
                 }}
               >
-                <FontAwesome name={"people-arrows"} size={19} />
+                <FontAwesome name={"people-arrows"} size={22} />
               </TouchableOpacity>
             </View>
           </View>
