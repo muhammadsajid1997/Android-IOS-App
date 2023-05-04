@@ -34,14 +34,15 @@ import logoBack from "./Images/logoback.png";
 // // import { GoogleSignin } from '@react-native-google-signin/google-signin';
 // import { useAuthRequest } from 'expo-auth-session/providers/google';
 // // import auth from '@react-native-firebase/auth';
-
+import ContryPicker, { DARK_THEME } from "react-native-country-picker-modal";
 const SignUpScreen = ({ navigation }) => {
   const [firstName, setFirstName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState(false);
   const [errortext, setErrortext] = useState("");
   const [showPassword, setShowPassword] = useState(true);
   const passwordInputRef = createRef();
-
+  const [countryCode, setCountryCode] = useState("US");
+  const [callingCodes, setcallingCode] = useState("1");
   // const SingupUser = () => {
   //   if (!firstName) {
   //     Alert.alert("Please enter your FullName");
@@ -72,8 +73,13 @@ const SignUpScreen = ({ navigation }) => {
   //       console.log(error);
   //     });
   // };
+  const onChangeCallingcode = (value) => {
+    setcallingCode(value);
+  };
 
   const SingupUser = () => {
+    console.log(callingCodes);
+    console.log(phoneNumber);
     // var regEx = "/^[A-Za-z]+$/";
     // if (firstName == "" && phoneNumber == "") {
     //   Alert.alert("Please Enter Field");
@@ -85,7 +91,7 @@ const SignUpScreen = ({ navigation }) => {
         "https://heyalli.azurewebsites.net/api/Identity/register",
         {
           FullName: firstName,
-          PhoneNumber: phoneNumber,
+          PhoneNumber: `+${callingCodes}${phoneNumber}`,
         },
         {
           headers: {
@@ -95,11 +101,11 @@ const SignUpScreen = ({ navigation }) => {
         }
       )
       .then((response) => {
-        // console.log("response get details:" + response.data);
+        console.log("response get details:" + response.data);
 
         if (response.data) {
           navigation.navigate("otp", {
-            phoneNumber: phoneNumber,
+            phoneNumber: `+${callingCodes}${phoneNumber}`,
             name: firstName,
           });
         }
@@ -180,6 +186,45 @@ const SignUpScreen = ({ navigation }) => {
             
             </View> */}
             <View style={styles.SectionStyle}>
+              <ContryPicker
+                withFilter
+                countryCode={countryCode}
+                countryCodes
+                withAlphaFilter={false}
+                withCurrencyButton={false}
+                withCallingCode={true}
+                onSelect={(value) => {
+                  const { cca2, callingCode } = value;
+                  const abc = value.cca2;
+                  onChangeCallingcode(value.callingCode[0]);
+                  // console.log("abc",abc)
+                  // console.log("cca2",cca2)
+                  // onChange({ name:'countryCode',value});
+                  // onChange({ name: 'callingCode', abc});
+                  setCountryCode(value.cca2);
+                  setcallingCode(value.callingCode[0]);
+                }}
+                containerButtonStyle={{
+                  // borderWidth:1,
+                  height: 40,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  // borderBottomWidth: 1.8,
+                  // borderColor: "grey",
+                  // marginBottom:5
+                  // borderWidth:1,
+                  // width:30
+
+                  // width:35,
+                  // alignItems:'center',
+                  // justifyContent:'center',
+                  // borderWidth:1,
+                  // width:40,
+                  // height:'110%',
+                  // alignItems:'center',
+                  // marginLeft:10
+                }}
+              ></ContryPicker>
               <TextInput
                 style={styles.inputStyle}
                 onChangeText={(phoneNumber) => setPhoneNumber(phoneNumber)}

@@ -12,7 +12,7 @@ import {
   KeyboardAvoidingView,
   SafeAreaView,
 } from "react-native";
-
+import ContryPicker, { DARK_THEME } from "react-native-country-picker-modal";
 // import AsyncStorage from '@react-native-community/async-storage';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -42,8 +42,15 @@ const LoginScreen = ({ navigation }) => {
   const [errortext, setErrortext] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const passwordInputRef = createRef();
+  const [countryCode, setCountryCode] = useState("US");
+  const [callingCodes, setcallingCode] = useState("1");
 
+  const onChangeCallingcode = (value) => {
+    setcallingCode(value);
+  };
   const loginUser = () => {
+    console.log(callingCodes);
+    console.log(userphoneNumber);
     // console.log(userphoneNumber);
 
     // if (userphoneNumber == "") {
@@ -53,7 +60,7 @@ const LoginScreen = ({ navigation }) => {
       .post(
         "https://heyalli.azurewebsites.net/api/Identity/login",
         {
-          PhoneNumber: userphoneNumber,
+          PhoneNumber: `+${callingCodes}${userphoneNumber}`,
         },
         {
           headers: {
@@ -66,7 +73,7 @@ const LoginScreen = ({ navigation }) => {
         console.log(response);
         if (response.data) {
           navigation.navigate("otp", {
-            phoneNumber: userphoneNumber,
+            phoneNumber: `+${callingCodes}${userphoneNumber}`,
           });
         } else {
           Alert.alert("Invalid PhoneNumber");
@@ -104,6 +111,62 @@ const LoginScreen = ({ navigation }) => {
             </View>
 
             <View style={{ ...styles.SectionStyle }}>
+              <ContryPicker
+                withFilter
+                countryCode={countryCode}
+                countryCodes
+                withAlphaFilter={false}
+                withCurrencyButton={false}
+                withCallingCode={true}
+                onSelect={(value) => {
+                  const { cca2, callingCode } = value;
+                  const abc = value.cca2;
+                  onChangeCallingcode(value.callingCode[0]);
+                  // console.log("abc",abc)
+                  // console.log("cca2",cca2)
+                  // onChange({ name:'countryCode',value});
+                  // onChange({ name: 'callingCode', abc});
+                  setCountryCode(value.cca2);
+                  setcallingCode(value.callingCode[0]);
+                }}
+                containerButtonStyle={{
+                  // borderWidth:1,
+                  height: 40,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  // borderBottomWidth: 1.8,
+                  // borderColor: "grey",
+                  // marginBottom:5
+                  // borderWidth:1,
+                  // width:30
+
+                  // width:35,
+                  // alignItems:'center',
+                  // justifyContent:'center',
+                  // borderWidth:1,
+                  // width:40,
+                  // height:'110%',
+                  // alignItems:'center',
+                  // marginLeft:10
+                }}
+              ></ContryPicker>
+              {/* <TextInput
+                style={styles.inputStyle1}
+                onChangeText={(userphoneNumber) =>
+                  setUserphoneNumber(userphoneNumber)
+                }
+                placeholder="+91" //dummy@abc.com
+                placeholderTextColor="#9ea3b7"
+                autoCapitalize="none"
+                keyboardType="phone-pad"
+                returnKeyType="next"
+                onSubmitEditing={() =>
+                  passwordInputRef.current && passwordInputRef.current.focus()
+                }
+                underlineColorAndroid="#f000"
+                blurOnSubmit={false}
+              /> */}
+
               {/* <MaterialIcons name="email" style={{ top: 12, right: 4 }} size={16} color="#b1b6c6" /> */}
 
               <TextInput
@@ -216,6 +279,14 @@ const styles = StyleSheet.create({
     flex: 1,
     color: "black",
     marginLeft: 5,
+  },
+  inputStyle1: {
+    // flex: 1,
+    width: "20%",
+    color: "black",
+    marginLeft: 5,
+    borderRightWidth: 0.2,
+    borderColor: "grey",
   },
   registerTextStyle: {
     color: "black",
