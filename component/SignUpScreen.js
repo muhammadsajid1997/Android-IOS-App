@@ -102,11 +102,11 @@ const SignUpScreen = ({ navigation }) => {
       )
       .then((response) => {
         console.log("response get details:" + response.data);
-
         if (response.data) {
           navigation.navigate("otp", {
             phoneNumber: `+${callingCodes}${phoneNumber}`,
             name: firstName,
+            type: "Register",
           });
         }
       })

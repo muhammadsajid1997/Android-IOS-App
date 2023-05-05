@@ -1,18 +1,28 @@
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import { Image, ScrollView, Text, TouchableOpacity, SafeAreaView,View } from "react-native";
+import {
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  SafeAreaView,
+  View,
+} from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 const myApps = () => {
   const navigate = useNavigation();
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
-      <SafeAreaView/>
+      <SafeAreaView />
       <View
         style={{ marginTop: 50, flexDirection: "row", alignItems: "center" }}
       >
         <View style={{ marginLeft: 25 }}>
-          <TouchableOpacity onPress={() => navigate.goBack()}>
+          <TouchableOpacity
+            disabledInputStyle={{ opacity: 1 }}
+            onPress={() => navigate.goBack()}
+          >
             <Ionicons
               name="ios-arrow-back-circle-sharp"
               size={30}
@@ -43,14 +53,24 @@ const myApps = () => {
                 padding: 5,
               }}
             >
-              <TouchableOpacity style={{ width: "25%", alignItems: "center" }}>
+              <TouchableOpacity
+                disabled
+                style={{
+                  opacity: 0.5,
+                  width: "25%",
+                  opacity: 0.5,
+                  alignItems: "center",
+                }}
+              >
                 <Image
                   source={require("../assets/icons/youtube.png")}
                   style={{ width: 50, height: 50 }}
                 ></Image>
                 <Text style={{ marginTop: 5 }}>Youtube</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={{ width: "25%", alignItems: "center" }}>
+              <TouchableOpacity
+                style={{ width: "25%", opacity: 0.5, alignItems: "center" }}
+              >
                 <Image
                   source={require("../assets/icons/facebook.png")}
                   style={{ width: 50, height: 50 }}
@@ -62,7 +82,9 @@ const myApps = () => {
                   style={{ width: 50, height: 50 }}></Image>
                 <Text style={{ marginTop: 5 }}>Google</Text>
               </TouchableOpacity> */}
-              <TouchableOpacity style={{ width: "25%", alignItems: "center" }}>
+              <TouchableOpacity
+                style={{ width: "25%", opacity: 0.5, alignItems: "center" }}
+              >
                 <Image
                   source={require("../assets/icons/gmail.png")}
                   style={{ width: 50, height: 50 }}
@@ -70,7 +92,7 @@ const myApps = () => {
                 <Text style={{ marginTop: 5 }}>Gmail</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{ width: "25%", alignItems: "center", marginTop: 15 }}
+                style={{ width: "25%", opacity: 0.5, alignItems: "center" }}
               >
                 <Image
                   source={require("../assets/icons/messenger.png")}
@@ -79,7 +101,12 @@ const myApps = () => {
                 <Text style={{ marginTop: 5 }}>Messenger</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{ width: "25%", alignItems: "center", marginTop: 15 }}
+                style={{
+                  width: "25%",
+                  opacity: 0.5,
+                  alignItems: "center",
+                  marginTop: 15,
+                }}
               >
                 <Image
                   source={require("../assets/icons/google-maps.png")}
@@ -88,7 +115,12 @@ const myApps = () => {
                 <Text style={{ marginTop: 5 }}>Google Maps</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{ width: "25%", alignItems: "center", marginTop: 15 }}
+                style={{
+                  width: "25%",
+                  opacity: 0.5,
+                  alignItems: "center",
+                  marginTop: 15,
+                }}
               >
                 <Image
                   source={require("../assets/icons/instagram.png")}
@@ -97,7 +129,12 @@ const myApps = () => {
                 <Text style={{ marginTop: 5 }}>instagram</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{ width: "25%", alignItems: "center", marginTop: 15 }}
+                style={{
+                  width: "25%",
+                  opacity: 0.5,
+                  alignItems: "center",
+                  marginTop: 15,
+                }}
               >
                 <Image
                   source={require("../assets/icons/amazon-pay.png")}
@@ -106,7 +143,12 @@ const myApps = () => {
                 <Text style={{ marginTop: 5 }}>Amazon</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{ width: "25%", alignItems: "center", marginTop: 15 }}
+                style={{
+                  width: "25%",
+                  opacity: 0.5,
+                  alignItems: "center",
+                  marginTop: 15,
+                }}
               >
                 <Image
                   source={require("../assets/icons/tik-tok.png")}
@@ -115,7 +157,12 @@ const myApps = () => {
                 <Text style={{ marginTop: 5 }}>Tik-Tok</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{ width: "25%", alignItems: "center", marginTop: 15 }}
+                style={{
+                  width: "25%",
+                  opacity: 0.5,
+                  alignItems: "center",
+                  marginTop: 15,
+                }}
               >
                 <Image
                   source={require("../assets/icons/whatsapp.png")}
@@ -124,7 +171,12 @@ const myApps = () => {
                 <Text style={{ marginTop: 5 }}>Whatsapp</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{ width: "25%", alignItems: "center", marginTop: 15 }}
+                style={{
+                  width: "25%",
+                  opacity: 0.5,
+                  alignItems: "center",
+                  marginTop: 15,
+                }}
               >
                 <Image
                   source={require("../assets/icons/telegram.png")}
@@ -133,7 +185,12 @@ const myApps = () => {
                 <Text style={{ marginTop: 5 }}>Telegram</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{ width: "25%", alignItems: "center", marginTop: 15 }}
+                style={{
+                  width: "25%",
+                  opacity: 0.5,
+                  alignItems: "center",
+                  marginTop: 15,
+                }}
               >
                 <Image
                   source={require("../assets/icons/snapchat.png")}
@@ -142,7 +199,12 @@ const myApps = () => {
                 <Text style={{ marginTop: 5 }}>Snapchat</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{ width: "25%", alignItems: "center", marginTop: 15 }}
+                style={{
+                  width: "25%",
+                  opacity: 0.5,
+                  alignItems: "center",
+                  marginTop: 15,
+                }}
               >
                 <Image
                   source={require("../assets/icons/twitter.png")}
@@ -151,7 +213,12 @@ const myApps = () => {
                 <Text style={{ marginTop: 5 }}>Twitter</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{ width: "25%", alignItems: "center", marginTop: 15 }}
+                style={{
+                  width: "25%",
+                  opacity: 0.5,
+                  alignItems: "center",
+                  marginTop: 15,
+                }}
               >
                 <Image
                   source={require("../assets/icons/discord.png")}
@@ -160,7 +227,12 @@ const myApps = () => {
                 <Text style={{ marginTop: 5 }}>Discord</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{ width: "25%", alignItems: "center", marginTop: 15 }}
+                style={{
+                  width: "25%",
+                  opacity: 0.5,
+                  alignItems: "center",
+                  marginTop: 15,
+                }}
               >
                 <Image
                   source={require("../assets/icons/slack.png")}
@@ -169,7 +241,12 @@ const myApps = () => {
                 <Text style={{ marginTop: 5 }}>Slack</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{ width: "25%", alignItems: "center", marginTop: 15 }}
+                style={{
+                  width: "25%",
+                  opacity: 0.5,
+                  alignItems: "center",
+                  marginTop: 15,
+                }}
               >
                 <Image
                   source={require("../assets/icons/netflix.png")}
@@ -178,7 +255,12 @@ const myApps = () => {
                 <Text style={{ marginTop: 5 }}>Netflix</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{ width: "25%", alignItems: "center", marginTop: 15 }}
+                style={{
+                  width: "25%",
+                  opacity: 0.5,
+                  alignItems: "center",
+                  marginTop: 15,
+                }}
               >
                 <Image
                   source={require("../assets/icons/reddit.png")}
@@ -187,7 +269,12 @@ const myApps = () => {
                 <Text style={{ marginTop: 5 }}>Reddit</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{ width: "25%", alignItems: "center", marginTop: 15 }}
+                style={{
+                  width: "25%",
+                  opacity: 0.5,
+                  alignItems: "center",
+                  marginTop: 15,
+                }}
               >
                 <Image
                   source={require("../assets/icons/google-drive.png")}
@@ -197,7 +284,12 @@ const myApps = () => {
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={{ width: "25%", alignItems: "center", marginTop: 15 }}
+                style={{
+                  width: "25%",
+                  opacity: 0.5,
+                  alignItems: "center",
+                  marginTop: 15,
+                }}
               >
                 <Image
                   source={require("../assets/icons/spotify.png")}
@@ -206,7 +298,12 @@ const myApps = () => {
                 <Text style={{ marginTop: 5 }}>Spotify</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{ width: "25%", alignItems: "center", marginTop: 15 }}
+                style={{
+                  width: "25%",
+                  opacity: 0.5,
+                  alignItems: "center",
+                  marginTop: 15,
+                }}
               >
                 <Image
                   source={require("../assets/icons/outlook.png")}
@@ -222,7 +319,12 @@ const myApps = () => {
                 <Text style={{ marginTop: 5 ,textAlign:'center'}}>Yahoo</Text>
               </TouchableOpacity> */}
               <TouchableOpacity
-                style={{ width: "25%", alignItems: "center", marginTop: 15 }}
+                style={{
+                  width: "25%",
+                  opacity: 0.5,
+                  alignItems: "center",
+                  marginTop: 15,
+                }}
               >
                 <Image
                   source={require("../assets/icons/meet.png")}
@@ -233,7 +335,12 @@ const myApps = () => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{ width: "25%", alignItems: "center", marginTop: 15 }}
+                style={{
+                  width: "25%",
+                  opacity: 0.5,
+                  alignItems: "center",
+                  marginTop: 15,
+                }}
               >
                 <Image
                   source={require("../assets/icons/notepad.png")}
@@ -244,7 +351,12 @@ const myApps = () => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{ width: "25%", alignItems: "center", marginTop: 15 }}
+                style={{
+                  width: "25%",
+                  opacity: 0.5,
+                  alignItems: "center",
+                  marginTop: 15,
+                }}
               >
                 <Image
                   source={require("../assets/icons/pinterest.png")}
@@ -255,7 +367,12 @@ const myApps = () => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{ width: "25%", alignItems: "center", marginTop: 15 }}
+                style={{
+                  width: "25%",
+                  opacity: 0.5,
+                  alignItems: "center",
+                  marginTop: 15,
+                }}
               >
                 <Image
                   source={require("../assets/icons/walmart.png")}
@@ -271,7 +388,12 @@ const myApps = () => {
                 <Text style={{ marginTop: 5 ,textAlign:'center'}}>Google Photos</Text>
               </TouchableOpacity> */}
               <TouchableOpacity
-                style={{ width: "25%", alignItems: "center", marginTop: 15 }}
+                style={{
+                  width: "25%",
+                  opacity: 0.5,
+                  alignItems: "center",
+                  marginTop: 15,
+                }}
               >
                 <Image
                   source={require("../assets/icons/calculator.png")}
@@ -282,7 +404,12 @@ const myApps = () => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{ width: "25%", alignItems: "center", marginTop: 15 }}
+                style={{
+                  width: "25%",
+                  opacity: 0.5,
+                  alignItems: "center",
+                  marginTop: 15,
+                }}
               >
                 <Image
                   source={require("../assets/icons/internet.png")}
@@ -293,7 +420,12 @@ const myApps = () => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{ width: "25%", alignItems: "center", marginTop: 15 }}
+                style={{
+                  width: "25%",
+                  opacity: 0.5,
+                  alignItems: "center",
+                  marginTop: 15,
+                }}
               >
                 <Image
                   source={require("../assets/icons/google-calendar.png")}
@@ -305,7 +437,12 @@ const myApps = () => {
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={{ width: "25%", alignItems: "center", marginTop: 15 }}
+                style={{
+                  width: "25%",
+                  opacity: 0.5,
+                  alignItems: "center",
+                  marginTop: 15,
+                }}
               >
                 <Image
                   source={require("../assets/icons/clock.png")}

@@ -74,6 +74,7 @@ const LoginScreen = ({ navigation }) => {
         if (response.data) {
           navigation.navigate("otp", {
             phoneNumber: `+${callingCodes}${userphoneNumber}`,
+            type: "Login",
           });
         } else {
           Alert.alert("Invalid PhoneNumber");

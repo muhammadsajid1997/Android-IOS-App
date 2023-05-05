@@ -60,27 +60,70 @@ const OtpScreen = ({ navigation }) => {
   };
 
   const ResendOTP = () => {
-    axios
-      .post(
-        "https://heyalli.azurewebsites.net/api/Identity/login",
-        {
-          PhoneNumber: route.params.phoneNumber,
-        },
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "multipart/form-data",
+    if (route.params.type == "Login") {
+      console.log("Login");
+      axios
+        .post(
+          "https://heyalli.azurewebsites.net/api/Identity/login",
+          {
+            PhoneNumber: route.params.phoneNumber,
           },
-        }
-      )
-      .then((response) => {
-        // console.log(response);
-        // navigation.navigate("Home", { screen: "home" });
-      })
-      .catch((error) => {
-        Alert.alert(error.response.data);
-        console.log("axios error:", error.response.data);
-      });
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
+        .then((response) => {
+          // console.log(response);
+          // navigation.navigate("Home", { screen: "home" });
+        })
+        .catch((error) => {
+          Alert.alert(error.response.data);
+          console.log("axios error:", error.response.data);
+        });
+    } else if (route.params.type == "Register") {
+      console.log("Register");
+      axios
+        .post(
+          "https://heyalli.azurewebsites.net/api/Identity/register",
+          {
+            FullName: route.params.name,
+            PhoneNumber: route.params.phoneNumber,
+          },
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
+        .then((response) => {
+          console.log("response get details:" + response.data);
+        })
+        .catch((error) => {
+          console.log(route.params.name);
+          console.log("axios error:", error.response.data);
+          if (
+            error.response.data == "User with this phone number already exists"
+          ) {
+            Alert.alert("User with this phone number already exists");
+          } else if (error.message == "Network Error") {
+            Alert.alert("Network Error");
+            // return null;
+          } else if (error.response.data.errors) {
+            Alert.alert(error.response.data.errors.FullName[0]);
+          }
+          //     Alert.alert(
+          //       error.response.data
+          //         ? error.response.data
+          //         : error.response.data.title
+          //     );
+        });
+    } else {
+      return null;
+    }
   };
 
   const userOtp = async () => {
