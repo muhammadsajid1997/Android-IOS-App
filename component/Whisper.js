@@ -54,6 +54,7 @@ import BackgroundTimer from "react-native-background-timer";
 import Tts from "react-native-tts";
 var RNFS = require("react-native-fs");
 var Sound = require("react-native-sound");
+import { useIsFocused, useNavigationState } from "@react-navigation/native";
 
 // var { TextDecoder } = require("util");
 // import { TextDecoder } from "util";
@@ -94,12 +95,15 @@ export default function whisper({ navigation }) {
   const dispatch = useDispatch();
   const scrollViewRef = useRef();
   const state = useSelector((state) => state.authReducers);
-
+  const isFocused = useIsFocused();
+  const navigationState = useNavigationState((state) => state);
+  const currentRoute1 = navigationState.routes[navigationState.index];
+  console.log("currentRoute1", currentRoute1);
   const [isListening, setIsListening] = useState(false);
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const appState = useRef(AppState.currentState);
-  const [appStateVisible, setAppStateVisible] = useState("active");
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const [manageState, SetmanageState] = useState(false);
   const [form, setForm] = useState({ email: null });
   const [errors, setErrors] = useState({});
@@ -112,7 +116,9 @@ export default function whisper({ navigation }) {
   const [partialResults, setPartialResults] = useState([]);
   const [color, setcolors] = useState("grey");
   const navigatation = useNavigation();
-  const route = useRoute();
+  const [timerCount, setTimer] = useState(300);
+  const currentRoute = navigatation.getState();
+
   useEffect(() => {
     getProfile();
   }, []);
@@ -122,10 +128,7 @@ export default function whisper({ navigation }) {
     Voice.onSpeechRecognized = onSpeechRecognized;
     Voice.onSpeechEnd = onSpeechEnd;
     Voice.onSpeechError = onSpeechError;
-    // Voice.onSpeechResults = onSpeechResults;
     Voice.onSpeechPartialResults = onSpeechPartialResults;
-    // Voice.onSpeechVolumeChanged = onSpeechVolumeChanged;
-
     return () => {
       Voice.destroy().then(Voice.removeAllListeners);
     };
@@ -138,6 +141,28 @@ export default function whisper({ navigation }) {
 
     return unsubscribe;
   }, []);
+
+  // useEffect(() => {
+  //   let interval = setInterval(() => {
+  //     setTimer((lastTimerCount) => {
+  //       lastTimerCount <= 1 && clearInterval(interval);
+  //       return lastTimerCount - 1;
+  //     });
+  //   }, 1000); //each count lasts for a second
+  //   //cleanup the interval on complete
+  //   return () => clearInterval(interval);
+  // }, []);
+
+  // const startTimerSec = () => {
+  //   let interval = setInterval(() => {
+  //     setTimer((lastTimerCount) => {
+  //       lastTimerCount <= 1 && clearInterval(interval);
+  //       return lastTimerCount - 1;
+  //     });
+  //   }, 1000); //each count lasts for a second
+  //   //cleanup the interval on complete
+  //   return () => clearInterval(interval);
+  // };
 
   // useEffect(async () => {
   //   const data = await AsyncStorage.getItem("isFirstTime");
@@ -173,35 +198,48 @@ export default function whisper({ navigation }) {
   //     subscription.remove();
   //   };
   // }, []);
+  useEffect(() => {
+    if (currentRoute1.name == "home") {
+      const subscription = AppState.addEventListener(
+        "change",
+        handleAppStateChange
+      );
+      return () => {
+        subscription.remove();
+      };
+    }
+  }, [currentRoute1]);
 
-  // useEffect(() => {
-  //   const subscription = AppState.addEventListener("change", (nextAppState) => {
-  //     if (
-  //       appState.current.match(/inactive|background/) &&
-  //       nextAppState === "active"
-  //     ) {
-  //       _startRecognizing();
-  //       console.log("App has come to the foreground!");
-  //     } else if (
-  //       appState.current.match(/inactive|active/) &&
-  //       nextAppState === "background"
-  //     ) {
-  //       _stopRecognizing();
-  //       console.log("app in bbb");
-  //       // onStartRecord();
-  //     }
-  //     console.log("AppState1", appState.current);
+  const handleAppStateChange = (nextAppState) => {
+    console.log("App State: " + nextAppState);
+    if (appState != nextAppState) {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === "active"
+      ) {
+        console.log("App State: " + "App has come to the foreground!");
+        // alert("App State: " + "App has come to the foreground!");
+      }
+      console.log("App Statedddd: " + nextAppState);
 
-  //     // appState.current = nextAppState;
+      // currentRoute.routes.map((index, i) => {
+      // if (index.name == "home") {
 
-  //     setAppStateVisible(appState.current);
-  //     console.log("AppState2", route);
-  //   });
+      // if (currentRoute1.name == "home") {
+      if (nextAppState == "background") {
+        _stopRecognizing();
+      } else {
+        _startRecognizing();
+      }
+      setAppStateVisible(nextAppState);
+      // }
 
-  //   return () => {
-  //     subscription.remove();
-  //   };
-  // }, [appStateVisible]);
+      // } else {
+      //   return null;
+      // }
+      // });
+    }
+  };
 
   const onSpeechStart = (e: any) => {
     console.log("onSpeechStart: ", e);
@@ -219,7 +257,7 @@ export default function whisper({ navigation }) {
   };
 
   const onSpeechError = (e: SpeechErrorEvent) => {
-    console.log("onSpeechError: ", e);
+    console.log("onSpeechError: ", e.error.code);
     setError(JSON.stringify(e.error));
   };
 
@@ -241,6 +279,27 @@ export default function whisper({ navigation }) {
   //     });
   // setResults(Data);
   // };
+
+  // function fancyTimeFormat(duration) {
+  //   // Hours, minutes and seconds
+  //   if (duration == 0) {
+  //     setTimer(300);
+  //     startTimerSec();
+  //     _stopRecognizing();
+  //     _startRecognizing();
+  //   } else {
+  //     const hrs = ~~(duration / 3600);
+  //     const mins = ~~((duration % 3600) / 60);
+  //     const secs = ~~duration % 60;
+  //     let ret = "";
+  //     if (hrs > 0) {
+  //       ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
+  //     }
+  //     ret += "" + mins + ":" + (secs < 10 ? "0" : "");
+  //     ret += "" + secs;
+  //     return ret;
+  //   }
+  // }
 
   const onSpeechPartialResults = (e: SpeechResultsEvent) => {
     var Data = e.value;
@@ -433,6 +492,7 @@ export default function whisper({ navigation }) {
   };
 
   const handleInputField = () => {
+    _stopRecognizing();
     setShowInput(!showInput);
   };
   const handleSend = (text) => {
@@ -483,20 +543,16 @@ export default function whisper({ navigation }) {
       });
       setIsLoading(false);
     } catch (e) {
+      setIsLoading(false);
       // Alert('Cannot play the file');
       console.log("cannot play the song file", e);
     }
   };
 
   const onStopRecord = async () => {
-    // console.log("RecordStop");
-
-    // console.log("hshahgsasgash");
     setStarted(false);
     AudioRecord.stop();
     const audioFile = await AudioRecord.stop();
-
-    // console.log("_startRecognizing();", audioFile);
     BackgroundTimer.stopBackgroundTimer();
     setcolors("grey");
     checkspeechData(audioFile);
@@ -526,6 +582,7 @@ export default function whisper({ navigation }) {
 
       if (data == "") {
         setisLoggingIn(false);
+        _stopRecognizing();
         _startRecognizing();
       } else {
         setisLoggingIn(true);
@@ -533,9 +590,6 @@ export default function whisper({ navigation }) {
       }
     } catch (error) {
       setisLoggingIn(false);
-      Alert.alert("Internal server Error");
-
-      // Alert('Cannot play the file');
       console.log("API Error", error);
     }
   };
@@ -543,11 +597,7 @@ export default function whisper({ navigation }) {
   const uploadAudioAsync = async (uri) => {
     try {
       const token = await AsyncStorage.getItem("token");
-      // setisLoggingIn(true);
-      // const UsersData = await AsyncStorage.getItem("Token");
-      console.log();
       const formData1 = new FormData();
-
       const apiUrl = "https://heyalli.azurewebsites.net/api/HeyAlli";
 
       const Data = {
@@ -764,6 +814,7 @@ export default function whisper({ navigation }) {
               <TouchableOpacity
                 style={{ padding: 10, marginLeft: 10 }}
                 onPress={() => {
+                  _stopRecognizing();
                   navigate("ReferralData");
                 }}
               >
@@ -805,6 +856,7 @@ export default function whisper({ navigation }) {
                   >
                     <FontAwesome name="microphone" size={32} color={"#fff"} />
                   </TouchableOpacity>
+                  {/* <Text>{fancyTimeFormat(timerCount)}</Text> */}
                 </View>
               ) : (
                 <TouchableOpacity
@@ -827,6 +879,7 @@ export default function whisper({ navigation }) {
           onRequestClose={() => {
             // Alert.alert("Modal has been closed.");
             // AudioRecord.stop();
+            _startRecognizing();
             setShowInput(!showInput);
           }}
         >
@@ -863,7 +916,12 @@ export default function whisper({ navigation }) {
             />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => setModalVisible(true)}>
+          <TouchableOpacity
+            onPress={() => {
+              _stopRecognizing();
+              setModalVisible(true);
+            }}
+          >
             <Entypo name="menu" size={28} color={"#000"} />
           </TouchableOpacity>
         </View>
@@ -876,6 +934,7 @@ export default function whisper({ navigation }) {
           visible={modalVisible}
           onRequestClose={() => {
             // Alert.alert("Modal has been closed.");
+            _startRecognizing();
             setModalVisible(!modalVisible);
           }}
         >
@@ -1461,6 +1520,7 @@ export default function whisper({ navigation }) {
                           marginTop: 5,
                         }}
                         onPress={() => {
+                          _startRecognizing();
                           setModalVisible(false), setSection("Profile");
                         }}
                       >
