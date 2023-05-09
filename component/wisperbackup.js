@@ -16,47 +16,33 @@ import {
   SafeAreaView,
   AppState,
   BackHandler,
+  Share,
 } from "react-native";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Voice, {
   SpeechRecognizedEvent,
   SpeechResultsEvent,
   SpeechErrorEvent,
 } from "@react-native-voice/voice";
 import axios from "axios";
-// import { Audio } from "expo-av";
-// import Logo from './Images/homeLogo.jpg'
-// import { FontAwesome } from "@expo/vector-icons";
-// import TextEffect from "./Shared/typeEffect"
 import { SelectCountry } from "react-native-element-dropdown";
-import {
-  PorcupineManager,
-  BuiltInKeywords,
-  PorcupineErrors,
-} from "@picovoice/porcupine-react-native";
-
 import CustomInput from "../component/Shared/customInput";
 import ChatUI from "../component/Shared/chatUI";
 import RNFetchBlob from "rn-fetch-blob";
-
-// import { AntDesign } from '@expo/vector-icons';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-// import { signOutFunc,auth } from "../firebaseConfig";
 import AudioRecord from "react-native-audio-record";
-// import SoundPlayer from "react-native-sound-player";
 import FontAwesome from "react-native-vector-icons/FontAwesome5";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { logout, setLogout } from "./Redux/authActions";
 import { useDispatch, useSelector } from "react-redux";
 import VoiceComponent from "./Record/Voice";
 import BackgroundTimer from "react-native-background-timer";
-import Tts from "react-native-tts";
 var RNFS = require("react-native-fs");
 var Sound = require("react-native-sound");
+import { useIsFocused, useNavigationState } from "@react-navigation/native";
 Sound.setCategory("Playback");
 const dirs = RNFetchBlob.fs.dirs;
 
@@ -83,7 +69,6 @@ export default function whisper({ navigation }) {
   let [started, setStarted] = useState(false);
   const [isLoggingIn, setisLoggingIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  let [results, setResults] = useState("");
   let [voiceResult, setVoiceResult] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [modalSection, setSection] = useState("Home");
@@ -94,201 +79,240 @@ export default function whisper({ navigation }) {
   const dispatch = useDispatch();
   const scrollViewRef = useRef();
   const state = useSelector((state) => state.authReducers);
-  console.log(state);
-  const [isListening, setIsListening] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const navigationState = useNavigationState((state) => state);
+  const currentRoute1 = navigationState.routes[navigationState.index];
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const [form, setForm] = useState({ email: null });
   const [errors, setErrors] = useState({});
-  let _accessKey = "uFXJZFIvHQD9ym3OKWSO9WD8xD3+DbqTJpoPtOALA4QkACtuHc6vdQ=="; // AccessKey obtained from Picovoice Console (https://console.picovoice.ai/)
-  let _keyword = "hey alli";
-
-  var _porcupineManager = PorcupineManager | undefined;
-
-  const _toggleListening = () => {
-    console.log("isListening", isListening);
-    // if (isListening) {
-    abc();
-    _startProcessing();
-    // } else {
-
-    //   _startProcessing();
-    // }
-  };
+  const [recognized, setRecognized] = useState("");
+  const [volume, setVolume] = useState("");
+  const [error, setError] = useState("");
+  const [end, setEnd] = useState("");
+  const [results, setResults] = useState([]);
+  const [partialResults, setPartialResults] = useState([]);
+  const [color, setcolors] = useState("grey");
+  const navigatation = useNavigation();
+  const [timerCount, setTimer] = useState(300);
+  var DataName = "Active";
 
   useEffect(() => {
     getProfile();
-    const subscription = AppState.addEventListener("change", (nextAppState) => {
+  }, []);
+
+  useEffect(() => {
+    Voice.onSpeechStart = onSpeechStart;
+    Voice.onSpeechRecognized = onSpeechRecognized;
+    Voice.onSpeechEnd = onSpeechEnd;
+    Voice.onSpeechError = onSpeechError;
+    Voice.onSpeechPartialResults = onSpeechPartialResults;
+    return () => {
+      Voice.destroy().then(Voice.removeAllListeners);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    const unsubscribe = navigatation.addListener("focus", () => {
+      _startRecognizing();
+    });
+
+    return unsubscribe;
+  }, []);
+
+  // useEffect(() => {
+  //   let interval = setInterval(() => {
+  //     setTimer((lastTimerCount) => {
+  //       lastTimerCount <= 1 && clearInterval(interval);
+  //       return lastTimerCount - 1;
+  //     });
+  //   }, 1000); //each count lasts for a second
+  //   //cleanup the interval on complete
+  //   return () => clearInterval(interval);
+  // }, []);
+
+  // const startTimerSec = () => {
+  //   let interval = setInterval(() => {
+  //     setTimer((lastTimerCount) => {
+  //       lastTimerCount <= 1 && clearInterval(interval);
+  //       return lastTimerCount - 1;
+  //     });
+  //   }, 1000); //each count lasts for a second
+  //   //cleanup the interval on complete
+  //   return () => clearInterval(interval);
+  // };
+
+  // useEffect(async () => {
+  //   const data = await AsyncStorage.getItem("isFirstTime");
+  //   if (data == null) {
+  //     _startRecognizing();
+  //     const jsonValue = JSON.stringify(true);
+  //     await AsyncStorage.setItem("isFirstTime", jsonValue);
+  //   }
+  // }, []);
+
+  // useEffect(async () => {
+  //   const subscription = AppState.addEventListener("change", (nextAppState) => {
+  //     if (
+  //       appState.current.match(/inactive|background/) &&
+  //       nextAppState === "active"
+  //     ) {
+  //       _startRecognizing();
+  //       console.log("App has come to the foreground!");
+  //     } else if (
+  //       appState.current.match(/inactive|active/) &&
+  //       nextAppState === "background"
+  //     ) {
+  //       _stopRecognizing();
+  //     }
+
+  //     appState.current = nextAppState;
+  //     setAppStateVisible(appState.current);
+  //     // console.log("methodcalled");
+  //     // console.log("AppState", appState.current);
+  //   });
+
+  //   return () => {
+  //     subscription.remove();
+  //   };
+  // }, []);
+  useEffect(() => {
+    if (currentRoute1.name == "home") {
+      const subscription = AppState.addEventListener(
+        "change",
+        handleAppStateChange
+      );
+      return () => {
+        subscription.remove();
+      };
+    }
+  }, [currentRoute1]);
+
+  const handleAppStateChange = (nextAppState) => {
+    console.log("App State: " + nextAppState);
+    if (appState != nextAppState) {
       if (
         appState.current.match(/inactive|background/) &&
         nextAppState === "active"
       ) {
-      } else if (
-        appState.current.match(/inactive|active/) &&
-        nextAppState === "background"
-      ) {
-        // _toggleListening();
-        // onStartRecord();
-        // console.log("app in bbb");
-        // setTimeout(() => onStopRecord(), 4000);
+        console.log("App State: " + "App has come to the foreground!");
+        // alert("App State: " + "App has come to the foreground!");
       }
-
-      appState.current = nextAppState;
-      setAppStateVisible(appState.current);
-      console.log("AppState", appState.current);
-    });
-
-    return () => {
-      subscription.remove();
-      _porcupineManager?.delete();
-    };
-  }, []);
-
-  const _startProcessing = async () => {
-    let recordAudioRequest;
-    if (Platform.OS === "android") {
-      console.log("android");
-      recordAudioRequest = _requestRecordAudioPermission();
-      console.log("recordAudioRequest", recordAudioRequest);
-    } else {
-      console.log("android1");
-      recordAudioRequest = new Promise(function (resolve, _) {
-        resolve(true);
-      });
-    }
-
-    recordAudioRequest.then(async (hasPermission) => {
-      console.log("hasPermission", hasPermission);
-      if (!hasPermission) {
-        console.error(
-          "Required permissions (Microphone)we're not found. Please add to platform code."
-        );
-        return;
+      console.log("App Statedddd: " + nextAppState);
+      if (nextAppState == "background") {
+        _stopRecognizing();
+        setAppStateVisible(nextAppState);
+        DataName = "background";
+        RecordStop();
       } else {
-        try {
-          await _porcupineManager?.start().then((didStop) => {
-            _porcupineManager?.delete();
-            if (didStop) {
-              setIsListening(true);
-            }
-          });
-        } catch (e) {
-          console.log("start error -- ", e);
-        }
+        _startRecognizing();
+        DataName = "Active";
+        setAppStateVisible(nextAppState);
       }
-    });
-  };
-  const _stopProcessing = async () => {
-    try {
-      // await _porcupineManager?.delete();
-      await _porcupineManager?.stop().then((didStop) => {
-        console.log("stop recording");
-        if (didStop) {
-          setIsListening(false);
-        }
-      });
-    } catch (error) {
-      console.log("stop error", error);
     }
   };
 
-  const _requestRecordAudioPermission = async () => {
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-        {
-          title: "Microphone Permission",
-          message:
-            "Porcupine needs access to your microphone to listen for wake words.",
-          buttonNeutral: "Ask Me Later",
-          buttonNegative: "Cancel",
-          buttonPositive: "OK",
-        }
-      );
-      return granted === PermissionsAndroid.RESULTS.GRANTED;
-    } catch (err) {
-      setIsError(true);
-      setErrorMessage(err.toString());
-
-      return false;
-    }
+  const onSpeechStart = (e: any) => {
+    console.log("onSpeechStart: ", e);
+    setStarted("√");
   };
 
-  const abc = async () => {
-    // console.log(_keyword, "--speack--");
-
-    try {
-      _porcupineManager = await PorcupineManager.fromKeywordPaths(
-        _accessKey,
-        ["resource/hey-alli_en_android_v2_2_0.ppn"],
-        async (keywordIndex) => {
-          console.log("keywordIndex", keywordIndex);
-          if (keywordIndex >= 0) {
-            await _porcupineManager.delete();
-            // console.log("match hey alli");
-            Tts.speak("Welcome");
-            // _toggleListening();
-            onStartRecord();
-
-            // AudioRecord.init(options);
-            // setStarted(true);
-            // AudioRecord.start();
-            // console.log("RecordStart");
-          }
-        },
-        (error) => {
-          _stopProcessing();
-          setIsError(true);
-          setErrorMessage(error.message);
-        },
-        "",
-        [0.5]
-      );
-    } catch (err) {
-      console.log("err", err);
-      let errorMessage = "";
-      if (err instanceof PorcupineErrors.PorcupineInvalidArgumentError) {
-        errorMessage = `${err.message}\nPlease make sure accessKey ${this._accessKey} is a valid access key.`;
-      } else if (err instanceof PorcupineErrors.PorcupineActivationError) {
-        errorMessage = "AccessKey activation error";
-      } else if (err instanceof PorcupineErrors.PorcupineActivationLimitError) {
-        errorMessage = "AccessKey reached its device limit";
-      } else if (
-        err instanceof PorcupineErrors.PorcupineActivationRefusedError
-      ) {
-        errorMessage = "AccessKey refused";
-      } else if (
-        err instanceof PorcupineErrors.PorcupineActivationThrottledError
-      ) {
-        errorMessage = "AccessKey has been throttled";
-      } else {
-        errorMessage = err.toString();
-      }
-
-      setIsError(true);
-      setErrorMessage(errorMessage);
-    }
+  const onSpeechRecognized = (e: SpeechRecognizedEvent) => {
+    console.log("onSpeechRecognized: ", e);
+    setRecognized("√");
   };
-  // console.log(state.token);
-  //   const soundRef = useRef(null);
 
-  //   useEffect(() => {
-  //     Voice.onSpeechError = onSpeechError;
-  //     Voice.onSpeechResults = onSpeechResults;
+  const onSpeechEnd = (e: any) => {
+    console.log("onSpeechEnd: ", e);
+    setEnd("√");
+  };
 
-  //     return () => {
-  //       Voice.destroy().then(Voice.removeAllListeners);
+  const onSpeechError = (e: SpeechErrorEvent) => {
+    console.log("onSpeechError: ", e.error.code);
+    setError(JSON.stringify(e.error));
+  };
+
+  // const onSpeechResults = (e: SpeechResultsEvent) => {
+  // var Data = e.value;
+  // console.log("Data", Data);
+  // Data.length == 0
+  //   ? []
+  //   : Data.map((index, i) => {
+  //       if (index.toLocaleLowerCase().includes("hey ali")) {
+  //         Tts.speak("Welcome");
+  //         onStartRecord();
+  //       } else {
+  //         _startRecognizing();
+  //       }
+  //       // console.log("index", index);
+  //       // console.log("i", i);
+  //       // console.log("onSpeechResults: ", Data);
+  //     });
+  // setResults(Data);
+  // };
+
+  // function fancyTimeFormat(duration) {
+  //   // Hours, minutes and seconds
+  //   if (duration == 0) {
+  //     setTimer(300);
+  //     startTimerSec();
+  //     _stopRecognizing();
+  //     _startRecognizing();
+  //   } else {
+  //     const hrs = ~~(duration / 3600);
+  //     const mins = ~~((duration % 3600) / 60);
+  //     const secs = ~~duration % 60;
+  //     let ret = "";
+  //     if (hrs > 0) {
+  //       ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
   //     }
-  //   }, []);
+  //     ret += "" + mins + ":" + (secs < 10 ? "0" : "");
+  //     ret += "" + secs;
+  //     return ret;
+  //   }
+  // }
+
+  const onSpeechPartialResults = (e: SpeechResultsEvent) => {
+    var Data = e.value;
+    console.log("Data", Data);
+    Data.map((index, i) => {
+      if (index.toLocaleLowerCase().includes("hey ali")) {
+        _stopRecognizing();
+        onStartRecord();
+      } else {
+        // console.log("else part");
+        // _startRecognizing();
+      }
+      // console.log("index", index);
+      // console.log("i", i);
+      // console.log("onSpeechResults: ", Data);
+    });
+  };
+
+  const _startRecognizing = async () => {
+    try {
+      await Voice.start("en-US", {
+        EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS: 300000,
+      });
+      console.log("Recording start");
+      setisLoggingIn(false);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const _stopRecognizing = async () => {
+    console.log("Recording stop");
+    try {
+      await Voice.stop();
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   useEffect(() => {
-    // AudioRecord.init(options);
     setReceivedText("");
     setTypeText("");
     setResults("");
-    // setVoiceResult('')
   }, [showInput]);
 
   const onChange = ({ name, value }) => {
@@ -300,26 +324,6 @@ export default function whisper({ navigation }) {
       });
     }
   };
-
-  const startSpeechToText = async () => {
-    await Voice.start("en-NZ");
-    setStarted(true);
-    setResults("");
-    setVoiceResult("");
-  };
-
-  const stopSpeechToText = async () => {
-    await Voice.stop();
-    setStarted(false);
-  };
-
-  //   const onSpeechResults = (result) => {
-  //     sendAnswer(result?.value)
-  //   };
-
-  //   const onSpeechError = (error) => {
-  //     console.log(error);
-  //   };
 
   const sendAnswer = async (text) => {
     const token = await AsyncStorage.getItem("token");
@@ -362,7 +366,7 @@ export default function whisper({ navigation }) {
         setResults(text);
         setReceivedText(text);
         const dirs = RNFetchBlob.fs.dirs;
-        const filePath = RNFS.DownloadDirectoryPath + "/audio.mp3";
+        const filePath = RNFS.CachesDirectoryPath + "/audio.mp3";
         const fileData = response?.data.split(",")[1];
 
         RNFetchBlob.fs
@@ -383,12 +387,12 @@ export default function whisper({ navigation }) {
               return;
             }
             // loaded successfully
-            console.log(
-              "duration in seconds: " +
-                whoosh.getDuration() +
-                "number of channels: " +
-                whoosh.getNumberOfChannels()
-            );
+            // console.log(
+            //   "duration in seconds: " +
+            //     whoosh.getDuration() +
+            //     "number of channels: " +
+            //     whoosh.getNumberOfChannels()
+            // );
 
             // Play the sound with an onEnd callback
             whoosh.play((success) => {
@@ -416,85 +420,24 @@ export default function whisper({ navigation }) {
       });
   };
 
-  //   useEffect(() => {
-  //     handlePlayButtonPress()
-  //   }, [voiceResult])
-
-  //   const handlePlayButtonPress = async () => {
-  //     try {
-  //       if (soundRef.current !== null) {
-  //         await soundRef.current.unloadAsync();
-  //       }
-  //       const { sound } = await Audio.Sound.createAsync(
-  //         { uri: 'data:audio/wav;base64,' + voiceResult },
-  //         { shouldPlay: true }
-  //       );
-  //       soundRef.current = sound;
-  //     } catch (err) {
-  //       // console.error('Failed to play audio', err);
-  //     }
-  //   };
-  //   const scrollViewRef = useRef();
-
-  //   useEffect(() => {
-  //     const interval = setInterval(() => {
-  //       scrollViewRef?.current?.scrollToEnd({ animated: true });
-  //     }, 3000);
-  //     return () => clearInterval(interval);
-  //   }, []);
-
   const handleInputField = () => {
+    _stopRecognizing();
     setShowInput(!showInput);
-    // setShowInput(!showInput);
   };
   const handleSend = (text) => {
-    // do something with the text (e.g. send a message to a server)
     setTypeText(text);
     sendAnswer(text);
   };
 
   const onStartRecord = async () => {
-    // console.log("function call");
-    // if (Platform.OS === "android") {
-    //   try {
-    //     const grants = await PermissionsAndroid.requestMultiple([
-    //       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-    //       PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-    //       PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-    //     ]);
-
-    //     console.log("write external stroage", grants);
-
-    //     if (
-    //       grants["android.permission.WRITE_EXTERNAL_STORAGE"] ===
-    //         PermissionsAndroid.RESULTS.GRANTED &&
-    //       grants["android.permission.READ_EXTERNAL_STORAGE"] ===
-    //         PermissionsAndroid.RESULTS.GRANTED &&
-    //       grants["android.permission.RECORD_AUDIO"] ===
-    //         PermissionsAndroid.RESULTS.GRANTED
-    //     ) {
+    setcolors("red");
     AudioRecord.init(options);
     setStarted(true);
     AudioRecord.start();
-
     BackgroundTimer.runBackgroundTimer(() => {
       onStopRecord();
-      // console.log("stopfunction called");
     }, 5000);
-
-    // setTimeout(() => console.log("stopfunction called"), 4000);
-    //   } else {
-    //     console.log("All required permissions not granted");
-
-    //     return;
-    //   }
-    // } catch (err) {
-    //   // console.warn(err);
-
     return;
-
-    // }
-    // }
   };
 
   const PlayAudio = (filePath) => {
@@ -519,6 +462,11 @@ export default function whisper({ navigation }) {
           if (success) {
             whoosh.stop();
             whoosh.release();
+            if (DataName == "background") {
+              AudioRecord.stop();
+            } else {
+              onStartRecord();
+            }
 
             console.log("successfully finished playing");
           } else {
@@ -528,32 +476,73 @@ export default function whisper({ navigation }) {
       });
       setIsLoading(false);
     } catch (e) {
+      setIsLoading(false);
       // Alert('Cannot play the file');
       console.log("cannot play the song file", e);
     }
   };
 
   const onStopRecord = async () => {
-    // console.log("RecordStop");
-
-    // console.log("hshahgsasgash");
     setStarted(false);
     AudioRecord.stop();
-
     const audioFile = await AudioRecord.stop();
     BackgroundTimer.stopBackgroundTimer();
+    setcolors("grey");
+    checkspeechData(audioFile);
+  };
 
-    uploadAudioAsync(audioFile);
+  const RecordStop = async () => {
+    setStarted(false);
+    setcolors("grey");
+    AudioRecord.stop();
+  };
+
+  const checkspeechData = async (uri) => {
+    try {
+      setisLoggingIn(true);
+      const token = await AsyncStorage.getItem("token");
+      const formData1 = new FormData();
+      const apiUrl = "https://heyalli.azurewebsites.net/api/convert/stt";
+      const Data = {
+        uri: "file:////" + uri,
+        name: "test.wav",
+        type: "audio/wav",
+      };
+      // console.log("Data", JSON.stringify(Data))
+
+      formData1.append("audio", Data);
+
+      const { data } = await axios.post(apiUrl, formData1, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (data == "") {
+        console.log("APPdssdsbhbsddb", DataName);
+
+        if (DataName == "background") {
+          setisLoggingIn(false);
+          _stopRecognizing();
+          RecordStop();
+        } else {
+          _startRecognizing();
+        }
+      } else {
+        setisLoggingIn(true);
+        uploadAudioAsync(uri);
+      }
+    } catch (error) {
+      setisLoggingIn(false);
+      console.log("API Error", error);
+    }
   };
 
   const uploadAudioAsync = async (uri) => {
     try {
       const token = await AsyncStorage.getItem("token");
-      setisLoggingIn(true);
-      // const UsersData = await AsyncStorage.getItem("Token");
-      console.log();
       const formData1 = new FormData();
-
       const apiUrl = "https://heyalli.azurewebsites.net/api/HeyAlli";
 
       const Data = {
@@ -561,7 +550,7 @@ export default function whisper({ navigation }) {
         name: "test.wav",
         type: "audio/wav",
       };
-      console.log("Data", JSON.stringify(Data));
+      // console.log("Data", JSON.stringify(Data));
 
       formData1.append("speech", Data);
 
@@ -573,16 +562,8 @@ export default function whisper({ navigation }) {
       });
 
       if (data) {
-        console.log("dataaaaa", data);
         setisLoggingIn(false);
-        // BackgroundTimer.runBackgroundTimer(() => {
-        //   onStartRecord();
-        //   // console.log("Start called");
-        // }, 5000);
-        const dirs = RNFetchBlob.fs.dirs;
-        const filePath = RNFS.DownloadDirectoryPath + "/audio.mp3";
-        const fileData = data.split(",")[1];
-
+        const filePath = RNFS.CachesDirectoryPath + "/audio.mp3";
         RNFetchBlob.fs
           .writeFile(filePath, data, "base64")
           .then(() => {
@@ -642,6 +623,7 @@ export default function whisper({ navigation }) {
 
     if (response.data) {
       // _toggleListening();
+
       // abc();
       setForm({
         firstName: response.data.firstName,
@@ -702,13 +684,34 @@ export default function whisper({ navigation }) {
     dispatch(setLogout());
   };
 
+  const ShareApp = async () => {
+    _stopRecognizing();
+    navigate("ShareScreen");
+    // const number = await AsyncStorage.getItem("number");
+    // console.log(number);
+    // const refcode = number;
+    // const palylink =
+    //   "https://play.google.com/store/apps/details?id=com.heyalli";
+
+    // try {
+    //   await Share.share(
+    //     {
+    //       message: `hello this is link to joint to hey alli app ${palylink}&ReferralCode=${refcode}`,
+    //     },
+    //     { dialogTitle: "Share BAM goodness" }
+    //   );
+    // } catch (error) {
+    //   console.log(error, "--share link error--");
+    // }
+  };
+
   return (
     <View style={styles.root}>
       {/* <VoiceComponent /> */}
       <SafeAreaView />
       {!showInput ? (
         <>
-          <View
+          {/* <View
             style={{
               alignSelf: "flex-end",
               margin: 30,
@@ -717,6 +720,52 @@ export default function whisper({ navigation }) {
             }}
           >
             <Text style={{ color: "white" }}> CC </Text>
+          </View> */}
+
+          <View
+            style={{
+              justifyContent: "space-between",
+              paddingHorizontal: 20,
+              alignItems: "center",
+              paddingVertical: 10,
+              flexDirection: "row",
+              width: "100%",
+            }}
+          >
+            <TouchableOpacity
+              style={{ padding: 10 }}
+              onPress={() => {
+                ShareApp();
+              }}
+            >
+              <Image
+                source={require("../assets/share.png")}
+                style={{
+                  height: 30,
+                  width: 30,
+                }}
+              />
+            </TouchableOpacity>
+            <View
+              style={{
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexDirection: "row",
+              }}
+            >
+              <TouchableOpacity style={{ padding: 10 }}>
+                <FontAwesome name={"closed-captioning"} size={23} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{ padding: 10, marginLeft: 10 }}
+                onPress={() => {
+                  _stopRecognizing();
+                  navigate("ReferralData");
+                }}
+              >
+                <FontAwesome name={"people-arrows"} size={22} />
+              </TouchableOpacity>
+            </View>
           </View>
 
           <View style={{ flex: 1, marginHorizontal: 20, alignItems: "center" }}>
@@ -736,28 +785,27 @@ export default function whisper({ navigation }) {
           <View>
             <View style={styles.container}>
               {!isLoggingIn ? (
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: !started ? "#fff" : "#000",
-                    width: 64,
-                    height: 64,
-                    borderRadius: 32,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    alignItems: "center",
-                  }}
-                  // onPress={_toggleListening}
-                  onPress={!started ? onStartRecord : onStopRecord}
-                >
-                  <FontAwesome
-                    name="microphone"
-                    size={32}
-                    color={!started ? "#000" : "#fff"}
-                  />
-                </TouchableOpacity>
+                <View>
+                  <TouchableOpacity
+                    style={{
+                      backgroundColor: color,
+                      width: 64,
+                      height: 64,
+                      borderRadius: 32,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      alignItems: "center",
+                    }}
+                    // onPress={_startRecognizing}
+                    // onPress={!started ? onStartRecord : onStopRecord}
+                  >
+                    <FontAwesome name="microphone" size={32} color={"#fff"} />
+                  </TouchableOpacity>
+                  {/* <Text>{fancyTimeFormat(timerCount)}</Text> */}
+                </View>
               ) : (
                 <TouchableOpacity
-                  style={[styles.circleButton, { backgroundColor: "#000" }]}
+                  style={[styles.circleButton, { backgroundColor: "grey" }]}
                   disabled
                 >
                   <ActivityIndicator size={32} color="#fff" />
@@ -776,11 +824,13 @@ export default function whisper({ navigation }) {
           onRequestClose={() => {
             // Alert.alert("Modal has been closed.");
             // AudioRecord.stop();
+            _startRecognizing();
             setShowInput(!showInput);
           }}
         >
           <View style={{ flex: 1 }}>
             <View style={{ marginTop: 10, width: "100%" }}>
+              <SafeAreaView />
               <Text
                 style={{
                   ...styles.title,
@@ -811,7 +861,12 @@ export default function whisper({ navigation }) {
             />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => setModalVisible(true)}>
+          <TouchableOpacity
+            onPress={() => {
+              _stopRecognizing();
+              setModalVisible(true);
+            }}
+          >
             <Entypo name="menu" size={28} color={"#000"} />
           </TouchableOpacity>
         </View>
@@ -824,10 +879,12 @@ export default function whisper({ navigation }) {
           visible={modalVisible}
           onRequestClose={() => {
             // Alert.alert("Modal has been closed.");
+            _startRecognizing();
             setModalVisible(!modalVisible);
           }}
         >
           <View style={{ flex: 1 }}>
+            <SafeAreaView />
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
               <View style={styles.centeredView}>
                 <View style={styles.modalView}>
@@ -1408,6 +1465,7 @@ export default function whisper({ navigation }) {
                           marginTop: 5,
                         }}
                         onPress={() => {
+                          _startRecognizing();
                           setModalVisible(false), setSection("Profile");
                         }}
                       >

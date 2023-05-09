@@ -25,22 +25,11 @@ import Voice, {
   SpeechErrorEvent,
 } from "@react-native-voice/voice";
 import axios from "axios";
-// import { Audio } from "expo-av";
-// import Logo from './Images/homeLogo.jpg'
-// import { FontAwesome } from "@expo/vector-icons";
-// import TextEffect from "./Shared/typeEffect"
 import { SelectCountry } from "react-native-element-dropdown";
-
 import CustomInput from "../component/Shared/customInput";
 import ChatUI from "../component/Shared/chatUI";
 import RNFetchBlob from "rn-fetch-blob";
-import { Buffer } from "buffer";
-
-// import { AntDesign } from '@expo/vector-icons';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-// import { signOutFunc,auth } from "../firebaseConfig";
 import AudioRecord from "react-native-audio-record";
-// import SoundPlayer from "react-native-sound-player";
 import FontAwesome from "react-native-vector-icons/FontAwesome5";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -51,14 +40,9 @@ import { logout, setLogout } from "./Redux/authActions";
 import { useDispatch, useSelector } from "react-redux";
 import VoiceComponent from "./Record/Voice";
 import BackgroundTimer from "react-native-background-timer";
-import Tts from "react-native-tts";
 var RNFS = require("react-native-fs");
 var Sound = require("react-native-sound");
 import { useIsFocused, useNavigationState } from "@react-navigation/native";
-
-// var { TextDecoder } = require("util");
-// import { TextDecoder } from "util";
-import base64js from "base64-js";
 Sound.setCategory("Playback");
 const dirs = RNFetchBlob.fs.dirs;
 
@@ -95,19 +79,12 @@ export default function whisper({ navigation }) {
   const dispatch = useDispatch();
   const scrollViewRef = useRef();
   const state = useSelector((state) => state.authReducers);
-  const isFocused = useIsFocused();
   const navigationState = useNavigationState((state) => state);
   const currentRoute1 = navigationState.routes[navigationState.index];
-  console.log("currentRoute1", currentRoute1);
-  const [isListening, setIsListening] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
-  const [manageState, SetmanageState] = useState(false);
   const [form, setForm] = useState({ email: null });
   const [errors, setErrors] = useState({});
-
   const [recognized, setRecognized] = useState("");
   const [volume, setVolume] = useState("");
   const [error, setError] = useState("");
@@ -117,7 +94,7 @@ export default function whisper({ navigation }) {
   const [color, setcolors] = useState("grey");
   const navigatation = useNavigation();
   const [timerCount, setTimer] = useState(300);
-  const currentRoute = navigatation.getState();
+  var DataName = "Active";
 
   useEffect(() => {
     getProfile();
@@ -221,23 +198,16 @@ export default function whisper({ navigation }) {
         // alert("App State: " + "App has come to the foreground!");
       }
       console.log("App Statedddd: " + nextAppState);
-
-      // currentRoute.routes.map((index, i) => {
-      // if (index.name == "home") {
-
-      // if (currentRoute1.name == "home") {
       if (nextAppState == "background") {
         _stopRecognizing();
+        setAppStateVisible(nextAppState);
+        DataName = "background";
+        RecordStop();
       } else {
         _startRecognizing();
+        DataName = "Active";
+        setAppStateVisible(nextAppState);
       }
-      setAppStateVisible(nextAppState);
-      // }
-
-      // } else {
-      //   return null;
-      // }
-      // });
     }
   };
 
@@ -306,8 +276,6 @@ export default function whisper({ navigation }) {
     console.log("Data", Data);
     Data.map((index, i) => {
       if (index.toLocaleLowerCase().includes("hey ali")) {
-        // Tts.speak("Welcome");
-
         _stopRecognizing();
         onStartRecord();
       } else {
@@ -318,18 +286,9 @@ export default function whisper({ navigation }) {
       // console.log("i", i);
       // console.log("onSpeechResults: ", Data);
     });
-    // console.log("onSpeechPartialResults: ", e);
-    // setPartialResults(e.value);
   };
 
-  // const onSpeechVolumeChanged = (e: any) => {
-  //   console.log("onSpeechVolumeChanged: ", e);
-  //   setVolume(e.value);
-  // };
-
   const _startRecognizing = async () => {
-    // console.log("appStateVisible", strappState);
-    // if (strappState == "active") {
     try {
       await Voice.start("en-US", {
         EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS: 300000,
@@ -339,7 +298,6 @@ export default function whisper({ navigation }) {
     } catch (e) {
       console.error(e);
     }
-    // }
   };
 
   const _stopRecognizing = async () => {
@@ -351,39 +309,10 @@ export default function whisper({ navigation }) {
     }
   };
 
-  const _cancelRecognizing = async () => {
-    try {
-      await Voice.cancel();
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  // const _destroyRecognizer = async () => {
-  //   try {
-  //     await Voice.destroy();
-  //   } catch (e) {
-  //     console.error(e);
-  //   }
-  //   _clearState();
-  // };
-
-  const _clearState = () => {
-    setRecognized("");
-    setVolume("");
-    setError("");
-    setEnd("");
-    setStarted("");
-    setResults([]);
-    setPartialResults([]);
-  };
-
   useEffect(() => {
-    // AudioRecord.init(options);
     setReceivedText("");
     setTypeText("");
     setResults("");
-    // setVoiceResult('')
   }, [showInput]);
 
   const onChange = ({ name, value }) => {
@@ -458,12 +387,12 @@ export default function whisper({ navigation }) {
               return;
             }
             // loaded successfully
-            console.log(
-              "duration in seconds: " +
-                whoosh.getDuration() +
-                "number of channels: " +
-                whoosh.getNumberOfChannels()
-            );
+            // console.log(
+            //   "duration in seconds: " +
+            //     whoosh.getDuration() +
+            //     "number of channels: " +
+            //     whoosh.getNumberOfChannels()
+            // );
 
             // Play the sound with an onEnd callback
             whoosh.play((success) => {
@@ -505,10 +434,12 @@ export default function whisper({ navigation }) {
     AudioRecord.init(options);
     setStarted(true);
     AudioRecord.start();
-
-    BackgroundTimer.runBackgroundTimer(() => {
+    setTimeout(() => {
       onStopRecord();
     }, 5000);
+    // BackgroundTimer.runBackgroundTimer(() => {
+    //   onStopRecord();
+    // }, 5000);
     return;
   };
 
@@ -534,7 +465,12 @@ export default function whisper({ navigation }) {
           if (success) {
             whoosh.stop();
             whoosh.release();
-            onStartRecord();
+            if (DataName == "background") {
+              AudioRecord.stop();
+            } else {
+              onStartRecord();
+            }
+
             console.log("successfully finished playing");
           } else {
             console.log("playback failed due to audio decoding errors");
@@ -550,16 +486,24 @@ export default function whisper({ navigation }) {
   };
 
   const onStopRecord = async () => {
+    console.log("stop");
     setStarted(false);
     AudioRecord.stop();
     const audioFile = await AudioRecord.stop();
-    BackgroundTimer.stopBackgroundTimer();
+    // BackgroundTimer.stopBackgroundTimer();
     setcolors("grey");
     checkspeechData(audioFile);
   };
 
+  const RecordStop = async () => {
+    setStarted(false);
+    setcolors("grey");
+    AudioRecord.stop();
+  };
+
   const checkspeechData = async (uri) => {
     try {
+      console.log("API Calle");
       setisLoggingIn(true);
       const token = await AsyncStorage.getItem("token");
       const formData1 = new FormData();
@@ -569,7 +513,7 @@ export default function whisper({ navigation }) {
         name: "test.wav",
         type: "audio/wav",
       };
-      // console.log("Data", JSON.stringify(Data))
+      console.log("Data", JSON.stringify(Data));
 
       formData1.append("audio", Data);
 
@@ -579,7 +523,8 @@ export default function whisper({ navigation }) {
           Authorization: `Bearer ${token}`,
         },
       });
-
+      console.log("datataaaatat", data);
+      console.log("APPdssdsbhbsddb", uri);
       if (data == "") {
         setisLoggingIn(false);
         _stopRecognizing();
@@ -588,6 +533,18 @@ export default function whisper({ navigation }) {
         setisLoggingIn(true);
         uploadAudioAsync(uri);
       }
+
+      //   if (DataName == "background") {
+      //     setisLoggingIn(false);
+      //     _stopRecognizing();
+      //     RecordStop();
+      //   } else {
+      //     _startRecognizing();
+      //   }
+      // } else {
+      //   setisLoggingIn(true);
+      //   uploadAudioAsync(uri);
+      // }
     } catch (error) {
       setisLoggingIn(false);
       console.log("API Error", error);
@@ -595,6 +552,7 @@ export default function whisper({ navigation }) {
   };
 
   const uploadAudioAsync = async (uri) => {
+    console.log("uploadAudioAsync");
     try {
       const token = await AsyncStorage.getItem("token");
       const formData1 = new FormData();
