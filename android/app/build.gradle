@@ -106,8 +106,8 @@ android {
         applicationId "com.heyalli"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 16
-        versionName "2.2"
+        versionCode 20
+        versionName "2.6"
     }
 
     splits {
@@ -159,8 +159,6 @@ project.ext.react = [
   enableHermes: true,
   entryFile: "index.js",
 ]
-
-
 }
 
 dependencies {

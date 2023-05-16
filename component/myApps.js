@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   View,
+  StyleSheet,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 const myApps = () => {
@@ -15,7 +16,32 @@ const myApps = () => {
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <SafeAreaView />
-      <View
+      <View style={{ marginTop: 10, width: "100%" }}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View style={{ marginLeft: 5 }}>
+            <TouchableOpacity
+              style={{ padding: 10 }}
+              onPress={() => navigate.goBack()}
+            >
+              <Ionicons name={"arrow-back"} size={30} />
+            </TouchableOpacity>
+          </View>
+          <View style={{ width: "80%", alignItems: "center" }}>
+            <Text
+              style={{
+                ...styles.title,
+                fontWeight: "700",
+                fontSize: 30,
+                color: "#0f87cf",
+                marginVertical: 10,
+              }}
+            >
+              My Apps{" "}
+            </Text>
+          </View>
+        </View>
+      </View>
+      {/* <View
         style={{ marginTop: 50, flexDirection: "row", alignItems: "center" }}
       >
         <View style={{ marginLeft: 25 }}>
@@ -33,7 +59,7 @@ const myApps = () => {
         <View style={{ width: "80%", alignItems: "center" }}>
           <Text style={{ fontSize: 22, fontWeight: "bold" }}>My Apps</Text>
         </View>
-      </View>
+      </View> */}
       <ScrollView style={{ flexGrow: 1 }}>
         <View
           style={{
@@ -459,3 +485,13 @@ const myApps = () => {
 };
 
 export default myApps;
+
+const styles = StyleSheet.create({
+  title: {
+    marginTop: 0,
+    fontWeight: "400",
+    fontSize: 30,
+    alignSelf: "center",
+    justifyContent: "center",
+  },
+});

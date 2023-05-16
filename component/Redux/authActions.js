@@ -32,7 +32,6 @@ export const setLogout = (data) => async (dispatch) => {
   try {
     await AsyncStorage.removeItem("token");
     await AsyncStorage.clear();
-
     await AsyncStorage.removeItem("isLogin", () => {
       dispatch({ type: LOGOUT_STATE });
       dispatch(restoreStatus());

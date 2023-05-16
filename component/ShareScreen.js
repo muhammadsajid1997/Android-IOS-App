@@ -15,6 +15,7 @@ import {
   ListItem,
   Modal,
   ActivityIndicator,
+  Linking,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -103,30 +104,75 @@ const ShareScreen = () => {
       });
   };
 
+  const openSettings = () => {
+    Linking.openSettings();
+  };
+  const requestUserPermission = async () => {
+    if (Platform.OS === "android") {
+      try {
+        const grants = await PermissionsAndroid.requestMultiple([
+          PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+        ]);
+        if (
+          grants["android.permission.READ_CONTACTS"] ===
+          PermissionsAndroid.RESULTS.GRANTED
+        ) {
+          contactsget();
+          console.log("permissions granted");
+        } else if (
+          grants["android.permission.READ_CONTACTS"] ===
+          PermissionsAndroid.RESULTS.DENIED
+        ) {
+          console.log("DENIED");
+
+          // console.log("All required permissions not granted");
+        } else if (
+          grants["android.permission.READ_CONTACTS"] ===
+          PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN
+        ) {
+          console.log("never Ask me again");
+          Alert.alert(
+            "Contact Permission Required",
+            "App needs access to your Contact to read contact. Please go to app settings and grant permission.",
+            [
+              { text: "Cancel", style: "cancel" },
+              { text: "Open Settings", onPress: openSettings },
+            ]
+          );
+        }
+      } catch (err) {
+        // console.warn(err);
+
+        return;
+      }
+    }
+  };
+
   const contactsget = async () => {
-    PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_CONTACTS, {
-      title: "Contacts",
-      message: "This app would like to view your contacts.",
-      buttonPositive: "Please accept bare mortal",
-    })
-      .then((res) => {
-        console.log("Permission: ", res);
-        setIsLoading(true);
-        Contacts.getAll()
-          .then((contacts) => {
-            setContacts(contacts);
-            setModalVisible(true);
-            setIsLoading(false);
-            // work with contacts
-            console.log(contacts);
-          })
-          .catch((e) => {
-            console.log(e);
-          });
+    // PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_CONTACTS, {
+    //   title: "Contacts",
+    //   message: "This app would like to view your contacts.",
+    //   buttonPositive: "Please accept Contacts Permission",
+    // })
+    //   .then((res) => {
+    // console.log("Permission: ", res);
+    // if (res) setIsLoading(true);
+    Contacts.getAll()
+      .then((contacts) => {
+        setContacts(contacts);
+        setModalVisible(true);
+        setIsLoading(false);
+        // work with contacts
+        console.log(contacts);
       })
-      .catch((error) => {
-        console.error("Permission error: ", error);
+
+      .catch((e) => {
+        console.log(e);
       });
+    // })
+    // .catch((error) => {
+    //   console.error("Permission error: ", error);
+    // });
   };
 
   return (
@@ -173,7 +219,7 @@ const ShareScreen = () => {
           >
             <TouchableOpacity
               onPress={() => {
-                contactsget();
+                requestUserPermission();
               }}
             >
               <AntDesign name={"contacts"} size={22} color="#0f87cf" />

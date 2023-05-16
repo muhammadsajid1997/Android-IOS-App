@@ -159,7 +159,7 @@ const Secratekey = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <View
+      {/* <View
         style={{ marginTop: 20, flexDirection: "row", alignItems: "center" }}
       >
         <View style={{ marginLeft: 25 }}>
@@ -181,6 +181,36 @@ const Secratekey = () => {
         </View>
         <View style={{ width: "80%", alignItems: "center" }}>
           <Text style={{ fontSize: 22, fontWeight: "bold" }}>Secret key</Text>
+        </View>
+      </View> */}
+      <View style={{ marginTop: 10, width: "100%" }}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View style={{ marginLeft: 5 }}>
+            <TouchableOpacity
+              style={{ padding: 10 }}
+              onPress={() => {
+                if (Changesecrate == true) {
+                  SetChangesecrate(false);
+                } else {
+                  navigation.goBack();
+                }
+              }}
+            >
+              <Ionicons name={"arrow-back"} size={30} />
+            </TouchableOpacity>
+          </View>
+          <View style={{ width: "80%", alignItems: "center" }}>
+            <Text
+              style={{
+                fontWeight: "700",
+                fontSize: 30,
+                color: "#0f87cf",
+                marginVertical: 10,
+              }}
+            >
+              Secret key{" "}
+            </Text>
+          </View>
         </View>
       </View>
       <View style={{ alignItems: "center", marginTop: 50 }}>

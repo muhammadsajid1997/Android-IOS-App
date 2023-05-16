@@ -13,6 +13,8 @@ import BussinessUpgrade from "../BussinessUpgrade";
 import whisper from "../Whisper";
 import ReferralHistoryScreen from "../ReferralScreen";
 import ShareScreen from "../ShareScreen";
+import TexttoSpeechComponent from "../TexttoSpeechComponent";
+import MenuScreen from "../MenuScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -94,8 +96,23 @@ const HomeStack = (isSecrateCode) => {
         }}
       />
       <Stack.Screen
+        name="TexttoSpeechScreen"
+        component={TexttoSpeechComponent}
+        options={{
+          headerShown: false,
+        }}
+      />
+
+      <Stack.Screen
         name="ShareScreen"
         component={ShareScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="MenuScreen"
+        component={MenuScreen}
         options={{
           headerShown: false,
         }}

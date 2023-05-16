@@ -34,7 +34,6 @@ const options = {
   audioSource: 6, // android only (see below)
   wavFile: "test.wav", // default 'audio.wav'
 };
-import BackgroundTimer from "react-native-background-timer";
 const LandingScreen = ({ navigation }) => {
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);

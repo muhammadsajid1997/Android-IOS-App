@@ -19,6 +19,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import { loginUser, setLogin } from "./Redux/authActions";
 import moment from "moment";
+import Tts from "react-native-tts";
 const OtpScreen = ({ navigation }) => {
   const [verifyOtp, setVerifyOtp] = useState("");
   const passwordInputRef = createRef();
@@ -151,8 +152,11 @@ const OtpScreen = ({ navigation }) => {
 
             // await AsyncStorage.setItem("Token", data.data.accessToken);
             // navigate("Home");
+            const string = `${`Hey,welcome back ${data.data.name}`}`;
+            Tts.speak(string);
 
             dispatch(setLogin(data.data.accessToken, route.params.phoneNumber));
+
             // ProfileStore();
           } else {
             // console.log("data", data);
