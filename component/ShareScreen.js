@@ -16,6 +16,7 @@ import {
   Modal,
   ActivityIndicator,
   Linking,
+  SafeAreaView,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -176,211 +177,215 @@ const ShareScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <View style={{ marginLeft: 5 }}>
-          <TouchableOpacity
-            style={{ padding: 10 }}
-            onPress={() => navigation.goBack()}
-          >
-            <Ionicons name={"arrow-back"} size={25} />
-          </TouchableOpacity>
-        </View>
-        <View style={{ width: "80%", alignItems: "center" }}>
-          <Text style={{ fontSize: 22, fontWeight: "400" }}>
-            Invite A Friend
-          </Text>
-        </View>
-      </View>
-      <View style={{ paddingVertical: 40 }}>
-        <View style={{ ...styles.SectionStyle }}>
-          {/* <MaterialIcons name="email" style={{ top: 12, right: 4 }} size={16} color="#b1b6c6" /> */}
-
-          <TextInput
-            style={styles.inputStyle}
-            onChangeText={(userphoneNumber) =>
-              setUserphoneNumber(userphoneNumber)
-            }
-            value={userphoneNumber}
-            placeholder="Enter phone number" //dummy@abc.com
-            placeholderTextColor="#9ea3b7"
-            autoCapitalize="none"
-            keyboardType="phone-pad"
-            returnKeyType="next"
-            underlineColorAndroid="#f000"
-            blurOnSubmit={false}
-          />
-          <View
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              //   marginRight: 10,
-            }}
-          >
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View style={{ marginLeft: 5 }}>
             <TouchableOpacity
-              onPress={() => {
-                requestUserPermission();
-              }}
+              style={{ padding: 10 }}
+              onPress={() => navigation.goBack()}
             >
-              <AntDesign name={"contacts"} size={22} color="#0f87cf" />
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={{ alignItems: "center" }}>
-          <Text style={{ fontWeight: "bold" }}>OR</Text>
-        </View>
-
-        <View style={{ ...styles.SectionStyle }}>
-          {/* <MaterialIcons name="email" style={{ top: 12, right: 4 }} size={16} color="#b1b6c6" /> */}
-
-          <TextInput
-            style={styles.inputStyle}
-            onChangeText={(email) => setuserEmail(email)}
-            placeholder="Enter email address" //dummy@abc.com
-            placeholderTextColor="#9ea3b7"
-            autoCapitalize="none"
-            keyboardType="email-address"
-            returnKeyType="next"
-            underlineColorAndroid="#f000"
-            blurOnSubmit={false}
-          />
-        </View>
-      </View>
-
-      <TouchableOpacity
-        style={{
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "#14a5f4",
-          marginHorizontal: 18,
-          borderRadius: 6,
-        }}
-        activeOpacity={0.5}
-        onPress={() => {
-          if (userphoneNumber == "" && userEmail == "") {
-            Alert.alert("Please enter Phonenumber or Email");
-          } else if (userphoneNumber) {
-            phoneAPI();
-          } else if (userEmail) {
-            if (
-              /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(userEmail)
-            ) {
-              EmailAPI();
-            } else {
-              Alert.alert("Please enter valid Email");
-            }
-          } else {
-            phoneAPI();
-          }
-        }}
-      >
-        {/* <Image style={{ borderRadius: 10, marginVertical: 10 }} source={signInButton}>
-              </Image> */}
-
-        <Text style={styles.buttonTextStyle}>Share</Text>
-      </TouchableOpacity>
-      {isLoading ? (
-        <View style={{ alignItems: "center", justifyContent: "center" }}>
-          <TouchableOpacity
-            style={[styles.circleButton, { backgroundColor: "grey" }]}
-            disabled
-          >
-            <ActivityIndicator size={32} color="#fff" />
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <View></View>
-      )}
-
-      <Modal
-        animationType="slide"
-        transparent={false}
-        visible={modalVisible}
-        onRequestClose={() => {
-          //   Alert.alert("Modal has been closed.");
-          setModalVisible(!modalVisible);
-          setIsLoading(false);
-        }}
-      >
-        <View style={{ flex: 1 }}>
-          <View
-            style={{
-              marginLeft: 10,
-              // borderWidth: 1,
-              marginTop: 20,
-              flexDirection: "row",
-              alignItems: "center",
-              marginBottom: 30,
-            }}
-          >
-            <TouchableOpacity style={{}} onPress={() => setModalVisible(false)}>
               <Ionicons name={"arrow-back"} size={25} />
             </TouchableOpacity>
+          </View>
+          <View style={{ width: "80%", alignItems: "center" }}>
+            <Text style={{ fontSize: 22, fontWeight: "400" }}>
+              Invite A Friend
+            </Text>
+          </View>
+        </View>
+        <View style={{ paddingVertical: 40 }}>
+          <View style={{ ...styles.SectionStyle }}>
+            {/* <MaterialIcons name="email" style={{ top: 12, right: 4 }} size={16} color="#b1b6c6" /> */}
 
-            <View style={{ width: "80%", alignItems: "center" }}>
-              <Text style={{ fontSize: 20, fontWeight: "400" }}>
-                Select Contact
-              </Text>
+            <TextInput
+              style={styles.inputStyle}
+              onChangeText={(userphoneNumber) =>
+                setUserphoneNumber(userphoneNumber)
+              }
+              value={userphoneNumber}
+              placeholder="Enter phone number" //dummy@abc.com
+              placeholderTextColor="#9ea3b7"
+              autoCapitalize="none"
+              keyboardType="phone-pad"
+              returnKeyType="next"
+              underlineColorAndroid="#f000"
+              blurOnSubmit={false}
+            />
+            <View
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                //   marginRight: 10,
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  requestUserPermission();
+                }}
+              >
+                <AntDesign name={"contacts"} size={22} color="#0f87cf" />
+              </TouchableOpacity>
             </View>
           </View>
-          <FlatList
-            data={contacts}
-            renderItem={(contact) => {
-              return (
-                <View style={{ alignItems: "center" }}>
-                  <TouchableOpacity
-                    style={{
-                      width: "85%",
-                      borderColor: "grey",
-                      // marginLeft: 20,
+          <View style={{ alignItems: "center" }}>
+            <Text style={{ fontWeight: "bold" }}>OR</Text>
+          </View>
 
-                      borderBottomWidth: 0.5,
-                    }}
-                    onPress={() => {
-                      setUserphoneNumber(contact.item.phoneNumbers[0].number);
-                      setModalVisible(false);
-                    }}
-                  >
-                    <View
+          <View style={{ ...styles.SectionStyle }}>
+            {/* <MaterialIcons name="email" style={{ top: 12, right: 4 }} size={16} color="#b1b6c6" /> */}
+
+            <TextInput
+              style={styles.inputStyle}
+              onChangeText={(email) => setuserEmail(email)}
+              placeholder="Enter email address" //dummy@abc.com
+              placeholderTextColor="#9ea3b7"
+              autoCapitalize="none"
+              keyboardType="email-address"
+              returnKeyType="next"
+              underlineColorAndroid="#f000"
+              blurOnSubmit={false}
+            />
+          </View>
+        </View>
+
+        <TouchableOpacity
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "#14a5f4",
+            marginHorizontal: 18,
+            borderRadius: 6,
+          }}
+          activeOpacity={0.5}
+          onPress={() => {
+            if (userphoneNumber == "" && userEmail == "") {
+              Alert.alert("Please enter Phonenumber or Email");
+            } else if (userphoneNumber) {
+              phoneAPI();
+            } else if (userEmail) {
+              if (
+                /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(userEmail)
+              ) {
+                EmailAPI();
+              } else {
+                Alert.alert("Please enter valid Email");
+              }
+            } else {
+              phoneAPI();
+            }
+          }}
+        >
+          {/* <Image style={{ borderRadius: 10, marginVertical: 10 }} source={signInButton}>
+              </Image> */}
+
+          <Text style={styles.buttonTextStyle}>Share</Text>
+        </TouchableOpacity>
+        {isLoading ? (
+          <View style={{ alignItems: "center", justifyContent: "center" }}>
+            <TouchableOpacity
+              style={[styles.circleButton, { backgroundColor: "grey" }]}
+              disabled
+            >
+              <ActivityIndicator size={32} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View></View>
+        )}
+
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={modalVisible}
+          onRequestClose={() => {
+            //   Alert.alert("Modal has been closed.");
+            setModalVisible(!modalVisible);
+            setIsLoading(false);
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            <View
+              style={{
+                marginLeft: 10,
+                // borderWidth: 1,
+                marginTop: 20,
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 30,
+              }}
+            >
+              <TouchableOpacity
+                style={{}}
+                onPress={() => setModalVisible(false)}
+              >
+                <Ionicons name={"arrow-back"} size={25} />
+              </TouchableOpacity>
+
+              <View style={{ width: "80%", alignItems: "center" }}>
+                <Text style={{ fontSize: 20, fontWeight: "400" }}>
+                  Select Contact
+                </Text>
+              </View>
+            </View>
+            <FlatList
+              data={contacts}
+              renderItem={(contact) => {
+                return (
+                  <View style={{ alignItems: "center" }}>
+                    <TouchableOpacity
                       style={{
-                        flex: 1,
-                        //   padding: 10,
-                        // alignItems: "center",
-                        // justifyContent: "center",
-                        paddingVertical: 5,
-                        // borderWidth: 1,
-                        borderRadius: 10,
-                        marginTop: 5,
-                        marginBottom: 5,
+                        width: "85%",
+                        borderColor: "grey",
+                        // marginLeft: 20,
+
+                        borderBottomWidth: 0.5,
+                      }}
+                      onPress={() => {
+                        setUserphoneNumber(contact.item.phoneNumbers[0].number);
+                        setModalVisible(false);
                       }}
                     >
-                      <Text
+                      <View
                         style={{
-                          color: "#14a5f4",
-                          fontSize: 18,
-                          fontWeight: "400",
+                          flex: 1,
+                          //   padding: 10,
+                          // alignItems: "center",
+                          // justifyContent: "center",
+                          paddingVertical: 5,
+                          // borderWidth: 1,
+                          borderRadius: 10,
+                          marginTop: 5,
+                          marginBottom: 5,
                         }}
                       >
-                        {contact.item.displayName == undefined
-                          ? null
-                          : contact.item.displayName}
-                      </Text>
-                      <Text style={{ fontSize: 17 }}>
-                        {contact.item.phoneNumbers.length == 0
-                          ? ""
-                          : contact.item.phoneNumbers[0].number}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              );
-            }}
-            keyExtractor={(item) => item.recordID}
-          />
-        </View>
-      </Modal>
+                        <Text
+                          style={{
+                            color: "#14a5f4",
+                            fontSize: 18,
+                            fontWeight: "400",
+                          }}
+                        >
+                          {contact.item.displayName == undefined
+                            ? null
+                            : contact.item.displayName}
+                        </Text>
+                        <Text style={{ fontSize: 17 }}>
+                          {contact.item.phoneNumbers.length == 0
+                            ? ""
+                            : contact.item.phoneNumbers[0].number}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                );
+              }}
+              keyExtractor={(item) => item.recordID}
+            />
+          </View>
+        </Modal>
 
-      {/* <TouchableOpacity
+        {/* <TouchableOpacity
         style={{
           margin: 10,
           padding: 15,
@@ -397,14 +402,15 @@ const ShareScreen = () => {
           Get referral Data
         </Text>
       </TouchableOpacity> */}
-      {/* <FlatList
+        {/* <FlatList
         data={referralData}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
         style={styles.list}
         contentContainerStyle={styles.listContentContainer}
       /> */}
-    </View>
+      </View>
+    </SafeAreaView>
   );
 };
 

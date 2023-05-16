@@ -158,8 +158,9 @@ const Secratekey = () => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      {/* <View
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={{ flex: 1 }}>
+        {/* <View
         style={{ marginTop: 20, flexDirection: "row", alignItems: "center" }}
       >
         <View style={{ marginLeft: 25 }}>
@@ -183,113 +184,117 @@ const Secratekey = () => {
           <Text style={{ fontSize: 22, fontWeight: "bold" }}>Secret key</Text>
         </View>
       </View> */}
-      <View style={{ marginTop: 10, width: "100%" }}>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <View style={{ marginLeft: 5 }}>
-            <TouchableOpacity
-              style={{ padding: 10 }}
-              onPress={() => {
-                if (Changesecrate == true) {
-                  SetChangesecrate(false);
-                } else {
-                  navigation.goBack();
-                }
-              }}
-            >
-              <Ionicons name={"arrow-back"} size={30} />
-            </TouchableOpacity>
-          </View>
-          <View style={{ width: "80%", alignItems: "center" }}>
-            <Text
-              style={{
-                fontWeight: "700",
-                fontSize: 30,
-                color: "#0f87cf",
-                marginVertical: 10,
-              }}
-            >
-              Secret key{" "}
-            </Text>
-          </View>
-        </View>
-      </View>
-      <View style={{ alignItems: "center", marginTop: 50 }}>
-        <Text
-          style={{
-            fontSize: 15,
-            fontWeight: "bold",
-          }}
-        >
-          {" "}
-          Secret Key Setup
-        </Text>
-      </View>
-      {Changesecrate == false ? (
-        <View style={{ alignItems: "center" }}>
-          <View
-            style={{
-              width: "90%",
-              height: 50,
-              // borderWidth: 1,
-              marginTop: 40,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                backgroundColor: "#fff",
-                //   borderBottomWidth: 1,
-                borderColor: "#000",
-                borderRadius: 10,
-                //   paddingBottom: 10,
-              }}
-            >
-              <TextInput
-                style={{
-                  flex: 1,
-
-                  padding: 10,
-                  borderColor: "#d9d9d9",
-                  width: "100%",
-                  height: 50,
-                  borderRadius: 10,
-                  textAlign: "left",
-                }}
-                keyboardType="numeric"
-                maxLength={6}
-                autoCorrect={false}
-                secureTextEntry={isSecureEntry}
-                placeholder="Secret Password"
-                //   value={this.state.password}
-                onChangeText={(password) => setSecratepassword(password)}
-              />
-              <View
-                style={{
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginRight: 10,
+        <View style={{ marginTop: 10, width: "100%" }}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View style={{ marginLeft: 5 }}>
+              <TouchableOpacity
+                style={{ padding: 10 }}
+                onPress={() => {
+                  if (Changesecrate == true) {
+                    SetChangesecrate(false);
+                  } else {
+                    navigation.goBack();
+                  }
                 }}
               >
-                <TouchableOpacity
-                  onPress={() => {
-                    isSecureEntry
-                      ? setIsSecureEntry(false)
-                      : setIsSecureEntry(true);
+                <Ionicons name={"arrow-back"} size={30} />
+              </TouchableOpacity>
+            </View>
+            <View style={{ width: "80%", alignItems: "center" }}>
+              <Text
+                style={{
+                  fontWeight: "700",
+                  fontSize: 30,
+                  color: "#0f87cf",
+                  marginVertical: 10,
+                }}
+              >
+                Secret key{" "}
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View style={{ alignItems: "center", marginTop: 50 }}>
+          <Text
+            style={{
+              fontSize: 15,
+              fontWeight: "bold",
+            }}
+          >
+            {" "}
+            Secret Key Setup
+          </Text>
+        </View>
+        {Changesecrate == false ? (
+          <View style={{ alignItems: "center" }}>
+            <View
+              style={{
+                width: "90%",
+                height: 50,
+                // borderWidth: 1,
+                marginTop: 40,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  backgroundColor: "#fff",
+                  //   borderBottomWidth: 1,
+                  borderColor: "#000",
+                  borderRadius: 10,
+                  //   paddingBottom: 10,
+                }}
+              >
+                <TextInput
+                  style={{
+                    flex: 1,
+
+                    padding: 10,
+                    borderColor: "#d9d9d9",
+                    width: "100%",
+                    height: 50,
+                    borderRadius: 10,
+                    textAlign: "left",
+                  }}
+                  keyboardType="numeric"
+                  maxLength={6}
+                  autoCorrect={false}
+                  secureTextEntry={isSecureEntry}
+                  placeholder="Secret Password"
+                  //   value={this.state.password}
+                  onChangeText={(password) => setSecratepassword(password)}
+                />
+                <View
+                  style={{
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginRight: 10,
                   }}
                 >
-                  {isSecureEntry ? (
-                    <Entypo name={"eye-with-line"} size={22} color="#0f87cf" />
-                  ) : (
-                    <AntDesign name={"eye"} size={22} color="#0f87cf" />
-                  )}
-                </TouchableOpacity>
-              </View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      isSecureEntry
+                        ? setIsSecureEntry(false)
+                        : setIsSecureEntry(true);
+                    }}
+                  >
+                    {isSecureEntry ? (
+                      <Entypo
+                        name={"eye-with-line"}
+                        size={22}
+                        color="#0f87cf"
+                      />
+                    ) : (
+                      <AntDesign name={"eye"} size={22} color="#0f87cf" />
+                    )}
+                  </TouchableOpacity>
+                </View>
 
-              {/* <Icon name="what_ever_icon_you_want" color="#000" size={14} /> */}
-            </View>
-            {/* <TextInput
+                {/* <Icon name="what_ever_icon_you_want" color="#000" size={14} /> */}
+              </View>
+              {/* <TextInput
             style={{
               backgroundColor: "#fff",
               padding: 10,
@@ -303,66 +308,66 @@ const Secratekey = () => {
             blurOnSubmit={false}
             returnKeyType="next"
           /> */}
-          </View>
-          <TouchableOpacity
-            style={{
-              justifyContent: "center",
-              // flex: 1,
-              marginTop: 50,
-              alignItems: "center",
-              backgroundColor: "#14a5f4",
-              marginHorizontal: 18,
-              borderRadius: 6,
-              paddingHorizontal: 40,
-            }}
-            activeOpacity={0.5}
-            onPress={() => {
-              check_Key();
-            }}
-          >
+            </View>
+            <TouchableOpacity
+              style={{
+                justifyContent: "center",
+                // flex: 1,
+                marginTop: 50,
+                alignItems: "center",
+                backgroundColor: "#14a5f4",
+                marginHorizontal: 18,
+                borderRadius: 6,
+                paddingHorizontal: 40,
+              }}
+              activeOpacity={0.5}
+              onPress={() => {
+                check_Key();
+              }}
+            >
+              <Text
+                style={{
+                  color: "white",
+                  paddingVertical: 10,
+                  fontSize: 18,
+                  fontWeight: "bold",
+                }}
+              >
+                Create
+              </Text>
+            </TouchableOpacity>
             <Text
               style={{
-                color: "white",
-                paddingVertical: 10,
-                fontSize: 18,
+                color: "black",
+                textAlign: "center",
                 fontWeight: "bold",
-              }}
-            >
-              Create
-            </Text>
-          </TouchableOpacity>
-          <Text
-            style={{
-              color: "black",
-              textAlign: "center",
-              fontWeight: "bold",
 
-              alignSelf: "center",
-              padding: 10,
-              marginTop: 10,
-              fontSize: 15,
-              //   borderBottomWidth: 1,
-              borderColor: "#4d97f0",
-            }}
-            onPress={() => {
-              SetChangesecrate(true);
-            }}
-          >
-            Change Secret code?{" "}
-            <Text
-              style={{
-                color: "#4d97f0",
-                // borderBottomWidth: 1,
-                // borderColor: "#4d97f0",
-                textDecorationLine: "underline",
-                padding: 5,
+                alignSelf: "center",
+                padding: 10,
+                marginTop: 10,
                 fontSize: 15,
+                //   borderBottomWidth: 1,
+                borderColor: "#4d97f0",
+              }}
+              onPress={() => {
+                SetChangesecrate(true);
               }}
             >
-              Change
+              Change Secret code?{" "}
+              <Text
+                style={{
+                  color: "#4d97f0",
+                  // borderBottomWidth: 1,
+                  // borderColor: "#4d97f0",
+                  textDecorationLine: "underline",
+                  padding: 5,
+                  fontSize: 15,
+                }}
+              >
+                Change
+              </Text>
             </Text>
-          </Text>
-          {/* <TouchableOpacity
+            {/* <TouchableOpacity
             style={{
               justifyContent: "center",
               // flex: 1,
@@ -389,131 +394,139 @@ const Secratekey = () => {
               Change Secrate Code
             </Text>
           </TouchableOpacity> */}
-        </View>
-      ) : (
-        <View style={{ alignItems: "center", marginTop: 40 }}>
-          <View
-            style={{
-              width: "90%",
-              height: 50,
-              // borderWidth: 1,
-              marginTop: 40,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
+          </View>
+        ) : (
+          <View style={{ alignItems: "center", marginTop: 40 }}>
             <View
               style={{
-                flexDirection: "row",
-                backgroundColor: "#fff",
-                //   borderBottomWidth: 1,
-                borderColor: "#000",
-                borderRadius: 10,
-                //   paddingBottom: 10,
+                width: "90%",
+                height: 50,
+                // borderWidth: 1,
+                marginTop: 40,
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              <TextInput
+              <View
                 style={{
-                  flex: 1,
-                  padding: 10,
-                  borderColor: "#d9d9d9",
-                  width: "100%",
-                  height: 50,
+                  flexDirection: "row",
+                  backgroundColor: "#fff",
+                  //   borderBottomWidth: 1,
+                  borderColor: "#000",
                   borderRadius: 10,
-                  textAlign: "left",
+                  //   paddingBottom: 10,
                 }}
-                keyboardType="numeric"
-                maxLength={6}
-                autoCorrect={false}
-                secureTextEntry={isSecureEntry1}
-                placeholder="Old Secret Password"
-                onChangeText={(password) => setoldSecratepassword(password)}
-                //   value={this.state.password}
-                // onChangeText={this.onPasswordEntry}
-              />
+              >
+                <TextInput
+                  style={{
+                    flex: 1,
+                    padding: 10,
+                    borderColor: "#d9d9d9",
+                    width: "100%",
+                    height: 50,
+                    borderRadius: 10,
+                    textAlign: "left",
+                  }}
+                  keyboardType="numeric"
+                  maxLength={6}
+                  autoCorrect={false}
+                  secureTextEntry={isSecureEntry1}
+                  placeholder="Old Secret Password"
+                  onChangeText={(password) => setoldSecratepassword(password)}
+                  //   value={this.state.password}
+                  // onChangeText={this.onPasswordEntry}
+                />
+
+                <View
+                  style={{
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginRight: 10,
+                  }}
+                >
+                  <TouchableOpacity
+                    onPress={() => {
+                      isSecureEntry1
+                        ? setIsSecureEntry1(false)
+                        : setIsSecureEntry1(true);
+                    }}
+                  >
+                    {isSecureEntry1 ? (
+                      <Entypo
+                        name={"eye-with-line"}
+                        size={22}
+                        color="#0f87cf"
+                      />
+                    ) : (
+                      <AntDesign name={"eye"} size={22} color="#0f87cf" />
+                    )}
+                  </TouchableOpacity>
+                </View>
+
+                {/* <Icon name="what_ever_icon_you_want" color="#000" size={14} /> */}
+              </View>
 
               <View
                 style={{
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginRight: 10,
-                }}
-              >
-                <TouchableOpacity
-                  onPress={() => {
-                    isSecureEntry1
-                      ? setIsSecureEntry1(false)
-                      : setIsSecureEntry1(true);
-                  }}
-                >
-                  {isSecureEntry1 ? (
-                    <Entypo name={"eye-with-line"} size={22} color="#0f87cf" />
-                  ) : (
-                    <AntDesign name={"eye"} size={22} color="#0f87cf" />
-                  )}
-                </TouchableOpacity>
-              </View>
-
-              {/* <Icon name="what_ever_icon_you_want" color="#000" size={14} /> */}
-            </View>
-
-            <View
-              style={{
-                flexDirection: "row",
-                backgroundColor: "#fff",
-                //   borderBottomWidth: 1,
-                borderColor: "#000",
-                borderRadius: 10,
-                marginTop: 20,
-                //   paddingBottom: 10,
-              }}
-            >
-              <TextInput
-                style={{
-                  flex: 1,
-
-                  padding: 10,
-                  borderColor: "#d9d9d9",
-                  width: "100%",
-                  height: 50,
+                  flexDirection: "row",
+                  backgroundColor: "#fff",
+                  //   borderBottomWidth: 1,
+                  borderColor: "#000",
                   borderRadius: 10,
-                  textAlign: "left",
-                }}
-                keyboardType="numeric"
-                maxLength={6}
-                autoCorrect={false}
-                secureTextEntry={isSecureEntry2}
-                placeholder="New Secret Password"
-                onChangeText={(password) => setnewSecratepassword(password)}
-                //   value={this.state.password}
-                //   onChangeText={this.onPasswordEntry}
-              />
-
-              <View
-                style={{
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginRight: 10,
+                  marginTop: 20,
+                  //   paddingBottom: 10,
                 }}
               >
-                <TouchableOpacity
-                  onPress={() => {
-                    isSecureEntry2
-                      ? setIsSecureEntry2(false)
-                      : setIsSecureEntry2(true);
+                <TextInput
+                  style={{
+                    flex: 1,
+
+                    padding: 10,
+                    borderColor: "#d9d9d9",
+                    width: "100%",
+                    height: 50,
+                    borderRadius: 10,
+                    textAlign: "left",
+                  }}
+                  keyboardType="numeric"
+                  maxLength={6}
+                  autoCorrect={false}
+                  secureTextEntry={isSecureEntry2}
+                  placeholder="New Secret Password"
+                  onChangeText={(password) => setnewSecratepassword(password)}
+                  //   value={this.state.password}
+                  //   onChangeText={this.onPasswordEntry}
+                />
+
+                <View
+                  style={{
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginRight: 10,
                   }}
                 >
-                  {isSecureEntry2 ? (
-                    <Entypo name={"eye-with-line"} size={22} color="#0f87cf" />
-                  ) : (
-                    <AntDesign name={"eye"} size={22} color="#0f87cf" />
-                  )}
-                </TouchableOpacity>
-              </View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      isSecureEntry2
+                        ? setIsSecureEntry2(false)
+                        : setIsSecureEntry2(true);
+                    }}
+                  >
+                    {isSecureEntry2 ? (
+                      <Entypo
+                        name={"eye-with-line"}
+                        size={22}
+                        color="#0f87cf"
+                      />
+                    ) : (
+                      <AntDesign name={"eye"} size={22} color="#0f87cf" />
+                    )}
+                  </TouchableOpacity>
+                </View>
 
-              {/* <Icon name="what_ever_icon_you_want" color="#000" size={14} /> */}
-            </View>
-            {/* <TextInput
+                {/* <Icon name="what_ever_icon_you_want" color="#000" size={14} /> */}
+              </View>
+              {/* <TextInput
             style={{
               backgroundColor: "#fff",
               padding: 10,
@@ -527,49 +540,50 @@ const Secratekey = () => {
             blurOnSubmit={false}
             returnKeyType="next"
           /> */}
-          </View>
-          <TouchableOpacity
-            style={{
-              justifyContent: "center",
-              // flex: 1,
-              marginTop: 50,
-              alignItems: "center",
-              backgroundColor: "#14a5f4",
-              marginHorizontal: 18,
-              borderRadius: 6,
-              paddingHorizontal: 40,
-            }}
-            activeOpacity={0.5}
-            onPress={() => {
-              if (oldSecratepassword == "") {
-                Alert.alert("Please Enter Old Secret Key");
-              } else if (newSecratepassword == "") {
-                Alert.alert("Please Enter New Secret Key");
-              } else {
-                SetSecratePasswordsUpdate(
-                  oldSecratepassword,
-                  newSecratepassword
-                );
-
-                // Alert.alert("Please Enter Valid Old Secret Key");
-              }
-              // Alert.alert("Please Enter   ")
-            }}
-          >
-            <Text
+            </View>
+            <TouchableOpacity
               style={{
-                color: "white",
-                paddingVertical: 10,
-                fontSize: 18,
-                fontWeight: "bold",
+                justifyContent: "center",
+                // flex: 1,
+                marginTop: 50,
+                alignItems: "center",
+                backgroundColor: "#14a5f4",
+                marginHorizontal: 18,
+                borderRadius: 6,
+                paddingHorizontal: 40,
+              }}
+              activeOpacity={0.5}
+              onPress={() => {
+                if (oldSecratepassword == "") {
+                  Alert.alert("Please Enter Old Secret Key");
+                } else if (newSecratepassword == "") {
+                  Alert.alert("Please Enter New Secret Key");
+                } else {
+                  SetSecratePasswordsUpdate(
+                    oldSecratepassword,
+                    newSecratepassword
+                  );
+
+                  // Alert.alert("Please Enter Valid Old Secret Key");
+                }
+                // Alert.alert("Please Enter   ")
               }}
             >
-              Update
-            </Text>
-          </TouchableOpacity>
-        </View>
-      )}
-    </View>
+              <Text
+                style={{
+                  color: "white",
+                  paddingVertical: 10,
+                  fontSize: 18,
+                  fontWeight: "bold",
+                }}
+              >
+                Update
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+    </SafeAreaView>
   );
 };
 

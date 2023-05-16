@@ -40,7 +40,7 @@ import { logout, setLogout } from "./Redux/authActions";
 import { useDispatch, useSelector } from "react-redux";
 import VoiceComponent from "./Record/Voice";
 var RNFS = require("react-native-fs");
-import Sound from "react-native-sound";
+import Sound, { MAIN_BUNDLE } from "react-native-sound";
 import Tts from "react-native-tts";
 import { useIsFocused, useNavigationState } from "@react-navigation/native";
 Sound.setCategory("Playback");
@@ -122,11 +122,47 @@ export default function whisper({ navigation }) {
     }
     speechTimeout = setTimeout(() => {
       setcolors("grey");
+      console.log("Timer has hit, restarting speech recognition...");
       detectHeyAlli = 0;
       previous = "";
       current = "";
     }, 10000);
   };
+
+  // useEffect(async () => {
+  //   const data = await AsyncStorage.getItem("isFirstTime");
+  //   if (data == null) {
+  //     _startRecognizing();
+  //     const jsonValue = JSON.stringify(true);
+  //     await AsyncStorage.setItem("isFirstTime", jsonValue);
+  //   }
+  // }, []);
+
+  // useEffect(async () => {
+  //   const subscription = AppState.addEventListener("change", (nextAppState) => {
+  //     if (
+  //       appState.current.match(/inactive|background/) &&
+  //       nextAppState === "active"
+  //     ) {
+  //       _startRecognizing();
+  //       console.log("App has come to the foreground!");
+  //     } else if (
+  //       appState.current.match(/inactive|active/) &&
+  //       nextAppState === "background"
+  //     ) {
+  //       _stopRecognizing();
+  //     }
+
+  //     appState.current = nextAppState;
+  //     setAppStateVisible(appState.current);
+  //     // console.log("methodcalled");
+  //     // console.log("AppState", appState.current);
+  //   });
+
+  //   return () => {
+  //     subscription.remove();
+  //   };
+  // }, []);
   useEffect(() => {
     if (currentRoute1.name == "home") {
       const subscription = AppState.addEventListener(
@@ -140,7 +176,6 @@ export default function whisper({ navigation }) {
   }, [currentRoute1]);
 
   const handleAppStateChange = (nextAppState) => {
-    console.log("App State: " + nextAppState);
     if (appState != nextAppState) {
       if (
         appState.current.match(/inactive|background/) &&
@@ -163,11 +198,17 @@ export default function whisper({ navigation }) {
         detectHeyAlli = 0;
         previous = "";
         current = "";
-        _startRecognizing();
+        if (Platform.OS == "ios") {
+          return null;
+        } else {
+          _startRecognizing();
+        }
         DataName = "Active";
+        _startRecognizing();
         setAppStateVisible(nextAppState);
       }
     }
+    console.log("App State: " + nextAppState);
   };
 
   // const onSpeechResults = (e: any) => {
@@ -188,6 +229,10 @@ export default function whisper({ navigation }) {
 
   const onSpeechEnd = (e: any) => {
     console.log("onSpeechEnd: ", e);
+    if (Platform.OS === "ios") {
+      console.log("current", current);
+      // use this.state.results here
+    }
     setEnd("√");
   };
 
@@ -216,7 +261,7 @@ export default function whisper({ navigation }) {
   const onSpeechPartialResults = async (e: SpeechResultsEvent) => {
     Data = e.value;
 
-    console.log("detectHeyAlli", detectHeyAlli);
+    // console.log("detectHeyAlli", detectHeyAlli);
     console.log("Datalenght", Data);
 
     if (detectHeyAlli == 1) {
@@ -227,7 +272,7 @@ export default function whisper({ navigation }) {
         }
         setPartialResults(e.value);
         previous = Data[0];
-        console.log("if API Call");
+        console.log("if API Call", previous);
         const timer = setTimeout(() => {
           startApi();
         }, 3000);
@@ -262,7 +307,7 @@ export default function whisper({ navigation }) {
       setisLoggingIn(true);
       sendAnswer(current);
       previous = "";
-      // console.log("currentvalue", current);
+      console.log("currentvalue", current);
     }
   };
 
@@ -298,17 +343,18 @@ export default function whisper({ navigation }) {
     setResults("");
   }, [showInput]);
 
-  // const onChange = ({ name, value }) => {
-  //   setForm({ ...form, [name]: value });
+  const onChange = ({ name, value }) => {
+    setForm({ ...form, [name]: value });
 
-  //   if (value !== "") {
-  //     setErrors((prev) => {
-  //       return { ...prev, [name]: null };
-  //     });
-  //   }
-  // };
+    if (value !== "") {
+      setErrors((prev) => {
+        return { ...prev, [name]: null };
+      });
+    }
+  };
 
   const sendAnswer = async (text) => {
+    console.log("SpeakText", text);
     const token = await AsyncStorage.getItem("token");
     console.log("sendAnswer", token);
     setIsLoading(true);
@@ -320,9 +366,15 @@ export default function whisper({ navigation }) {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then(function (response) {
+      .then(async function (response) {
+        if (Platform.OS === "ios") {
+          await RNFS.unlink(`${RNFS.CachesDirectoryPath}/audio.mp3`);
+        } else {
+          getAnswerVoice(response?.data);
+          // await RNFS.unlink(`${RNFS.CachesDirectoryPath}/audio.mp3`);
+        }
         // console.log("responseddd", response);
-        getAnswerVoice(response?.data);
+
         setIsLoading(true);
       })
       .catch(function (error) {
@@ -332,6 +384,7 @@ export default function whisper({ navigation }) {
   };
 
   const getAnswerVoice = async (text) => {
+    console.log("texttexttext", text);
     const token = await AsyncStorage.getItem("token");
     setIsLoading(true);
     const timer = text.length * 50 + 20000;
@@ -344,7 +397,7 @@ export default function whisper({ navigation }) {
         },
       })
       .then(function (response) {
-        console.log("response", response);
+        // console.log("response", response);
         setVoiceResult(response?.data);
         setIsLoading(false);
         setResults(text);
@@ -353,11 +406,11 @@ export default function whisper({ navigation }) {
         const dirs = RNFetchBlob.fs.dirs;
         const filePath = RNFS.CachesDirectoryPath + "/audio.mp3";
         const fileData = response?.data.split(",")[1];
-
         RNFetchBlob.fs
           .writeFile(filePath, response?.data, "base64")
           .then(() => {
             console.log("File converted successfully");
+            PlayAudio(filePath);
             setisLoggingIn(false);
           })
           .catch((error) => {
@@ -366,34 +419,29 @@ export default function whisper({ navigation }) {
           });
         try {
           // SoundPlayer.playUrl(filePath);
-          var whoosh = new Sound(filePath, Sound.MAIN_BUNDLE, (error) => {
-            if (error) {
-              console.log("failed to load the sound", error);
-              return;
-            }
-            // loaded successfully
-            // console.log(
-            //   "duration in seconds: " +
-            //     whoosh.getDuration() +
-            //     "number of channels: " +
-            //     whoosh.getNumberOfChannels()
-            // );
 
-            // Play the sound with an onEnd callback
-            whoosh.play((success) => {
-              if (success) {
-                // setPartialResults([]);
-                apiCallRunning = false;
-                previous = "";
+          // loaded successfully
+          // console.log(
+          //   "duration in seconds: " +
+          //     whoosh.getDuration() +
+          //     "number of channels: " +
+          //     whoosh.getNumberOfChannels()
+          // );
 
-                _startRecognizing();
-                setcolors("red");
-                console.log("successfully finished playing");
-              } else {
-                console.log("playback failed due to audio decoding errors");
-              }
-            });
-          });
+          // Play the sound with an onEnd callback
+          //   whoosh.play((success) => {
+          //     if (success) {
+          //       // setPartialResults([]);
+          //       apiCallRunning = false;
+          //       previous = "";
+          //       _startRecognizing();
+          //       setcolors("red");
+          //       console.log("successfully finished playing");
+          //     } else {
+          //       console.log("playback failed due to audio decoding errors");
+          //     }
+          //   });
+          // });
           setIsLoading(false);
         } catch (e) {
           // Alert('Cannot play the file');
@@ -418,6 +466,10 @@ export default function whisper({ navigation }) {
     // current = "";
     navigate("TexttoSpeechScreen");
   };
+  // const handleSend = (text) => {
+  //   setTypeText(text);
+  //   sendAnswer(text);
+  // };
 
   // const onStartRecord = async () => {
   //   setcolors("red");
@@ -436,38 +488,46 @@ export default function whisper({ navigation }) {
   const PlayAudio = (filePath) => {
     try {
       // SoundPlayer.playUrl(filePath);
-      var whoosh = new Sound(filePath, Sound.MAIN_BUNDLE, (error) => {
-        if (error) {
-          PlayAudio(filePath);
-          // console.log("failed to load the sound", error);
-          return;
-        }
-        // loaded successfully
-        console.log(
-          "duration in seconds: " +
-            whoosh.getDuration() +
-            "number of channels: " +
-            whoosh.getNumberOfChannels()
-        );
-
-        // Play the sound with an onEnd callback
-        whoosh.play((success) => {
-          if (success) {
-            whoosh.stop();
-            whoosh.release();
-            if (DataName == "background") {
-              // AudioRecord.stop();
-              _stopRecognizing();
-            } else {
-              // onStartRecord();
-            }
-
-            console.log("successfully finished playing");
-          } else {
-            console.log("playback failed due to audio decoding errors");
+      var whoosh = new Sound(
+        filePath,
+        Platform.OS == "ios" ? "" : MAIN_BUNDLE,
+        (error) => {
+          if (error) {
+            PlayAudio(filePath);
+            // console.log("failed to load the sound", error);
+            return;
           }
-        });
-      });
+          // loaded successfully
+          console.log(
+            "duration in seconds: " +
+              whoosh.getDuration() +
+              "number of channels: " +
+              whoosh.getNumberOfChannels()
+          );
+
+          // Play the sound with an onEnd callback
+          whoosh.play((success) => {
+            if (success) {
+              whoosh.stop();
+              whoosh.release();
+
+              if (DataName == "background") {
+                // AudioRecord.stop();
+                _stopRecognizing();
+              } else {
+                apiCallRunning = false;
+                previous = "";
+                _startRecognizing();
+                setcolors("red");
+                // onStartRecord();
+              }
+              console.log("successfully finished playing");
+            } else {
+              console.log("playback failed due to audio decoding errors");
+            }
+          });
+        }
+      );
       setIsLoading(false);
     } catch (e) {
       setIsLoading(false);
