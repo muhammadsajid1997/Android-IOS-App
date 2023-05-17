@@ -85,6 +85,9 @@ export default function whisper({ navigation }) {
   const [timerCount, setTimer] = useState(60);
   const [RecognizeData, setRecognizeData] = useState([]);
   const [timerId, setTimerId] = useState(null);
+  const [currentTranscript, setCurrentTranscript] = useState(null);
+  const [processedTranscript, setProcessedTranscript] = useState(null);
+
   var DataName = "Active";
   var Data = "";
   var detectHeyAlli = 0;
@@ -99,6 +102,7 @@ export default function whisper({ navigation }) {
     Voice.onSpeechEnd = onSpeechEnd;
     Voice.onSpeechError = onSpeechError;
     Voice.onSpeechPartialResults = onSpeechPartialResults;
+    Voice.onSpeechResults = onSpeechResults;
     return () => {
       Voice.destroy().then(Voice.removeAllListeners);
     };
@@ -106,7 +110,6 @@ export default function whisper({ navigation }) {
 
   React.useEffect(() => {
     KeepAwake.activate();
-
     const unsubscribe = navigatation.addListener("focus", () => {
       detectHeyAlli = false;
       previous = "";
@@ -122,7 +125,7 @@ export default function whisper({ navigation }) {
     }
     speechTimeout = setTimeout(() => {
       setcolors("grey");
-      console.log("Timer has hit, restarting speech recognition...");
+      // console.log("Timer has hit, restarting speech recognition...");
       detectHeyAlli = 0;
       previous = "";
       current = "";
@@ -194,15 +197,21 @@ export default function whisper({ navigation }) {
         current = "";
         setAppStateVisible(nextAppState);
         DataName = "background";
+      } else if (nextAppState == "inactive") {
+        detectHeyAlli = 0;
+        previous = "";
+        current = "";
+        DataName = "inactive";
+        return null;
       } else {
         detectHeyAlli = 0;
         previous = "";
         current = "";
-        if (Platform.OS == "ios") {
-          return null;
-        } else {
-          _startRecognizing();
-        }
+        // if (Platform.OS == "ios") {
+        //   return null;
+        // } else {
+        //   _startRecognizing();
+        // }
         DataName = "Active";
         _startRecognizing();
         setAppStateVisible(nextAppState);
@@ -211,9 +220,9 @@ export default function whisper({ navigation }) {
     console.log("App State: " + nextAppState);
   };
 
-  // const onSpeechResults = (e: any) => {
-  //   console.log("Results", e);
-  // };
+  const onSpeechResults = (e: any) => {
+    console.log("Resultsddssddssdsd", e);
+  };
 
   const onSpeechStart = (e: any) => {
     if (detectHeyAlli == 1) {
@@ -258,12 +267,31 @@ export default function whisper({ navigation }) {
     "help me alli",
   ];
 
+  // var prevSpeechResultArray = [];
   const onSpeechPartialResults = async (e: SpeechResultsEvent) => {
     Data = e.value;
-
-    // console.log("detectHeyAlli", detectHeyAlli);
-    console.log("Datalenght", Data);
-
+    // const myArray = Data[0].split(" ");
+    // console.log("sdjhdjjdsjhddsdd", myArray);
+    // if (Platform.OS == "ios") {
+    // const myArray = Data[0].split(" ");
+    // if (prevSpeechResultArray.length > 0) {
+    //   if (myArray.length > prevSpeechResultArray.length) {
+    //     const tempPrevSpeechResultArray = [];
+    //     tempPrevSpeechResultArray.push(
+    //       myArray.slice(prevSpeechResultArray.length, myArray.length)
+    //     );
+    //     console.log("2. new Data :===> ", tempPrevSpeechResultArray);
+    //     prevSpeechResultArray.push(myArray);
+    //   }
+    // } else {
+    //   prevSpeechResultArray.push(myArray);
+    //   console.log("1. new Data :===> ", prevSpeechResultArray);
+    // }
+    // await Voice.cancel();
+    // this.setState({
+    //   end: true,
+    // });
+    // } else {
     if (detectHeyAlli == 1) {
       if (Data.length > 0 && Data[0].length > 0) {
         if (speechTimeout) {
@@ -291,11 +319,16 @@ export default function whisper({ navigation }) {
           if (index.toLocaleLowerCase().includes(index1)) {
             setcolors("red");
             detectHeyAlli = 1;
+            previous = "";
+            current = "";
+          } else {
+            setPartialResults([]);
           }
         });
       });
     }
     console.log("Speech started!");
+    // }
     // console.log("methodcalled");
   };
 
@@ -310,6 +343,8 @@ export default function whisper({ navigation }) {
       console.log("currentvalue", current);
     }
   };
+
+  // console.log("Partiicaulater", partialResults);
 
   const _startRecognizing = async () => {
     // console.log("1. Detectheyall", detectHeyAlli);
@@ -368,7 +403,7 @@ export default function whisper({ navigation }) {
       })
       .then(async function (response) {
         if (Platform.OS === "ios") {
-          await RNFS.unlink(`${RNFS.CachesDirectoryPath}/audio.mp3`);
+          getAnswerVoice(response?.data);
         } else {
           getAnswerVoice(response?.data);
           // await RNFS.unlink(`${RNFS.CachesDirectoryPath}/audio.mp3`);
