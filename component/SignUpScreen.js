@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState, createRef } from "react";
+import React, { useState, createRef, useRef } from "react";
 import {
   StyleSheet,
   TextInput,
@@ -35,6 +35,7 @@ import logoBack from "./Images/logoback.png";
 // import { useAuthRequest } from 'expo-auth-session/providers/google';
 // // import auth from '@react-native-firebase/auth';
 import ContryPicker, { DARK_THEME } from "react-native-country-picker-modal";
+import AnimateLoadingButton from "react-native-animate-loading-button";
 const SignUpScreen = ({ navigation }) => {
   const [firstName, setFirstName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState(false);
@@ -43,6 +44,7 @@ const SignUpScreen = ({ navigation }) => {
   const passwordInputRef = createRef();
   const [countryCode, setCountryCode] = useState("US");
   const [callingCodes, setcallingCode] = useState("1");
+  const ldngbtn = useRef(null);
   // const SingupUser = () => {
   //   if (!firstName) {
   //     Alert.alert("Please enter your FullName");
@@ -86,6 +88,7 @@ const SignUpScreen = ({ navigation }) => {
     // } else if (firstName.match(regEx)) {
     //   Alert.alert("Please enter a valid first name.");
     // } else {
+    ldngbtn.current.showLoading(true);
     axios
       .post(
         "https://heyalli.azurewebsites.net/api/Identity/register",
@@ -103,6 +106,7 @@ const SignUpScreen = ({ navigation }) => {
       .then((response) => {
         console.log("response get details:" + response.data);
         if (response.data) {
+          ldngbtn.current.showLoading(false);
           navigation.navigate("otp", {
             phoneNumber: `+${callingCodes}${phoneNumber}`,
             name: firstName,
@@ -111,15 +115,19 @@ const SignUpScreen = ({ navigation }) => {
         }
       })
       .catch((error) => {
+        ldngbtn.current.showLoading(false);
         // console.log("axios error:", error.response.data);
         if (
           error.response.data == "User with this phone number already exists"
         ) {
+          ldngbtn.current.showLoading(false);
           Alert.alert("User with this phone number already exists");
         } else if (error.message == "Network Error") {
+          ldngbtn.current.showLoading(false);
           Alert.alert("Network Error");
           // return null;
         } else if (error.response.data.errors) {
+          ldngbtn.current.showLoading(false);
           Alert.alert(error.response.data.errors.FullName[0]);
         }
         //     Alert.alert(
@@ -249,24 +257,40 @@ const SignUpScreen = ({ navigation }) => {
                 marginHorizontal: 18,
                 borderRadius: 6,
               }}
-              activeOpacity={0.5}
-              onPress={() => {
-                const nameRegex = new RegExp(/^[a-z ,.'-]+(\s)([a-z ,.'-])+$/i);
-                if (firstName == "") {
-                  Alert.alert("Please enter firstname");
-                } else if (phoneNumber == "") {
-                  Alert.alert("Please enter phoneNumber ");
-                } else {
-                  SingupUser();
-                  // Alert.alert("Please Enter Valid Old Secret Key");
-                }
-                // navigation.navigate("whisper")
-              }}
             >
-              {/* <Image style={{ borderRadius: 10, marginVertical: 10 }} source={signInButton}>
-              </Image> */}
-
-              <Text style={styles.buttonTextStyle}>Sign Up</Text>
+              <AnimateLoadingButton
+                useNativeDriver={true}
+                style={{
+                  justifyContent: "center",
+                  flex: 1,
+                  alignItems: "center",
+                  backgroundColor: "#14a5f4",
+                  marginHorizontal: 18,
+                  borderRadius: 6,
+                }}
+                ref={ldngbtn}
+                width={300}
+                height={45}
+                title="Sign Up"
+                titleFontSize={16}
+                titleColor="rgb(255,255,255)"
+                backgroundColor="#14a5f4"
+                borderRadius={6}
+                onPress={() => {
+                  const nameRegex = new RegExp(
+                    /^[a-z ,.'-]+(\s)([a-z ,.'-])+$/i
+                  );
+                  if (firstName == "") {
+                    Alert.alert("Please enter firstname");
+                  } else if (phoneNumber == "") {
+                    Alert.alert("Please enter phoneNumber ");
+                  } else {
+                    SingupUser();
+                    // Alert.alert("Please Enter Valid Old Secret Key");
+                  }
+                  // navigation.navigate("whisper")
+                }}
+              />
             </TouchableOpacity>
 
             <Text

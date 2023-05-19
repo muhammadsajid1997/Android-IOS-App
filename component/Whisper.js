@@ -35,10 +35,12 @@ import Tts from "react-native-tts";
 import { useIsFocused, useNavigationState } from "@react-navigation/native";
 Sound.setCategory("Playback");
 const dirs = RNFetchBlob.fs.dirs;
+var RNFS = require("react-native-fs");
 import KeepAwake from "react-native-keep-awake";
 export default function whisper({ navigation }) {
   const [started, setStarted] = useState(false);
   const [loading, setisloading] = useState(false);
+  const [time, setTime] = useState(false);
   const { navigate } = useNavigation();
   const navigationState = useNavigationState((state) => state);
   const currentRoute1 = navigationState.routes[navigationState.index];
@@ -56,6 +58,8 @@ export default function whisper({ navigation }) {
   var previous = "";
   var apiCallRunning = false;
   var speechTimeout = null;
+  var startTime = "";
+  var endTime = "";
 
   useEffect(async () => {
     Voice.onSpeechStart = onSpeechStart;
@@ -90,7 +94,7 @@ export default function whisper({ navigation }) {
       detectHeyAlli = 0;
       previous = "";
       current = "";
-    }, 10000);
+    }, 7000);
   };
 
   useEffect(() => {
@@ -201,83 +205,63 @@ export default function whisper({ navigation }) {
         }
         previous = Data[0];
         // console.log("if API Call", previous);
+
         const timer = setTimeout(() => {
+          startTime = Date.now();
+          console.log("START Brain Call - ", startTime);
           startApi();
-        }, 2000);
+        }, 1500);
         return () => {
           clearTimeout(timer);
         };
       }
     } else {
-      if (Data.length) {
-        const lowerCaseData = Data[0].toLocaleLowerCase(); // Convert 'data' to lowercase
-        if (
-          myArray.some(
-            (element) => element.toLocaleLowerCase() === lowerCaseData
-          )
-        ) {
-          setcolors("red");
-          detectHeyAlli = 1;
-          previous = "";
-          current = "";
-        }
-      }
+      Data.map((index, i) => {
+        myArray.map((index1, i) => {
+          if (index.toLocaleLowerCase().includes(index1)) {
+            setcolors("red");
+            detectHeyAlli = 1;
+            previous = "";
+            current = "";
+            startTimerSec();
+          }
+        });
+      });
     }
-    //   Data.map((index, i) => {
-    //     myArray.map((index1, i) => {
-    //       if (index.toLocaleLowerCase().includes(index1)) {
-    //         setcolors("red");
-    //         detectHeyAlli = 1;
-    //         previous = "";
-    //         current = "";
-    //       }
-    //     });
-    //   });
-    // }
-    // console.log("Speech started!");
-    // }
-    // console.log("methodcalled");
   };
 
   const startApi = () => {
     if (previous.length > 0 && !apiCallRunning) {
-      // console.log("API CALLed", previous);
       apiCallRunning = true;
       current = previous;
       sendAnswer(current);
       previous = "";
-      console.log("currentvalue", current);
     }
   };
 
   const _startRecognizing = async () => {
-    // console.log("1. Detectheyall", detectHeyAlli);
     try {
       await Voice.start("en-US", {
         EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS: 300000,
-        EXTRA_LANGUAGE_MODEL: "LANGUAGE_MODEL_FREE_FORM",
         EXTRA_MAX_RESULTS: 1,
         EXTRA_PARTIAL_RESULTS: true,
       });
       setisloading(false);
     } catch (e) {
-      // console.error(e);
+      console.error(e);
     }
   };
 
   const _stopRecognizing = async () => {
     setcolors("grey");
-    // console.log("2. Detectheyall", detectHeyAlli);
     try {
-      await Voice.stop();
+      await Voice.destroy();
     } catch (e) {
       console.error(e);
     }
   };
 
   const sendAnswer = async (text) => {
-    console.log("SpeakText", text);
-    const startTime = performance.now();
     setisloading(true);
     const token = await AsyncStorage.getItem("token");
     const url = `https://heyalli.azurewebsites.net/api/HeyAlli/brain?text=${text}`;
@@ -289,30 +273,113 @@ export default function whisper({ navigation }) {
         },
       })
       .then(async function (response) {
-        const endTime = performance.now();
-        const elapsedTime = endTime - startTime;
-        console.log(`API call took ${elapsedTime} milliseconds.`);
         if (response) {
-          setisloading(false);
-          Tts.speak(response.data);
-          _stopRecognizing();
-          Tts.addEventListener("tts-finish", (event) => {
-            console.log("finish", event);
-            if (DataName == "background") {
-              _stopRecognizing();
-            } else {
-              apiCallRunning = false;
-              previous = "";
-              _startRecognizing();
-              setcolors("red");
-            }
-          });
+          console.log("END Brain Call - ", Date.now());
+          getAnswerVoice(response?.data);
         }
       })
       .catch(function (error) {
         // console.log("sendAnswer", error);
         setisloading(false);
       });
+  };
+
+  const getAnswerVoice = async (text) => {
+    console.log("START TTS Call - ", Date.now());
+    const token = await AsyncStorage.getItem("token");
+    setisloading(true);
+    const timer = text.length * 50 + 20000;
+    const url = `https://heyalli.azurewebsites.net/api/convert/tts?text=${text}`;
+    axios
+      .get(url, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(function (response) {
+        endTime = Date.now();
+        console.log("END TTS Call - ", endTime);
+        setTime("Time Taken: " + (endTime - startTime));
+        setisloading(false);
+        _stopRecognizing();
+        const dirs = RNFetchBlob.fs.dirs;
+        const filePath = RNFS.CachesDirectoryPath + "/audio.mp3";
+        const fileData = response?.data.split(",")[1];
+        RNFetchBlob.fs
+          .writeFile(filePath, response?.data, "base64")
+          .then(() => {
+            console.log("File converted successfully");
+            PlayAudio(filePath);
+            setisloading(false);
+          })
+          .catch((error) => {
+            setisloading(false);
+            console.log(`Error converting file: ${error}`);
+          });
+        try {
+          setisloading(false);
+        } catch (e) {
+          // Alert('Cannot play the file');
+          console.log("cannot play the song file", e);
+        }
+
+        setisloading(false);
+      })
+      .catch(function (error) {
+        console.log("getAnswerVoice", error);
+        setisloading(false);
+      });
+  };
+
+  const PlayAudio = (filePath) => {
+    try {
+      // SoundPlayer.playUrl(filePath);
+      var whoosh = new Sound(
+        filePath,
+        Platform.OS == "ios" ? "" : MAIN_BUNDLE,
+        (error) => {
+          if (error) {
+            PlayAudio(filePath);
+            // console.log("failed to load the sound", error);
+            return;
+          }
+          // loaded successfully
+          console.log(
+            "duration in seconds: " +
+              whoosh.getDuration() +
+              "number of channels: " +
+              whoosh.getNumberOfChannels()
+          );
+
+          // Play the sound with an onEnd callback
+          whoosh.play((success) => {
+            if (success) {
+              whoosh.stop();
+              whoosh.release();
+              if (DataName == "background") {
+                // AudioRecord.stop();
+                _stopRecognizing();
+              } else {
+                apiCallRunning = false;
+                previous = "";
+                _startRecognizing();
+                setcolors("red");
+                // onStartRecord();
+              }
+              console.log("successfully finished playing");
+            } else {
+              console.log("playback failed due to audio decoding errors");
+            }
+          });
+        }
+      );
+      setisloading(false);
+    } catch (e) {
+      setisloading(false);
+      // Alert('Cannot play the file');
+      console.log("cannot play the song file", e);
+    }
   };
   const handleInputField = () => {
     _stopRecognizing();
@@ -401,7 +468,7 @@ export default function whisper({ navigation }) {
               >
                 <FontAwesome name="microphone" size={32} color={"#fff"} />
               </TouchableOpacity>
-              {/* <Text>{}</Text> */}
+              <Text style={styles.baseText}>{time}</Text>
             </View>
           ) : (
             <TouchableOpacity

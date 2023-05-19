@@ -1,4 +1,4 @@
-import React, { useState, createRef, useEffect } from "react";
+import React, { useState, createRef, useEffect, useRef } from "react";
 import {
   StyleSheet,
   TextInput,
@@ -20,14 +20,16 @@ import { useDispatch } from "react-redux";
 import { loginUser, setLogin } from "./Redux/authActions";
 import moment from "moment";
 import Tts from "react-native-tts";
+import AnimateLoadingButton from "react-native-animate-loading-button";
+import ActivityLoader from "./ActivityLoader";
 const OtpScreen = ({ navigation }) => {
   const [verifyOtp, setVerifyOtp] = useState("");
   const passwordInputRef = createRef();
   const route = useRoute();
-
+  const ldngbtn = useRef(null);
   const navigate = useNavigation();
   const dispatch = useDispatch();
-
+  const [loading, setLoading] = useState(false);
   let timer = () => {};
   const [timeLeft, setTimeLeft] = useState(30);
 
@@ -62,7 +64,7 @@ const OtpScreen = ({ navigation }) => {
 
   const ResendOTP = () => {
     if (route.params.type == "Login") {
-      console.log("Login");
+      setLoading(true);
       axios
         .post(
           "https://heyalli.azurewebsites.net/api/Identity/login",
@@ -77,15 +79,18 @@ const OtpScreen = ({ navigation }) => {
           }
         )
         .then((response) => {
+          setLoading(false);
           // console.log(response);
           // navigation.navigate("Home", { screen: "home" });
         })
         .catch((error) => {
+          setLoading(false);
           Alert.alert(error.response.data);
           console.log("axios error:", error.response.data);
         });
     } else if (route.params.type == "Register") {
       console.log("Register");
+      setLoading(true);
       axios
         .post(
           "https://heyalli.azurewebsites.net/api/Identity/register",
@@ -101,19 +106,24 @@ const OtpScreen = ({ navigation }) => {
           }
         )
         .then((response) => {
+          setLoading(false);
           console.log("response get details:" + response.data);
         })
         .catch((error) => {
           console.log(route.params.name);
+          setLoading(false);
           console.log("axios error:", error.response.data);
           if (
             error.response.data == "User with this phone number already exists"
           ) {
+            setLoading(false);
             Alert.alert("User with this phone number already exists");
           } else if (error.message == "Network Error") {
             Alert.alert("Network Error");
+            setLoading(false);
             // return null;
           } else if (error.response.data.errors) {
+            setLoading(false);
             Alert.alert(error.response.data.errors.FullName[0]);
           }
           //     Alert.alert(
@@ -131,6 +141,7 @@ const OtpScreen = ({ navigation }) => {
     if (verifyOtp == "") {
       Alert.alert("Please Enter OTP");
     } else if (verifyOtp.length == 6) {
+      ldngbtn.current.showLoading(true);
       axios
         .post(
           "https://heyalli.azurewebsites.net/api/Identity/token",
@@ -148,6 +159,7 @@ const OtpScreen = ({ navigation }) => {
         .then(async (data) => {
           // console.log("TokenStore", data);
           if (data) {
+            ldngbtn.current.showLoading(false);
             // console.log("data", data.data.accessToken);
 
             // await AsyncStorage.setItem("Token", data.data.accessToken);
@@ -159,21 +171,26 @@ const OtpScreen = ({ navigation }) => {
 
             // ProfileStore();
           } else {
+            ldngbtn.current.showLoading(false);
             // console.log("data", data);
           }
         })
         .catch((error) => {
-          console.log(error.response.data);
+          // console.log(error.response.data);
           if (error) {
+            ldngbtn.current.showLoading(false);
             if (error.response.data == "Invalid or expired OTP") {
               Alert.alert("Invalid or expired OTP");
+              ldngbtn.current.showLoading(false);
             } else if (
               error.response.data.errors.OTP[0] == "Please enter a valid OTP."
             ) {
+              ldngbtn.current.showLoading(false);
               Alert.alert("Please enter a valid OTP.");
             }
             // console.log(error);
           } else {
+            ldngbtn.current.showLoading(false);
             console.log("error", error);
           }
           // SpeakAudio(error.request._response, false, null);
@@ -305,6 +322,14 @@ const OtpScreen = ({ navigation }) => {
                   justifyContent: "center",
                 }}
               >
+                {loading ? (
+                  <View style={{ position: "absolute" }}>
+                    <ActivityLoader />
+                  </View>
+                ) : (
+                  <View></View>
+                )}
+
                 <TouchableOpacity
                   activeOpacity={0.9}
                   hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }}
@@ -348,17 +373,39 @@ const OtpScreen = ({ navigation }) => {
                 alignItems: "center",
                 backgroundColor: "#14a5f4",
                 marginHorizontal: 18,
-                borderRadius: 12,
+                borderRadius: 6,
                 marginTop: 18,
               }}
-              activeOpacity={0.5}
-              onPress={() => {
-                // props.navigation.navigate("home")
-                // navigation.navigate("Home", { screen: "home" });
-                userOtp();
-              }}
+              // activeOpacity={0.5}
+              // onPress={() => {
+              //   // props.navigation.navigate("home")
+              //   // navigation.navigate("Home", { screen: "home" });
+              //   userOtp();
+              // }}
             >
-              <Text style={styles.buttonTextStyle}>Verify otp</Text>
+              <AnimateLoadingButton
+                useNativeDriver={true}
+                style={{
+                  justifyContent: "center",
+                  flex: 1,
+                  alignItems: "center",
+                  backgroundColor: "#14a5f4",
+                  marginHorizontal: 18,
+                  borderRadius: 6,
+                }}
+                ref={ldngbtn}
+                width={300}
+                height={45}
+                title="Verify otp"
+                titleFontSize={16}
+                titleColor="rgb(255,255,255)"
+                backgroundColor="#14a5f4"
+                borderRadius={6}
+                onPress={() => {
+                  userOtp();
+                }}
+              />
+              {/* <Text style={styles.buttonTextStyle}>Verify otp</Text> */}
             </TouchableOpacity>
             {/* <Text
               style={styles.registerTextStyle}

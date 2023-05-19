@@ -7,7 +7,7 @@ const ActivityLoader = () => (
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: "#b0bec550",
+      // backgroundColor: "#b0bec550",
     }}
   >
     <View
@@ -17,7 +17,7 @@ const ActivityLoader = () => (
         justifyContent: "center",
         height: 90,
 
-        backgroundColor: "#ffffff",
+        // backgroundColor: "#ffffff",
         borderRadius: 20,
       }}
     >

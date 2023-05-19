@@ -1,4 +1,4 @@
-import React, { useState, createRef } from "react";
+import React, { useState, createRef, useRef } from "react";
 import {
   StyleSheet,
   TextInput,
@@ -34,7 +34,7 @@ import logoBack from "./Images/logoback.png";
 // import { useAuthRequest } from 'expo-auth-session/providers/google';
 // // import auth from '@react-native-firebase/auth';
 import axios from "axios";
-
+import AnimateLoadingButton from "react-native-animate-loading-button";
 const LoginScreen = ({ navigation }) => {
   const [userphoneNumber, setUserphoneNumber] = useState("");
   const [userPassword, setUserPassword] = useState("");
@@ -44,6 +44,7 @@ const LoginScreen = ({ navigation }) => {
   const passwordInputRef = createRef();
   const [countryCode, setCountryCode] = useState("US");
   const [callingCodes, setcallingCode] = useState("1");
+  const ldngbtn = useRef(null);
 
   const onChangeCallingcode = (value) => {
     setcallingCode(value);
@@ -51,11 +52,12 @@ const LoginScreen = ({ navigation }) => {
   const loginUser = () => {
     console.log(callingCodes);
     console.log(userphoneNumber);
-    // console.log(userphoneNumber);
+    console.log(ldngbtn);
 
     // if (userphoneNumber == "") {
     //   Alert.alert("Please Enter PhoneNumber");
     // } else {
+    ldngbtn.current.showLoading(true);
     axios
       .post(
         "https://heyalli.azurewebsites.net/api/Identity/login",
@@ -70,7 +72,8 @@ const LoginScreen = ({ navigation }) => {
         }
       )
       .then((response) => {
-        console.log(response);
+        // console.log(response);
+        ldngbtn.current.showLoading(false);
         if (response.data) {
           navigation.navigate("otp", {
             phoneNumber: `+${callingCodes}${userphoneNumber}`,
@@ -79,10 +82,12 @@ const LoginScreen = ({ navigation }) => {
         } else {
           Alert.alert("Invalid PhoneNumber");
           console.log("erroe");
+          ldngbtn.current.showLoading(false);
         }
         // navigation.navigate("Home", { screen: "home" });
       })
       .catch((error) => {
+        ldngbtn.current.showLoading(false);
         Alert.alert(error.response.data);
         console.log("axios error:", error.response.data);
       });
@@ -199,25 +204,53 @@ const LoginScreen = ({ navigation }) => {
                 marginHorizontal: 18,
                 borderRadius: 6,
               }}
-              activeOpacity={0.5}
-              onPress={() => {
-                // navigation.navigate("otp")
-                if (userphoneNumber == "") {
-                  Alert.alert("Please enter Phonenumber");
-                  // loginUser();
-                } else if (isNaN(userphoneNumber)) {
-                  Alert.alert("Please enter a valid Phonenumber");
-                  // Alert.alert("Please enter a valid Phonenumber");
-                } else {
-                  loginUser();
-                  // Alert.alert("apicall");
-                }
-              }}
+              // activeOpacity={0.5}
+              // onPress={() => {
+              //   // navigation.navigate("otp")
+              //   if (userphoneNumber == "") {
+              //     Alert.alert("Please enter Phonenumber");
+              //     // loginUser();
+              //   } else if (isNaN(userphoneNumber)) {
+              //     Alert.alert("Please enter a valid Phonenumber");
+              //     // Alert.alert("Please enter a valid Phonenumber");
+              //   } else {
+              //     loginUser();
+              //     // Alert.alert("apicall");
+              //   }
+              // }}
             >
-              {/* <Image style={{ borderRadius: 10, marginVertical: 10 }} source={signInButton}>
-              </Image> */}
-
-              <Text style={styles.buttonTextStyle}>Login</Text>
+              <AnimateLoadingButton
+                useNativeDriver={true}
+                style={{
+                  justifyContent: "center",
+                  flex: 1,
+                  alignItems: "center",
+                  backgroundColor: "#14a5f4",
+                  marginHorizontal: 18,
+                  borderRadius: 6,
+                }}
+                ref={ldngbtn}
+                width={300}
+                height={45}
+                title="Login"
+                titleFontSize={16}
+                titleColor="rgb(255,255,255)"
+                backgroundColor="#14a5f4"
+                borderRadius={6}
+                onPress={() => {
+                  if (userphoneNumber == "") {
+                    Alert.alert("Please enter Phonenumber");
+                    // loginUser();
+                  } else if (isNaN(userphoneNumber)) {
+                    Alert.alert("Please enter a valid Phonenumber");
+                    // Alert.alert("Please enter a valid Phonenumber");
+                  } else {
+                    loginUser();
+                    // Alert.alert("apicall");
+                  }
+                }}
+              />
+              {/* <Text style={styles.buttonTextStyle}>Login</Text> */}
             </TouchableOpacity>
 
             <Text
