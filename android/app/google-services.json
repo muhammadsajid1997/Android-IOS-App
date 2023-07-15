@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "844313030470",
+    "project_id": "heyalli-89261",
+    "storage_bucket": "heyalli-89261.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:844313030470:android:ee5f2be1404155ee4bbf47",
+        "android_client_info": {
+          "package_name": "com.heyalli"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "844313030470-epmmbbnh3kk1s24jhtgaksrmevi19afe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJzoUz4MXHKITapf5wIAhCyvmQyGEj-Nw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "844313030470-epmmbbnh3kk1s24jhtgaksrmevi19afe.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
