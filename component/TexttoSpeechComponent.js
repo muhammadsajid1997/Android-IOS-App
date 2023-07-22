@@ -55,8 +55,6 @@ const TexttoSpeechComponent = () => {
 
   const getAnswerVoice = async (text) => {
     console.log("TTS: Started: ", new Date().toLocaleTimeString());
-    text = "hi"
-    text = "playback failed due to audio decoding errors playback failed due to audio decoding errors playback failed due to audio decoding errors playback failed due to audio decoding errors playback failed due to audio decoding errors playback failed due to audio decoding errors playback failed due to audio decoding errors playback failed due to audio decoding errors playback failed due to audio decoding errorsplayback failed due to audio decoding errors playback failed due to audio decoding errors playback failed due to audio decoding errors playback failed due to audio decoding errors"
     setIsLoading(true);
     const baseUrl = "https://api.elevenlabs.io/v1/text-to-speech";
     const voiceId = "21m00Tcm4TlvDq8ikWAM";
