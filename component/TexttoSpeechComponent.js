@@ -31,100 +31,97 @@ const TexttoSpeechComponent = () => {
   };
 
   const sendAnswer = async (text) => {
-    const token = await AsyncStorage.getItem("token");
-    console.log("sendAnswer", token);
-    setIsLoading(true);
-    const url = `https://heyalli.azurewebsites.net/api/HeyAlli/brain?text=${text}`;
-    axios
-      .get(url, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then(function (response) {
-        // console.log("responseddd", response);
-        getAnswerVoice(response?.data);
-        setIsLoading(true);
-      })
-      .catch(function (error) {
-        console.log("sendAnswer", error);
-        setIsLoading(false);
-      });
+    try {
+      
+
+      getAnswerVoice(text);
+    } catch (e) {
+      console.error("TTS: Failed: ", e);
+    }
+    setIsLoading(false);
+    // const token = await AsyncStorage.getItem("token");
+    // console.log("sendAnswer", token);
+    // setIsLoading(true);
+    // const url = `https://heyalli.azurewebsites.net/api/HeyAlli/brain?text=${text}`;
+    // axios
+    //   .get(url, {
+    //     headers: {
+    //       "Content-Type": "multipart/form-data",
+    //       Authorization: `Bearer ${token}`,
+    //     },
+    //   })
+    //   .then(function (response) {
+    //     // console.log("responseddd", response);
+    //     getAnswerVoice(response?.data);
+    //     setIsLoading(true);
+    //   })
+    //   .catch(function (error) {
+    //     console.log("sendAnswer", error);
+    //     setIsLoading(false);
+    //   });
   };
 
   const getAnswerVoice = async (text) => {
-    const token = await AsyncStorage.getItem("token");
+    console.log("TTS: Started: ", new Date().toLocaleTimeString());
+    text = "hi"
+    text = "playback failed due to audio decoding errors playback failed due to audio decoding errors playback failed due to audio decoding errors playback failed due to audio decoding errors playback failed due to audio decoding errors playback failed due to audio decoding errors playback failed due to audio decoding errors playback failed due to audio decoding errors playback failed due to audio decoding errorsplayback failed due to audio decoding errors playback failed due to audio decoding errors playback failed due to audio decoding errors playback failed due to audio decoding errors"
     setIsLoading(true);
-    const timer = text.length * 50 + 20000;
-    const url = `https://heyalli.azurewebsites.net/api/convert/tts?text=${text}`;
-    axios
-      .get(url, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then(function (response) {
-        console.log("response", response);
-        setVoiceResult(response?.data);
-        setIsLoading(false);
-        setResults(text);
-        setReceivedText(text);
-        const dirs = RNFetchBlob.fs.dirs;
-        const filePath = RNFS.CachesDirectoryPath + "/audio.mp3";
-        const fileData = response?.data.split(",")[1];
+    const baseUrl = "https://api.elevenlabs.io/v1/text-to-speech";
+    const voiceId = "21m00Tcm4TlvDq8ikWAM";
+    const headers = {
+      "Content-Type": "application/json",
+      "xi-api-key": "8daf0a2369f27e8891de2f96828ca9c9",
+    };
+    const requestBody = {
+      text,
+      voice_settings: {
+        stability: 0,
+        similarity_boost: 0
+      },
+    };
+    console.log("TTS: calling api");
+    const response = await axios.post(`${baseUrl}/${voiceId}`, requestBody, {
+      headers,
+      responseType: "arraybuffer",
+    });
+    const filePath = RNFS.CachesDirectoryPath + "/audio.mp3";
+    console.log("TTS: response.status: ", response.status);
+    if (response.status === 200) {
+      const fileData = response.request._response;
+      RNFetchBlob.fs
+        .writeFile(filePath, fileData, "base64")
+        .then(() => {
+          console.log("File converted successfully ok ok");
+          setisLoggingIn(false);
+        })
+        .catch((error) => {
+          setisLoggingIn(false);
+          console.log(`Error converting file: ${error}`);
+        });
 
-        RNFetchBlob.fs
-          .writeFile(filePath, response?.data, "base64")
-          .then(() => {
-            console.log("File converted successfully");
-            setisLoggingIn(false);
-          })
-          .catch((error) => {
-            setisLoggingIn(false);
-            console.log(`Error converting file: ${error}`);
-          });
-        try {
-          // SoundPlayer.playUrl(filePath);
-          var whoosh = new Sound(filePath, Sound.MAIN_BUNDLE, (error) => {
-            if (error) {
-              console.log("failed to load the sound", error);
-              return;
-            }
-            // loaded successfully
-            // console.log(
-            //   "duration in seconds: " +
-            //     whoosh.getDuration() +
-            //     "number of channels: " +
-            //     whoosh.getNumberOfChannels()
-            // );
-
-            // Play the sound with an onEnd callback
-            whoosh.play((success) => {
-              if (success) {
-                // setPartialResults([]);
-                console.log("successfully finished playing");
-              } else {
-                console.log("playback failed due to audio decoding errors");
-              }
-            });
-          });
-          setIsLoading(false);
-        } catch (e) {
-          // Alert('Cannot play the file');
-          console.log("cannot play the song file", e);
+    } else {
+      console.error("Error fetching audio:", error);
+      setError("Error: Unable to stream audio.");
+    }
+    try {
+      var whoosh = new Sound(filePath, Sound.MAIN_BUNDLE, (error) => {
+        if (error) {
+          console.log("failed to load the sound", error);
+          return;
         }
-
-        setTimeout(() => {
-          setResults("");
-        }, timer);
-        setIsLoading(false);
-      })
-      .catch(function (error) {
-        console.log("getAnswerVoice", error);
-        setIsLoading(false);
+        whoosh.play((success) => {
+          if (success) {
+            console.log("successfully finished playing");
+          } else {
+            console.log("playback failed due to audio decoding errors");
+          }
+        });
       });
+      setIsLoading(false);
+    } catch (e) {
+      console.log("cannot play the song file", e);
+    }
+    console.log("TTS: Ended: ", new Date().toLocaleTimeString());
   };
 
   return (
@@ -154,18 +151,6 @@ const TexttoSpeechComponent = () => {
             </Text>
           </View>
         </View>
-        {/* <Text
-          style={{
-            ...styles.title,
-            fontWeight: "700",
-            fontSize: 35,
-            color: "#0f87cf",
-            marginVertical: 10,
-          }}
-        >
-          Hey Alli{" "}
-        </Text> */}
-
         <CustomInput onSend={handleSend} isLoading={isLoading} />
       </View>
       <View style={{ marginTop: 10, width: "100%" }}>
