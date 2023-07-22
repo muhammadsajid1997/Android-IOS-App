@@ -31,34 +31,26 @@ const TexttoSpeechComponent = () => {
   };
 
   const sendAnswer = async (text) => {
-    try {
-      
-
-      getAnswerVoice(text);
-    } catch (e) {
-      console.error("TTS: Failed: ", e);
-    }
-    setIsLoading(false);
-    // const token = await AsyncStorage.getItem("token");
-    // console.log("sendAnswer", token);
-    // setIsLoading(true);
-    // const url = `https://heyalli.azurewebsites.net/api/HeyAlli/brain?text=${text}`;
-    // axios
-    //   .get(url, {
-    //     headers: {
-    //       "Content-Type": "multipart/form-data",
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //   })
-    //   .then(function (response) {
-    //     // console.log("responseddd", response);
-    //     getAnswerVoice(response?.data);
-    //     setIsLoading(true);
-    //   })
-    //   .catch(function (error) {
-    //     console.log("sendAnswer", error);
-    //     setIsLoading(false);
-    //   });
+    const token = await AsyncStorage.getItem("token");
+    console.log("sendAnswer", token);
+    setIsLoading(true);
+    const url = `https://heyalli.azurewebsites.net/api/HeyAlli/brain?text=${text}`;
+    axios
+      .get(url, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(function (response) {
+        // console.log("responseddd", response);
+        getAnswerVoice(response?.data);
+        setIsLoading(true);
+      })
+      .catch(function (error) {
+        console.log("sendAnswer", error);
+        setIsLoading(false);
+      });
   };
 
   const getAnswerVoice = async (text) => {
@@ -70,7 +62,7 @@ const TexttoSpeechComponent = () => {
     const voiceId = "21m00Tcm4TlvDq8ikWAM";
     const headers = {
       "Content-Type": "application/json",
-      "xi-api-key": "8daf0a2369f27e8891de2f96828ca9c9",
+      "xi-api-key": "",
     };
     const requestBody = {
       text,
